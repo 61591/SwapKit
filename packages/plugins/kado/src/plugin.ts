@@ -1,11 +1,6 @@
 import type { QuoteResponse, QuoteResponseRoute } from "@swapkit/api";
-import {
-    AssetValue,
-  Chain,
-  FeeTypeEnum,
-  ProviderName,
-  RequestClient,
-} from "@swatype pkit/helpers";
+import { AssetValue, Chain, FeeTypeEnum, ProviderName, RequestClient } from "@swapkit/helpers";
+import type { SwapKitPluginParams, WalletChain } from "@swapkit/helpers";
 import { ChainToKadoChain } from "./helpers";
 
 export type KadoFiatCurrency =
@@ -59,96 +54,96 @@ export type KadoQuoteRequest = {
 };
 
 type KadoQuoteResponse = {
-    success: boolean;
-    message: string;
-    data: {
-      quote: {
-        receive: {
-          amount: number;
-          originalAmount: number;
-          symbol: string;
-          unit: string;
-          unitCount: number;
-        };
-        networkFee: {
-          amount: number;
-          currency: string;
-          originalAmount: number;
-          promotionModifier: number;
-        };
-        processingFee: {
-          amount: number;
-          currency: string;
-          originalAmount: number;
-          promotionModifier: number;
-        };
-        totalFee: {
-          amount: number;
-          currency: string;
-          originalAmount: number;
-        };
+  success: boolean;
+  message: string;
+  data: {
+    quote: {
+      receive: {
+        amount: number;
+        originalAmount: number;
+        symbol: string;
+        unit: string;
+        unitCount: number;
+      };
+      networkFee: {
+        amount: number;
+        currency: string;
+        originalAmount: number;
+        promotionModifier: number;
+      };
+      processingFee: {
+        amount: number;
+        currency: string;
+        originalAmount: number;
+        promotionModifier: number;
+      };
+      totalFee: {
+        amount: number;
+        currency: string;
+        originalAmount: number;
       };
     };
   };
-  
-  function mapKadoQuoteToQuoteResponse({
-    quote,
-    sellAsset,
-    buyAsset,
-  }: {
-    quote: KadoQuoteResponse;
-    sellAsset: AssetValue;
-    buyAsset: AssetValue;
-  }): QuoteResponse {
-    const routes: QuoteResponseRoute[] = [
-      {
-        providers: [ProviderName.KADO],
-        sellAsset: sellAsset.toString(),
-        sellAmount: sellAsset.getValue("string"),
-        buyAsset: buyAsset.toString(),
-        expectedBuyAmount: quote.data.quote.receive.amount.toString(),
-        expectedBuyAmountMaxSlippage: quote.data.quote.receive.amount.toString(),
-        sourceAddress: "{sourceAddress}",
-        destinationAddress: "{destinationAddress}",
-        fees: [
-          {
-            asset: quote.data.quote.processingFee.currency,
-            amount: quote.data.quote.processingFee.amount.toString(),
-            type: FeeTypeEnum.LIQUIDITY,
-            protocol: ProviderName.KADO,
-            chain: "FIAT",
-          },
-          {
-            asset: quote.data.quote.networkFee.currency,
-            amount: quote.data.quote.networkFee.amount.toString(),
-            type: FeeTypeEnum.NETWORK,
-            protocol: ProviderName.KADO,
-            chain: buyAsset.chain,
-          },
-        ],
-        totalSlippageBps: 0,
-        legs: [
-          {
-            provider: ProviderName.KADO,
-            sellAsset: sellAsset.toString(),
-            sellAmount: sellAsset.getValue("string"),
-            buyAsset: buyAsset.toString(),
-            buyAmount: quote.data.quote.receive.unitCount.toString(),
-            buyAmountMaxSlippage: quote.data.quote.receive.unitCount.toString(),
-            fees: [],
-          },
-        ],
-        warnings: [],
-        meta: {},
-      },
-    ];
-  
-    return {
-      quoteId: crypto.randomUUID(),
-      routes,
-      error: quote.success ? undefined : quote.message,
-    };
-  }
+};
+
+function mapKadoQuoteToQuoteResponse({
+  quote,
+  sellAsset,
+  buyAsset,
+}: {
+  quote: KadoQuoteResponse;
+  sellAsset: AssetValue;
+  buyAsset: AssetValue;
+}): QuoteResponse {
+  const routes: QuoteResponseRoute[] = [
+    {
+      providers: [ProviderName.KADO],
+      sellAsset: sellAsset.toString(),
+      sellAmount: sellAsset.getValue("string"),
+      buyAsset: buyAsset.toString(),
+      expectedBuyAmount: quote.data.quote.receive.amount.toString(),
+      expectedBuyAmountMaxSlippage: quote.data.quote.receive.amount.toString(),
+      sourceAddress: "{sourceAddress}",
+      destinationAddress: "{destinationAddress}",
+      fees: [
+        {
+          asset: quote.data.quote.processingFee.currency,
+          amount: quote.data.quote.processingFee.amount.toString(),
+          type: FeeTypeEnum.LIQUIDITY,
+          protocol: ProviderName.KADO,
+          chain: "FIAT",
+        },
+        {
+          asset: quote.data.quote.networkFee.currency,
+          amount: quote.data.quote.networkFee.amount.toString(),
+          type: FeeTypeEnum.NETWORK,
+          protocol: ProviderName.KADO,
+          chain: buyAsset.chain,
+        },
+      ],
+      totalSlippageBps: 0,
+      legs: [
+        {
+          provider: ProviderName.KADO,
+          sellAsset: sellAsset.toString(),
+          sellAmount: sellAsset.getValue("string"),
+          buyAsset: buyAsset.toString(),
+          buyAmount: quote.data.quote.receive.unitCount.toString(),
+          buyAmountMaxSlippage: quote.data.quote.receive.unitCount.toString(),
+          fees: [],
+        },
+      ],
+      warnings: [],
+      meta: {},
+    },
+  ];
+
+  return {
+    quoteId: crypto.randomUUID(),
+    routes,
+    error: quote.success ? undefined : quote.message,
+  };
+}
 
 export type KadoBlockchainsResponse = {
   success: boolean;
@@ -205,8 +200,10 @@ export type KadoSupportedAssetsResponse = {
   };
 };
 
-
-function plugin({ getWallet, config: { kadoApiKey } }: SwapKitPluginParams<{ kadoApiKey: string }>) {
+function plugin({
+  getWallet,
+  config: { kadoApiKey },
+}: SwapKitPluginParams<{ kadoApiKey: string }>) {
   //   async function onRampQuote(
   //     assetValue: AssetValue,
   //     fiatCurrency: KadoFiatCurrency,
@@ -525,8 +522,14 @@ function plugin({ getWallet, config: { kadoApiKey } }: SwapKitPluginParams<{ kad
 
   function swap({ route }: { route: QuoteResponseRoute }) {
     const widgetUrl = getKadoWidgetUrl({
-      sellAsset: AssetValue.from({ asset: route.sellAsset, value: route.sellAmount }),
-      buyAsset: AssetValue.from({ asset: route.buyAsset, value: route.expectedBuyAmount }),
+      sellAsset: AssetValue.from({
+        asset: route.sellAsset,
+        value: route.sellAmount,
+      }),
+      buyAsset: AssetValue.from({
+        asset: route.buyAsset,
+        value: route.expectedBuyAmount,
+      }),
       supportedAssets: [],
       recipient: route.buyAsset.startsWith("FIAT.")
         ? ""
