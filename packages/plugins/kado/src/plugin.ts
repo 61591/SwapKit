@@ -101,8 +101,8 @@ function mapKadoQuoteToQuoteResponse({
       sellAsset: sellAsset.toString(),
       sellAmount: sellAsset.getValue("string"),
       buyAsset: buyAsset.toString(),
-      expectedBuyAmount: quote.data.quote.receive.amount.toString(),
-      expectedBuyAmountMaxSlippage: quote.data.quote.receive.amount.toString(),
+      expectedBuyAmount: quote.data.quote.receive.unitCount.toString(),
+      expectedBuyAmountMaxSlippage: quote.data.quote.receive.unitCount.toString(),
       sourceAddress: "{sourceAddress}",
       destinationAddress: "{destinationAddress}",
       fees: [
