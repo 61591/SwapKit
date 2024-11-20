@@ -104,7 +104,7 @@ export function SwapKit<
     return plugin;
   }
 
-  function addChain<T extends Chain>(connectWallet: ChainWallet<T>) {
+  function addChain<T extends WalletChain>(connectWallet: ChainWallet<T>) {
     const currentWallet = getWallet(connectWallet.chain);
 
     connectedWallets[connectWallet.chain] = { ...currentWallet, ...connectWallet };
@@ -163,7 +163,7 @@ export function SwapKit<
   /**
    * @Public
    */
-  function getWallet<T extends Chain>(chain: T) {
+  function getWallet<T extends WalletChain>(chain: T) {
     return connectedWallets[chain];
   }
 
@@ -171,7 +171,7 @@ export function SwapKit<
     return { ...connectedWallets };
   }
 
-  function getAddress<T extends Chain>(chain: T) {
+  function getAddress<T extends WalletChain>(chain: T) {
     return getWallet(chain)?.address || "";
   }
 
@@ -183,7 +183,7 @@ export function SwapKit<
     return approve({ assetValue, contractAddress, type: ApproveMode.CheckOnly });
   }
 
-  function disconnectChain<T extends Chain>(chain: T) {
+  function disconnectChain<T extends WalletChain>(chain: T) {
     const wallet = getWallet(chain);
     wallet?.disconnect?.();
     delete connectedWallets[chain];
@@ -195,7 +195,7 @@ export function SwapKit<
     }
   }
 
-  function getBalance<T extends Chain, R extends boolean>(
+  function getBalance<T extends WalletChain, R extends boolean>(
     chain: T,
     refresh?: R,
   ): ConditionalAssetValueReturn<R> {
@@ -216,7 +216,7 @@ export function SwapKit<
     });
   }
 
-  async function getWalletWithBalance<T extends Chain>(chain: T, potentialScamFilter = true) {
+  async function getWalletWithBalance<T extends WalletChain>(chain: T, potentialScamFilter = true) {
     const defaultBalance = [AssetValue.from({ chain })];
     const wallet = getWallet(chain);
 
@@ -254,14 +254,14 @@ export function SwapKit<
     assetValue,
     ...params
   }: UTXOTransferParams | EVMTransferParams | CosmosTransferParams) {
-    const chain = assetValue.chain as WalletChain;
+    const chain = assetValue.chain as Exclude<WalletChain, Chain.Radix>;
     const wallet = getWallet(chain);
     if (!wallet) throw new SwapKitError("core_wallet_connection_not_found");
 
     return wallet.transfer({ ...params, assetValue });
   }
 
-  function signMessage({ chain, message }: { chain: Chain; message: string }) {
+  function signMessage({ chain, message }: { chain: WalletChain; message: string }) {
     const wallet = getWallet(chain);
     if (!wallet) throw new SwapKitError("core_wallet_connection_not_found");
 
@@ -315,7 +315,8 @@ export function SwapKit<
     const { assetValue } = params;
     const { chain } = assetValue;
 
-    if (!getWallet(chain)) throw new SwapKitError("core_wallet_connection_not_found");
+    if (!getWallet(chain as WalletChain))
+      throw new SwapKitError("core_wallet_connection_not_found");
 
     const baseValue = AssetValue.from({ chain });
 

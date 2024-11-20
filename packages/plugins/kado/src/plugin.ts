@@ -1,121 +1,242 @@
 import {
   type AssetValue,
-  type Chain,
+  Chain,
   ProviderName,
   RequestClient,
   type SwapKitPluginParams,
 } from "@swapkit/helpers";
 import { ChainToKadoChain } from "./helpers";
 
-type KadoQuoteRequest = {
+export type KadoFiatCurrency =
+  | "USD"
+  | "CAD"
+  | "GBP"
+  | "EUR"
+  | "MXN"
+  | "COP"
+  | "INR"
+  | "CHF"
+  | "AUD"
+  | "ARS"
+  | "BRL"
+  | "CLP"
+  | "JPY"
+  | "KRW"
+  | "PEN"
+  | "PHP"
+  | "SGD"
+  | "TRY"
+  | "UYU"
+  | "TWD"
+  | "VND"
+  | "CRC"
+  | "SEK"
+  | "PLN"
+  | "DKK"
+  | "NOK"
+  | "NZD";
+
+export type KadoFiatMethod =
+  | "ach"
+  | "debit_card"
+  | "credit_card"
+  | "apple_pay_credit"
+  | "apple_pay_debit"
+  | "wire"
+  | "sepa"
+  | "pix"
+  | "koywe";
+
+export type KadoQuoteRequest = {
   transactionType: "buy" | "sell";
-  fiatMethod:
-    | "ach"
-    | "debit_card"
-    | "credit_card"
-    | "apple_pay_credit"
-    | "apple_pay_debit"
-    | "wire"
-    | "sepa"
-    | "pix"
-    | "koywe";
+  fiatMethod: KadoFiatMethod;
   partner: "fortress";
   amount: string;
   asset: string;
   blockchain: string;
-  currency:
-    | "USD"
-    | "CAD"
-    | "GBP"
-    | "EUR"
-    | "MXN"
-    | "COP"
-    | "INR"
-    | "CHF"
-    | "AUD"
-    | "ARS"
-    | "BRL"
-    | "CLP"
-    | "JPY"
-    | "KRW"
-    | "PEN"
-    | "PHP"
-    | "SGD"
-    | "TRY"
-    | "UYU"
-    | "TWD"
-    | "VND"
-    | "CRC"
-    | "SEK"
-    | "PLN"
-    | "DKK"
-    | "NOK"
-    | "NZD";
+  currency: KadoFiatCurrency;
 };
 
-function plugin({
-  getWallet,
-  config: { kadoApiKey },
-}: SwapKitPluginParams<{ kadoApiKey: string }>) {
-  async function onRampQuote(assetValue: AssetValue, fiatCurrency: KadoQuoteRequest["currency"]) {
-    const blockchain = ChainToKadoChain(assetValue.chain);
-    if (!blockchain) {
-      throw new Error(`Asset chain ${assetValue.chain} not supported by Kado`);
-    }
-    debugger;
-    try {
-      const quoteRequest: KadoQuoteRequest = {
-        transactionType: "buy",
-        fiatMethod: "sepa", // Default to SEPA, can be made configurable
-        partner: "fortress",
-        amount: assetValue.getValue("string"),
-        asset: assetValue.symbol,
-        blockchain,
-        currency: fiatCurrency,
+export type KadoBlockchainsResponse = {
+  success: boolean;
+  message: string;
+  data: {
+    blockchains: {
+      _id: string;
+      supportedEnvironment: string;
+      network: string;
+      origin: string;
+      label: string;
+      associatedAssets: {
+        _id: string;
+        name: string;
+        description: string;
+        label: string;
+        supportedProviders: string[];
+        stablecoin: boolean;
+        liveOnRamp: boolean;
+        createdAt: string;
+        updatedAt: string;
+        __v: number;
+        priority: number;
       };
+      avgTransactionTimeSeconds: number;
+      usesAvaxRouter: boolean;
+      liveOnRamp: boolean;
+      createdAt: string;
+      updatedAt: string;
+      __v: number;
+      priority: number;
+    }[];
+  };
+};
 
-      const quote = await RequestClient.get<{
-        success: boolean;
-        message: string;
-        data: {
-          quote: {
-            receiveAmount: number;
-            networkFee: number;
-            processingFee: number;
-            totalFee: number;
-          };
-        };
-      }>("https://api.kado.money/v2/ramp/quote", {
-        searchParams: quoteRequest,
-        headers: {
-          "X-Widget-Id": kadoApiKey,
-        },
-      });
+export type KadoSupportedAssetsResponse = {
+  success: boolean;
+  message: string;
+  data: {
+    assets: {
+      _id: string;
+      name: string;
+      description: string;
+      label: string;
+      symbol: string;
+      supportedProviders: string[];
+      stablecoin: boolean;
+      liveOnRamp: boolean;
+      createdAt: string;
+      updatedAt: string;
+      __v: number;
+      priority: number;
+    }[];
+  };
+};
 
-      if (!quote.success) {
-        throw new Error(quote.message);
-      }
+function plugin({ config: { kadoApiKey } }: SwapKitPluginParams<{ kadoApiKey: string }>) {
+  //   async function onRampQuote(
+  //     assetValue: AssetValue,
+  //     fiatCurrency: KadoFiatCurrency,
+  //     fiatMethod: KadoFiatMethod,
+  //   ) {
+  //     const blockchain = ChainToKadoChain(assetValue.chain);
+  //     if (!blockchain) {
+  //       throw new Error(`Asset chain ${assetValue.chain} not supported by Kado`);
+  //     }
 
-      return quote.data.quote;
-    } catch (error) {
-      throw new Error("core_swap_quote_error");
-    }
-  }
+  //     try {
+  //       const quoteRequest: KadoQuoteRequest = {
+  //         transactionType: "buy",
+  //         fiatMethod, // Default to SEPA, can be made configurable
+  //         partner: "fortress",
+  //         amount: assetValue.getValue("string"),
+  //         asset: assetValue.symbol,
+  //         blockchain,
+  //         currency: fiatCurrency,
+  //       };
 
-  async function offRampQuote(assetValue: AssetValue, fiatCurrency: KadoQuoteRequest["currency"]) {
-    const blockchain = ChainToKadoChain(assetValue.chain);
-    if (!blockchain) {
-      throw new Error("asset chain not supported");
-    }
+  //       const quote = await RequestClient.get<{
+  //         success: boolean;
+  //         message: string;
+  //         data: {
+  //           quote: {
+  //             receiveAmount: number;
+  //             networkFee: number;
+  //             processingFee: number;
+  //             totalFee: number;
+  //           };
+  //         };
+  //       }>("https://api.kado.money/v2/ramp/quote", {
+  //         searchParams: quoteRequest,
+  //         headers: {
+  //           "X-Widget-Id": kadoApiKey,
+  //         },
+  //       });
+
+  //       if (!quote.success) {
+  //         throw new Error(quote.message);
+  //       }
+
+  //       return quote.data.quote;
+  //     } catch (error) {
+  //       throw new Error("core_swap_quote_error");
+  //     }
+  //   }
+
+  //   async function offRampQuote(
+  //     sellAsset: AssetValue,
+  //     buyAsset: AssetValue,
+  //     fiatCurrency: KadoFiatCurrency,
+  //     fiatMethod: KadoFiatMethod,
+  //   ) {
+  //     const blockchain = ChainToKadoChain(assetValue.chain);
+  //     if (!blockchain) {
+  //       throw new Error("asset chain not supported");
+  //     }
+  //     try {
+  //       const quoteRequest: KadoQuoteRequest = {
+  //         transactionType: "sell",
+  //         fiatMethod: "sepa", // Default to SEPA, can be made configurable
+  //         partner: "fortress",
+  //         amount: assetValue.getValue("string"),
+  //         asset: assetValue.symbol,
+  //         blockchain,
+  //         currency: fiatCurrency,
+  //       };
+
+  //       const quote = await RequestClient.get<{
+  //         success: boolean;
+  //         message: string;
+  //         data: {
+  //           quote: {
+  //             receiveAmount: number;
+  //             networkFee: number;
+  //             processingFee: number;
+  //             totalFee: number;
+  //           };
+  //         };
+  //       }>("https://api.kado.money/v2/ramp/quote", {
+  //         json: quoteRequest,
+  //         headers: {
+  //           "X-Widget-Id": kadoApiKey,
+  //         },
+  //       });
+
+  //       if (!quote.success) {
+  //         throw new Error(quote.message);
+  //       }
+
+  //       return quote.data.quote;
+  //     } catch (error) {
+  //       throw new Error("core_swap_quote_error");
+  //     }
+  //   }
+
+  async function fetchProviderQuote({
+    sellAsset,
+    buyAsset,
+    fiatMethod,
+  }: {
+    sellAsset: AssetValue;
+    buyAsset: AssetValue;
+    fiatMethod: KadoFiatMethod;
+  }) {
     try {
+      const transactionType = sellAsset.chain === Chain.Fiat ? "sell" : "buy";
+
+      const currency = (
+        sellAsset.chain === Chain.Fiat ? sellAsset.symbol : buyAsset.symbol
+      ) as KadoFiatCurrency;
+
+      const asset = sellAsset.chain === Chain.Fiat ? buyAsset : sellAsset;
+
       const quoteRequest: KadoQuoteRequest = {
-        transactionType: "sell",
-        fiatMethod: "sepa", // Default to SEPA, can be made configurable
+        transactionType,
+        fiatMethod,
         partner: "fortress",
-        amount: assetValue.getBaseValue("number"),
-        asset: assetValue.symbol,
-        blockchain,
-        currency: fiatCurrency,
+        amount: buyAsset.getValue("string"),
+        asset: asset.symbol,
+        blockchain: asset.chain,
+        currency,
       };
 
       const quote = await RequestClient.get<{
@@ -141,7 +262,7 @@ function plugin({
       }
 
       return quote.data.quote;
-    } catch (error) {
+    } catch (_) {
       throw new Error("core_swap_quote_error");
     }
   }
@@ -239,14 +360,14 @@ function plugin({
       }
 
       return response.data.order;
-    } catch (error) {
+    } catch (_error) {
       throw new Error("Failed to get order status");
     }
   }
 
   function getKadoWidgetUrl({
-    sellAssetValue,
-    buyAssetValue,
+    sellAsset,
+    buyAsset,
     supportedAssets,
     recipient,
     networkList,
@@ -254,8 +375,8 @@ function plugin({
     typeList,
     widgetMode,
   }: {
-    sellAssetValue: AssetValue;
-    buyAssetValue: AssetValue;
+    sellAsset: AssetValue;
+    buyAsset: AssetValue;
     supportedAssets: AssetValue[];
     recipient: string;
     networkList: Chain[];
@@ -264,12 +385,12 @@ function plugin({
     widgetMode: "minimal" | "full";
   }) {
     const urlParams = new URLSearchParams({
-      onPayAmount: sellAssetValue.getValue("string"),
-      onPayCurrency: sellAssetValue.symbol,
-      onRevCurrency: buyAssetValue.symbol,
+      onPayAmount: sellAsset.getValue("string"),
+      onPayCurrency: sellAsset.symbol,
+      onRevCurrency: buyAsset.symbol,
       cryptoList: supportedAssets.map((asset) => asset.symbol).join(","),
       onToAddress: recipient,
-      network: ChainToKadoChain(buyAssetValue.chain).toUpperCase(),
+      network: ChainToKadoChain(buyAsset.chain).toUpperCase(),
       networkList: networkList.map((chain) => ChainToKadoChain(chain).toUpperCase()).join(","),
       product: type,
       productList: typeList,
@@ -280,8 +401,9 @@ function plugin({
   }
 
   return {
-    onRampQuote,
-    offRampQuote,
+    // onRampQuote,
+    // offRampQuote,
+    fetchProviderQuote,
     getBlockchains,
     getAssets,
     getOrderStatus,

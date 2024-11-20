@@ -20,6 +20,7 @@ import {
   TCBscDepositABI,
   TCEthereumVaultAbi,
   type UTXOChain,
+  type WalletChain,
   getMemoForLoan,
   lowercasedContractAbiMapping,
 } from "@swapkit/helpers";
@@ -158,7 +159,7 @@ function plugin({ getWallet, stagenet = false }: SwapKitPluginParams) {
         getMemoForLoan(type === "open" ? MemoType.OPEN_LOAN : MemoType.CLOSE_LOAN, {
           asset: assetValue.toString(),
           minAmount: minAmount.toString(),
-          address: getWallet(assetValue.chain).address,
+          address: getWallet(assetValue.chain as WalletChain).address,
         }),
     });
   }
