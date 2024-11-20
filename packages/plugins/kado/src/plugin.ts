@@ -493,7 +493,6 @@ function plugin({
     overlay.style.height = "100%";
     overlay.style.backgroundColor = "rgba(0, 0, 0, 0.5)"; // Grays out the background
     overlay.style.zIndex = "999";
-    overlay.style.display = "none";
 
     // Create the iframe element
     const iframe = document.createElement("iframe");
@@ -507,7 +506,6 @@ function plugin({
     iframe.style.zIndex = "1000"; // On top of the overlay
     iframe.style.border = "none";
     iframe.style.boxShadow = "0 0 15px rgba(0, 0, 0, 0.5)";
-    iframe.style.display = "none";
 
     // Append elements to the body
     document.body.appendChild(overlay);
