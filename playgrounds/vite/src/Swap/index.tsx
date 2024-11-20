@@ -32,11 +32,15 @@ export default function Swap({
   );
 
   const kadoWidget = async () => {
-    const quote = await skClient?.kado.onRampQuote(
-      AssetValue.from({ asset: "ETH.ETH", value: 0.01 }),
-      "USD",
-    );
-    console.log(quote);
+    const quote = await skClient?.kado.onRampQuote({
+      assetValue: AssetValue.from({ asset: "ETH.ETH", value: 0.01 }),
+      fiatValue: AssetValue.from({ asset: "FIAT.USD", value: 1000 }),
+    });
+
+    if (quote?.routes[0]) {
+      debugger;
+      skClient?.kado.swap({ route: quote.routes[0] });
+    }
   };
 
   kadoWidget();

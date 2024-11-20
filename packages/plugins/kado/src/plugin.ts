@@ -1,10 +1,11 @@
+import type { QuoteResponse, QuoteResponseRoute } from "@swapkit/api";
 import {
-  type AssetValue,
+    AssetValue,
   Chain,
+  FeeTypeEnum,
   ProviderName,
   RequestClient,
-  type SwapKitPluginParams,
-} from "@swapkit/helpers";
+} from "@swatype pkit/helpers";
 import { ChainToKadoChain } from "./helpers";
 
 export type KadoFiatCurrency =
@@ -56,6 +57,98 @@ export type KadoQuoteRequest = {
   blockchain: string;
   currency: KadoFiatCurrency;
 };
+
+type KadoQuoteResponse = {
+    success: boolean;
+    message: string;
+    data: {
+      quote: {
+        receive: {
+          amount: number;
+          originalAmount: number;
+          symbol: string;
+          unit: string;
+          unitCount: number;
+        };
+        networkFee: {
+          amount: number;
+          currency: string;
+          originalAmount: number;
+          promotionModifier: number;
+        };
+        processingFee: {
+          amount: number;
+          currency: string;
+          originalAmount: number;
+          promotionModifier: number;
+        };
+        totalFee: {
+          amount: number;
+          currency: string;
+          originalAmount: number;
+        };
+      };
+    };
+  };
+  
+  function mapKadoQuoteToQuoteResponse({
+    quote,
+    sellAsset,
+    buyAsset,
+  }: {
+    quote: KadoQuoteResponse;
+    sellAsset: AssetValue;
+    buyAsset: AssetValue;
+  }): QuoteResponse {
+    const routes: QuoteResponseRoute[] = [
+      {
+        providers: [ProviderName.KADO],
+        sellAsset: sellAsset.toString(),
+        sellAmount: sellAsset.getValue("string"),
+        buyAsset: buyAsset.toString(),
+        expectedBuyAmount: quote.data.quote.receive.amount.toString(),
+        expectedBuyAmountMaxSlippage: quote.data.quote.receive.amount.toString(),
+        sourceAddress: "{sourceAddress}",
+        destinationAddress: "{destinationAddress}",
+        fees: [
+          {
+            asset: quote.data.quote.processingFee.currency,
+            amount: quote.data.quote.processingFee.amount.toString(),
+            type: FeeTypeEnum.LIQUIDITY,
+            protocol: ProviderName.KADO,
+            chain: "FIAT",
+          },
+          {
+            asset: quote.data.quote.networkFee.currency,
+            amount: quote.data.quote.networkFee.amount.toString(),
+            type: FeeTypeEnum.NETWORK,
+            protocol: ProviderName.KADO,
+            chain: buyAsset.chain,
+          },
+        ],
+        totalSlippageBps: 0,
+        legs: [
+          {
+            provider: ProviderName.KADO,
+            sellAsset: sellAsset.toString(),
+            sellAmount: sellAsset.getValue("string"),
+            buyAsset: buyAsset.toString(),
+            buyAmount: quote.data.quote.receive.unitCount.toString(),
+            buyAmountMaxSlippage: quote.data.quote.receive.unitCount.toString(),
+            fees: [],
+          },
+        ],
+        warnings: [],
+        meta: {},
+      },
+    ];
+  
+    return {
+      quoteId: crypto.randomUUID(),
+      routes,
+      error: quote.success ? undefined : quote.message,
+    };
+  }
 
 export type KadoBlockchainsResponse = {
   success: boolean;
@@ -112,7 +205,8 @@ export type KadoSupportedAssetsResponse = {
   };
 };
 
-function plugin({ config: { kadoApiKey } }: SwapKitPluginParams<{ kadoApiKey: string }>) {
+
+function plugin({ getWallet, config: { kadoApiKey } }: SwapKitPluginParams<{ kadoApiKey: string }>) {
   //   async function onRampQuote(
   //     assetValue: AssetValue,
   //     fiatCurrency: KadoFiatCurrency,
@@ -239,30 +333,22 @@ function plugin({ config: { kadoApiKey } }: SwapKitPluginParams<{ kadoApiKey: st
         currency,
       };
 
-      const quote = await RequestClient.get<{
-        success: boolean;
-        message: string;
-        data: {
-          quote: {
-            receiveAmount: number;
-            networkFee: number;
-            processingFee: number;
-            totalFee: number;
-          };
-        };
-      }>("https://api.kado.money/v2/ramp/quote", {
-        json: quoteRequest,
-        headers: {
-          "X-Widget-Id": kadoApiKey,
+      const quote = await RequestClient.get<KadoQuoteResponse>(
+        "https://api.kado.money/v2/ramp/quote",
+        {
+          searchParams: quoteRequest,
+          headers: {
+            "X-Widget-Id": kadoApiKey,
+          },
         },
+      );
+
+      return mapKadoQuoteToQuoteResponse({
+        quote,
+        sellAsset,
+        buyAsset,
       });
-
-      if (!quote.success) {
-        throw new Error(quote.message);
-      }
-
-      return quote.data.quote;
-    } catch (_) {
+    } catch (_error) {
       throw new Error("core_swap_quote_error");
     }
   }
@@ -400,6 +486,60 @@ function plugin({ config: { kadoApiKey } }: SwapKitPluginParams<{ kadoApiKey: st
     return `https://app.kado.money/?${urlParams.toString()}`;
   }
 
+  function createWidgetIframe(widgetUrl: string) {
+    // Create the overlay element
+    const overlay = document.createElement("div");
+    overlay.style.position = "fixed";
+    overlay.style.top = "0";
+    overlay.style.left = "0";
+    overlay.style.width = "100%";
+    overlay.style.height = "100%";
+    overlay.style.backgroundColor = "rgba(0, 0, 0, 0.5)"; // Grays out the background
+    overlay.style.zIndex = "999";
+    overlay.style.display = "none";
+
+    // Create the iframe element
+    const iframe = document.createElement("iframe");
+    iframe.src = widgetUrl;
+    iframe.style.position = "fixed";
+    iframe.style.top = "50%";
+    iframe.style.left = "50%";
+    iframe.style.width = "80%";
+    iframe.style.height = "80%";
+    iframe.style.transform = "translate(-50%, -50%)";
+    iframe.style.zIndex = "1000"; // On top of the overlay
+    iframe.style.border = "none";
+    iframe.style.boxShadow = "0 0 15px rgba(0, 0, 0, 0.5)";
+    iframe.style.display = "none";
+
+    // Append elements to the body
+    document.body.appendChild(overlay);
+    document.body.appendChild(iframe);
+
+    // Add event listener to close the widget when clicking on the overlay
+    overlay.addEventListener("click", () => {
+      overlay.remove();
+      iframe.remove();
+    });
+  }
+
+  function swap({ route }: { route: QuoteResponseRoute }) {
+    const widgetUrl = getKadoWidgetUrl({
+      sellAsset: AssetValue.from({ asset: route.sellAsset, value: route.sellAmount }),
+      buyAsset: AssetValue.from({ asset: route.buyAsset, value: route.expectedBuyAmount }),
+      supportedAssets: [],
+      recipient: route.buyAsset.startsWith("FIAT.")
+        ? ""
+        : getWallet(AssetValue.from({ asset: route.buyAsset })?.chain as WalletChain)?.address,
+      networkList: [],
+      type: "BUY",
+      typeList: "BUY",
+      widgetMode: "minimal",
+    });
+
+    createWidgetIframe(widgetUrl);
+  }
+
   return {
     // onRampQuote,
     // offRampQuote,
@@ -408,6 +548,7 @@ function plugin({ config: { kadoApiKey } }: SwapKitPluginParams<{ kadoApiKey: st
     getAssets,
     getOrderStatus,
     getKadoWidgetUrl,
+    swap,
     supportedSwapkitProviders: [ProviderName.KADO],
   };
 }

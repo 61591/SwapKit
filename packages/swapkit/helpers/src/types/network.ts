@@ -37,6 +37,7 @@ export enum ExplorerUrl {
   Dash = "https://blockchair.com/dash",
   Dogecoin = "https://blockchair.com/dogecoin",
   Ethereum = "https://etherscan.io",
+  Fiat = "",
   Kujira = "https://finder.kujira.network/kaiyo-1",
   Litecoin = "https://blockchair.com/litecoin",
   Maya = "https://www.mayascan.org",

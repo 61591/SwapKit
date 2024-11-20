@@ -2,8 +2,9 @@ import type {
   CaviarV1List,
   ChainflipList,
   JupiterList,
+  KadoList,
   MayaList,
-  //   OciswapV1List,
+  //   OciswapList,
   OneInchList,
   OpenOceanV2List,
   PancakeswapList,
@@ -21,8 +22,9 @@ export type TokenNames =
   | (typeof CaviarV1List)["tokens"][number]["identifier"]
   | (typeof ChainflipList)["tokens"][number]["identifier"]
   | (typeof JupiterList)["tokens"][number]["identifier"]
+  | (typeof KadoList)["tokens"][number]["identifier"]
   | (typeof MayaList)["tokens"][number]["identifier"]
-  //   | (typeof OciswapV1List)["tokens"][number]["identifier"]
+  //   | (typeof OciswapList)["tokens"][number]["identifier"]
   | (typeof OneInchList)["tokens"][number]["identifier"]
   | (typeof OpenOceanV2List)["tokens"][number]["identifier"]
   | (typeof PancakeswapList)["tokens"][number]["identifier"]

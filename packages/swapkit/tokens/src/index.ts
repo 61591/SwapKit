@@ -1,9 +1,9 @@
 export { list as CaviarV1List } from "./tokenLists/caviar_v1";
-export { list as ChainflipList } from "./tokenLists/chainflip";
 export { list as JupiterList } from "./tokenLists/jupiter";
-export { list as KadoList } from "./tokenLists/kado";
+export { list as ChainflipList } from "./tokenLists/chainflip.js";
+export { list as KadoList } from "./tokenLists/kado.js";
 export { list as MayaList } from "./tokenLists/mayachain";
-// export { list as OciswapV1List } from "./tokenLists/ociswap_v1";
+// export { list as OciswapList } from "./tokenLists/ociswap.js";
 export { list as OneInchList } from "./tokenLists/oneinch";
 export { list as OpenOceanV2List } from "./tokenLists/openocean_v2";
 export { list as PancakeswapList } from "./tokenLists/pancakeswap";
