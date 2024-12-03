@@ -195,7 +195,7 @@ function plugin({ config: { kadoApiKey } }: SwapKitPluginParams<{ kadoApiKey: st
         transactionType,
         fiatMethod,
         partner: "fortress",
-        amount: buyAsset.getValue("string"),
+        amount: sellAsset.getValue("string"),
         asset: asset.symbol,
         blockchain: ChainToKadoChain(asset.chain),
         currency,
