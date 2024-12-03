@@ -186,15 +186,12 @@ function plugin({ config: { kadoApiKey } }: SwapKitPluginParams<{ kadoApiKey: st
         currency,
       };
 
-      const quote = await RequestClient.get<KadoQuoteResponse>(
-        "https://api.kado.money/v2/ramp/quote",
-        {
-          json: quoteRequest,
-          headers: {
-            "X-Widget-Id": kadoApiKey,
-          },
+      const quote = await RequestClient.get<KadoQuoteResponse>("https://api.kado.money/v2/ramp/quote", {
+        searchParams: quoteRequest,
+        headers: {
+          "X-Widget-Id": kadoApiKey,
         },
-      );
+      });
 
       if (!quote.success) {
         throw new Error(quote.message);
