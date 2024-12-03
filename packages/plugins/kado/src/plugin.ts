@@ -52,8 +52,8 @@ function mapKadoQuoteToQuoteResponse({
       sellAsset: sellAsset.toString(),
       sellAmount: sellAsset.getValue("string"),
       buyAsset: buyAsset.toString(),
-      expectedBuyAmount: buyAssetAmount.toString(),
-      expectedBuyAmountMaxSlippage: buyAssetAmount.toString(),
+      expectedBuyAmount: buyAssetAmount.getValue("string"),
+      expectedBuyAmountMaxSlippage: buyAssetAmount.getValue("string"),
       sourceAddress: "{sourceAddress}",
       destinationAddress: "{destinationAddress}",
       fees: [
@@ -81,7 +81,22 @@ function mapKadoQuoteToQuoteResponse({
           buyAsset: buyAsset.toString(),
           buyAmount: quote.data.quote.receive.unitCount.toString(),
           buyAmountMaxSlippage: quote.data.quote.receive.unitCount.toString(),
-          fees: [],
+          fees: [
+            {
+              asset: quote.data.quote.processingFee.currency,
+              amount: quote.data.quote.processingFee.amount.toString(),
+              type: FeeTypeEnum.LIQUIDITY,
+              protocol: ProviderName.KADO,
+              chain: Chain.Fiat,
+            },
+            {
+              asset: quote.data.quote.networkFee.currency,
+              amount: quote.data.quote.networkFee.amount.toString(),
+              type: FeeTypeEnum.NETWORK,
+              protocol: ProviderName.KADO,
+              chain: buyAsset.chain,
+            },
+          ],
         },
       ],
       warnings: [],
@@ -204,39 +219,9 @@ function plugin({ config: { kadoApiKey } }: SwapKitPluginParams<{ kadoApiKey: st
   }
 
   async function getBlockchains() {
-    const response = await RequestClient.get<{
-      success: boolean;
-      message: string;
-      data: {
-        blockchains: {
-          _id: string;
-          supportedEnvironment: string;
-          network: string;
-          origin: string;
-          label: string;
-          associatedAssets: {
-            _id: string;
-            name: string;
-            description: string;
-            label: string;
-            supportedProviders: string[];
-            stablecoin: boolean;
-            liveOnRamp: boolean;
-            createdAt: string;
-            updatedAt: string;
-            __v: number;
-            priority: number;
-          };
-          avgTransactionTimeSeconds: number;
-          usesAvaxRouter: boolean;
-          liveOnRamp: boolean;
-          createdAt: string;
-          updatedAt: string;
-          __v: number;
-          priority: number;
-        }[];
-      };
-    }>("https://api.kado.money/v1/ramp/blockchains");
+    const response = await RequestClient.get<KadoBlockchainsResponse>(
+      "https://api.kado.money/v1/ramp/blockchains",
+    );
 
     if (!response.success) {
       throw new Error(response.message);
