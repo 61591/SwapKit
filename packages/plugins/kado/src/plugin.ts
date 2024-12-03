@@ -185,7 +185,7 @@ function plugin({ config: { kadoApiKey } }: SwapKitPluginParams<{ kadoApiKey: st
     try {
       const isOnRamp = sellAsset.chain === Chain.Fiat;
 
-      const transactionType = isOnRamp ? "sell" : "buy";
+      const transactionType = isOnRamp ? "buy" : "sell";
 
       const currency = (isOnRamp ? sellAsset.symbol : buyAsset.symbol) as KadoFiatCurrency;
 
