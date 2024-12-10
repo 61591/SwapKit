@@ -19,6 +19,14 @@ When using our SDK/API to fetch quotes for a trade, you can specify an affiliate
 
 For THORChain swaps (1), your affiliate address is a [THORName](https://docs.thorchain.org/how-it-works/thorchain-name-service), and affiliate fees that you earn from any THORChain swap is sent directly to the addresses tied to the provided THORName.
 
+Don't know what a THORName is? It's multi-chain name service that's basically an equivalent of ENS of Ethereum, but on THORChain.
+
+{% hint style="info" %}
+You can [register a THORName](https://app.thorswap.finance/thorname) on the THORSwap web app, just connect your THORChain wallet and register. Name registration costs 10 RUNE as a base fee, and then 1 RUNE / year that your name will be active for ([more info](https://docs.thorswap.finance/thorswap/ecosystem/thorchain/thornames)).
+
+We advise that you register a THORName that is ❗️**NO LONGER than 3 characters long**❗️ since this affiliate name is passed in the memo for transactions through THORChain, a short THORName is necessary as BTC and other UTXO chains have 80 char limit for the memo.
+{% endhint %}
+
 DEX aggregation swaps (2), are any swaps that swap in, or out of, THORChain. These are typically swaps to/from ARC20/ERC20/BEP20 to assets on another blockchain supported by THORChain. For more detail about DEX aggregation, check out our article here. Earning fees from these swaps is only available to our partners.
 
 {% hint style="info" %}
