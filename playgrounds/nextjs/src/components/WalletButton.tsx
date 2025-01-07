@@ -1,44 +1,26 @@
 "use client";
 
-import { Wallet } from "lucide-react";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
-import { useSwapKit } from "~/lib/swapKit";
-import { WalletConnect } from "./WalletConnect";
+import { WalletConnectDialog } from "./WalletConnectDialog";
 import { WalletDrawer } from "./WalletDrawer";
+import { useSwapKit } from "~/lib/swapKit";
 
 export function WalletButton() {
-  const { disconnectWallet, isWalletConnected, walletType } = useSwapKit();
+  const { isWalletConnected } = useSwapKit();
+  const [connectOpen, setConnectOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  if (isWalletConnected) {
-    return (
-      <>
-        <Button onClick={() => setDrawerOpen(true)} variant="outline">
-          <Wallet className="mr-2 h-4 w-4" />
-          {walletType}
-        </Button>
-        <WalletDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />
-      </>
-    );
-  }
-
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" disabled={isWalletConnected}>
-          <Wallet className="mr-2 h-4 w-4" />
-          {isWalletConnected ? "Connecting..." : "Connect Wallet"}
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[600px]">
-        <WalletConnect />
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <>
+      {isWalletConnected ? (
+        <Button onClick={() => setDrawerOpen(true)}>My Wallet</Button>
+      ) : (
+        <Button onClick={() => setConnectOpen(true)}>Connect Wallet</Button>
+      )}
+
+      <WalletConnectDialog open={connectOpen} onOpenChange={setConnectOpen} />
+      <WalletDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />
+    </>
   );
 }

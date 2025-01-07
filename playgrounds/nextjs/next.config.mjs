@@ -9,6 +9,16 @@ const nextConfig = {
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
 
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'storage.googleapis.com',
+        pathname: '/token-list-swapkit/**',
+      },
+    ],
+  },
+
   webpack: (config, { isServer, webpack }) => {
     if (!isServer) {
       config.plugins.push(new NodePolyfillPlugin());

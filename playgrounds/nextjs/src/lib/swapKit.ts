@@ -11,6 +11,12 @@ import type { wallets } from "@swapkit/wallets";
 import { atom, useAtom } from "jotai";
 import { useCallback, useEffect } from "react";
 
+type KeystoreFile = {
+  keystore: import("@swapkit/wallet-keystore").Keystore;
+  file: File;
+  chains: Chain[];
+} | null;
+
 const swapKitAtom = atom<ReturnType<
   typeof SwapKit<
     typeof ThorchainPlugin & typeof ChainflipPlugin & typeof MayachainPlugin & typeof KadoPlugin,
@@ -22,6 +28,9 @@ const walletState = atom<{ connected: boolean; type: WalletOption | null }>({
   connected: false,
   type: null,
 });
+const keystoreFileAtom = atom<KeystoreFile>(null);
+const isKeystoreOpenAtom = atom<boolean>(false);
+const isKeystoreDecryptingAtom = atom<boolean>(false);
 
 export const useSwapKit = () => {
   const [swapKit, setSwapKit] = useAtom(swapKitAtom);
@@ -173,6 +182,7 @@ export const useSwapKit = () => {
           const chainBalances = await Promise.all(balancePromises);
           const allBalances = chainBalances.flat();
           setBalances(allBalances.sort((a, b) => a.getValue("number") - b.getValue("number")));
+          console.log(swapKit?.getAllWallets());
         }
       } catch (error) {
         console.error(`Failed to connect ${option}:`, error);
@@ -192,6 +202,51 @@ export const useSwapKit = () => {
     [swapKit?.getAddress],
   );
 
+  const [keystoreFile, setKeystoreFile] = useAtom(keystoreFileAtom);
+  const [isKeystoreOpen, setIsKeystoreOpen] = useAtom(isKeystoreOpenAtom);
+  const [isKeystoreDecrypting, setIsKeystoreDecrypting] = useAtom(isKeystoreDecryptingAtom);
+
+  const connectKeystore = useCallback(
+    async (password: string) => {
+      if (!keystoreFile || !swapKit) return;
+
+      try {
+        setIsKeystoreDecrypting(true);
+        const { decryptFromKeystore } = await import("@swapkit/wallet-keystore");
+        const phrase = await decryptFromKeystore(keystoreFile.keystore, password);
+        if (!phrase) throw new Error("Failed to decrypt keystore");
+
+        await swapKit.connectKeystore(keystoreFile.chains, phrase);
+        setWalletState({ connected: true, type: WalletOption.KEYSTORE });
+        setIsKeystoreOpen(false);
+        setKeystoreFile(null);
+
+        const balancePromises = keystoreFile.chains.map(async (chain) => {
+          const wallet = await swapKit?.getWalletWithBalance(chain);
+          if (!wallet || !("balance" in wallet)) return [];
+          return wallet.balance as AssetValue[];
+        });
+        const chainBalances = await Promise.all(balancePromises);
+        const allBalances = chainBalances.flat();
+        setBalances(allBalances.sort((a, b) => a.getValue("number") - b.getValue("number")));
+      } catch (error) {
+        console.error("Failed to decrypt keystore:", error);
+        setWalletState({ connected: false, type: null });
+      } finally {
+        setIsKeystoreDecrypting(false);
+      }
+    },
+    [
+      keystoreFile,
+      swapKit,
+      setWalletState,
+      setBalances,
+      setIsKeystoreOpen,
+      setKeystoreFile,
+      setIsKeystoreDecrypting,
+    ],
+  );
+
   return {
     balances,
     checkIfChainConnected,
@@ -199,8 +254,15 @@ export const useSwapKit = () => {
     disconnectWallet,
     getBalances,
     isWalletConnected,
-    setSwapKit,
     swapKit,
     walletType,
+    // Keystore related
+    keystoreFile,
+    setKeystoreFile,
+    isKeystoreOpen,
+    setIsKeystoreOpen,
+    isKeystoreDecrypting,
+    setIsKeystoreDecrypting,
+    connectKeystore,
   };
 };

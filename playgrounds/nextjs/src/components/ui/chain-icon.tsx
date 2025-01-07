@@ -1,36 +1,33 @@
 "use client";
 
-import { Chain } from "@swapkit/helpers";
-import { Bitcoin, Coins, DollarSign, Globe2, Landmark, LayoutGrid, Network } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { type Chain, getGasAsset } from "@swapkit/helpers";
+import { getTokenIcon } from "@swapkit/tokens";
+import Image from "next/image";
 
-const CHAIN_ICONS: Record<Chain, LucideIcon> = {
-  [Chain.Arbitrum]: Network,
-  [Chain.Avalanche]: Network,
-  [Chain.Base]: Network,
-  [Chain.BinanceSmartChain]: Network,
-  [Chain.Bitcoin]: Bitcoin,
-  [Chain.BitcoinCash]: Bitcoin,
-  [Chain.Chainflip]: Network,
-  [Chain.Cosmos]: Globe2,
-  [Chain.Dash]: Coins,
-  [Chain.Dogecoin]: Coins,
-  [Chain.Ethereum]: Network,
-  [Chain.Fiat]: DollarSign,
-  [Chain.Kujira]: Globe2,
-  [Chain.Litecoin]: Coins,
-  [Chain.Maya]: Landmark,
-  [Chain.Optimism]: Network,
-  [Chain.Polkadot]: LayoutGrid,
-  [Chain.Polygon]: Network,
-  [Chain.Radix]: Network,
-  [Chain.Solana]: Network,
-  [Chain.THORChain]: Landmark,
-};
+interface ChainIconProps {
+  chain: Chain;
+  className?: string;
+}
 
-export function ChainIcon({ chain, className = "" }: { chain: Chain; className?: string }) {
-  const Icon = CHAIN_ICONS[chain];
-  if (!Icon) return null;
+export function ChainIcon({ chain, className }: ChainIconProps) {
+  const gasAsset = getGasAsset({ chain });
+  const iconUrl = getTokenIcon(gasAsset.toString());
 
-  return <Icon className={`inline-block h-4 w-4 ${className}`} />;
+  if (!iconUrl) {
+    return (
+      <div className={`rounded-full bg-accent flex items-center justify-center text-xs font-medium ${className}`}>
+        {chain.slice(0, 2)}
+      </div>
+    );
+  }
+
+  return (
+    <Image
+      src={iconUrl}
+      alt={chain}
+      width={24}
+      height={24}
+      className={`rounded-full ${className}`}
+    />
+  );
 }

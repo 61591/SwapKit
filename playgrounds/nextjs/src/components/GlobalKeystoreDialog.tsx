@@ -1,6 +1,5 @@
 "use client";
 
-import { decryptFromKeystore } from "@swapkit/wallet-keystore";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "~/components/ui/button";
 import {
@@ -13,48 +12,40 @@ import {
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { useSwapKit } from "~/lib/swapKit";
-import { useKeystore } from "./KeystoreContext";
 
 export const GlobalKeystoreDialog = () => {
-  const { isOpen, setIsOpen, isDecrypting, setIsDecrypting, keystoreFile, setKeystoreFile } =
-    useKeystore();
-  const { swapKit } = useSwapKit();
+  const {
+    isKeystoreOpen,
+    setIsKeystoreOpen,
+    isKeystoreDecrypting,
+    keystoreFile,
+    setKeystoreFile,
+    connectKeystore,
+  } = useSwapKit();
   const [password, setPassword] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (isOpen) {
+    if (isKeystoreOpen) {
       inputRef.current?.focus();
       setPassword("");
     }
-  }, [isOpen]);
+  }, [isKeystoreOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedPassword = password.trim();
-    if (!trimmedPassword || !keystoreFile || !swapKit) return;
-
-    try {
-      setIsDecrypting(true);
-      const phrase = await decryptFromKeystore(keystoreFile.keystore, trimmedPassword);
-      if (!phrase) throw new Error("Failed to decrypt keystore");
-      await swapKit.connectKeystore(keystoreFile.chains, phrase);
-      setIsOpen(false);
-      setKeystoreFile(null);
-    } catch (error) {
-      console.error("Failed to decrypt keystore:", error);
-    } finally {
-      setIsDecrypting(false);
-    }
+    if (!trimmedPassword || !keystoreFile) return;
+    await connectKeystore(trimmedPassword);
   };
 
   const handleCancel = () => {
-    setIsOpen(false);
+    setIsKeystoreOpen(false);
     setKeystoreFile(null);
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && handleCancel()}>
+    <Dialog open={isKeystoreOpen} onOpenChange={(open) => !open && handleCancel()}>
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
@@ -71,7 +62,7 @@ export const GlobalKeystoreDialog = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
               ref={inputRef}
-              disabled={isDecrypting}
+              disabled={isKeystoreDecrypting}
               className="col-span-3"
             />
           </div>
@@ -80,12 +71,12 @@ export const GlobalKeystoreDialog = () => {
               type="button"
               variant="secondary"
               onClick={handleCancel}
-              disabled={isDecrypting}
+              disabled={isKeystoreDecrypting}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isDecrypting}>
-              {isDecrypting ? "Decrypting..." : "Unlock"}
+            <Button type="submit" disabled={isKeystoreDecrypting}>
+              {isKeystoreDecrypting ? "Decrypting..." : "Unlock"}
             </Button>
           </DialogFooter>
         </form>

@@ -1,7 +1,7 @@
 "use client";
-
 import type { Chain } from "@swapkit/helpers";
 import { LogOut } from "lucide-react";
+import { useMemo } from "react";
 import { Button } from "~/components/ui/button";
 import { ChainIcon } from "~/components/ui/chain-icon";
 import {
@@ -12,6 +12,8 @@ import {
   SheetTitle,
 } from "~/components/ui/sheet";
 import { useSwapKit } from "~/lib/swapKit";
+import { TokenBalance } from "./TokenBalance";
+import { TruncatedAddress } from "./TruncatedAddress";
 
 interface WalletDrawerProps {
   open: boolean;
@@ -19,11 +21,25 @@ interface WalletDrawerProps {
 }
 
 export function WalletDrawer({ open, onOpenChange }: WalletDrawerProps) {
-  const { balances, walletType, swapKit, disconnectWallet } = useSwapKit();
+  const { balances, walletType, disconnectWallet } = useSwapKit();
 
-  const connectedChains = Object.entries(swapKit?.getAllWallets() ?? {}).map(
-    ([chain]) => chain as Chain,
-  );
+  const connectedChains = useMemo(() => {
+    const uniqueChains = new Set<Chain>();
+    for (const balance of balances) {
+      uniqueChains.add(balance.chain);
+    }
+    return Array.from(uniqueChains);
+  }, [balances]);
+
+  const chainAddresses = useMemo(() => {
+    const addresses = new Map<Chain, string>();
+    for (const balance of balances) {
+      if (!addresses.has(balance.chain)) {
+        addresses.set(balance.chain, balance.address || "");
+      }
+    }
+    return addresses;
+  }, [balances]);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -39,27 +55,31 @@ export function WalletDrawer({ open, onOpenChange }: WalletDrawerProps) {
         <div className="mt-6 space-y-6 pb-16">
           {connectedChains.map((chain) => {
             const chainBalances = balances.filter((b) => b.chain === chain);
-            const address = swapKit?.getAddress(chain);
+            const address = chainAddresses.get(chain);
+            const gasAsset = chainBalances.find((b) => b.isGasAsset);
+            const otherBalances = chainBalances.filter((b) => !b.isGasAsset);
 
             return (
               <div key={chain} className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <ChainIcon chain={chain} className="h-6 w-6" />
-                  <h3 className="font-semibold">{chain}</h3>
-                </div>
-                <div className="rounded-lg border p-4">
-                  <div className="text-xs text-muted-foreground font-mono mb-2">{address}</div>
-                  <div className="space-y-1">
-                    {chainBalances.map((balance) => (
-                      <div key={balance.symbol} className="flex justify-between">
-                        <span>{balance.symbol}</span>
-                        <span>{balance.getValue("string")}</span>
-                      </div>
-                    ))}
-                    {chainBalances.length === 0 && (
-                      <div className="text-sm text-muted-foreground">No balances found</div>
-                    )}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <ChainIcon chain={chain} className="h-6 w-6" />
+                    <h3 className="font-semibold">{chain}</h3>
                   </div>
+                  {address && <TruncatedAddress address={address} />}
+                </div>
+                <div className="space-y-2">
+                  {gasAsset && (
+                    <div className="mb-2">
+                      <TokenBalance balance={gasAsset} />
+                    </div>
+                  )}
+                  {otherBalances.map((balance) => (
+                    <TokenBalance key={`${balance.chain}-${balance.ticker || balance.symbol}`} balance={balance} />
+                  ))}
+                  {chainBalances.length === 0 && (
+                    <div className="text-sm text-muted-foreground">No balances found</div>
+                  )}
                 </div>
               </div>
             );
