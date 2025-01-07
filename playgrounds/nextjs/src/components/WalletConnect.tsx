@@ -1,22 +1,31 @@
 "use client";
 
 import { Chain, WalletOption } from "@swapkit/helpers";
-import { decryptFromKeystore } from "@swapkit/wallet-keystore";
-import { useCallback, useState } from "react";
-import { useKeystore } from "~/components/providers/KeystoreContext";
+import { useState } from "react";
+import { Button } from "~/components/ui/button";
+import { ChainIcon } from "~/components/ui/chain-icon";
 import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "~/components/ui/dropdown-menu";
 import { WalletIcon } from "~/components/ui/wallet-icon";
-import { useSwapKit } from "../lib/swapKit";
+import { useWalletConnect } from "~/hooks/useWalletConnect";
 
-interface WalletConnectProps {
-  chains: Chain[];
-  onSuccess?: () => void;
-  onError?: (error: Error) => void;
-}
+const CHAIN_GROUPS = {
+  "EVM Chains": [
+    Chain.Ethereum,
+    Chain.BinanceSmartChain,
+    Chain.Avalanche,
+    Chain.Polygon,
+    Chain.Arbitrum,
+    Chain.Optimism,
+    Chain.Base,
+  ],
+  "UTXO Chains": [Chain.Bitcoin, Chain.BitcoinCash, Chain.Litecoin, Chain.Dogecoin, Chain.Dash],
+  "Cosmos Chains": [Chain.Cosmos, Chain.THORChain, Chain.Maya, Chain.Kujira],
+  "Other Chains": [Chain.Solana, Chain.Polkadot, Chain.Radix, Chain.Chainflip],
+};
 
 const WALLET_GROUPS = {
   "Hardware Wallets": [
@@ -135,180 +144,113 @@ const WALLET_CHAIN_SUPPORT: Record<WalletOption, Chain[]> = {
   [WalletOption.TALISMAN]: [Chain.Polkadot],
 };
 
-export const WalletConnect = ({ chains, onSuccess, onError }: WalletConnectProps) => {
-  const { swapKit, connectWallet } = useSwapKit();
-  const { keystoreFile, setIsDecrypting, setIsOpen, setKeystoreFile, setOnSubmit, setOnCancel } =
-    useKeystore();
-  const [loadingWallet, setLoadingWallet] = useState<WalletOption | null>(null);
+export const WalletConnect = () => {
+  const [selectedChains, setSelectedChains] = useState<Chain[]>([]);
+  const { loadingWallet, handleConnect } = useWalletConnect(selectedChains);
 
-  const handleKeystoreSubmit = useCallback(
-    async (password: string) => {
-      if (!swapKit || !keystoreFile) return;
-
-      try {
-        setIsDecrypting(true);
-        const phrase = await decryptFromKeystore(keystoreFile.keystore, password);
-        if (!phrase) throw new Error("Failed to decrypt keystore");
-        await swapKit.connectKeystore(chains, phrase);
-        onSuccess?.();
-        debugger;
-        setIsOpen(false);
-        setKeystoreFile(null);
-      } catch (e) {
-        if (e instanceof Error) {
-          onError?.(new Error(`Failed to decrypt keystore: ${e.message}`));
-        } else {
-          onError?.(new Error("Invalid password or corrupted keystore file"));
-        }
-      } finally {
-        setIsDecrypting(false);
-      }
-    },
-    [
-      swapKit,
-      chains,
-      keystoreFile,
-      onSuccess,
-      onError,
-      setIsDecrypting,
-      setIsOpen,
-      setKeystoreFile,
-    ],
-  );
-
-  const handleKeystoreFile = useCallback(
-    async (file: File) => {
-      try {
-        const keystoreFile = await file.text();
-        const parsed = JSON.parse(keystoreFile);
-
-        if (!parsed.crypto?.kdfparams?.salt || !parsed.crypto?.ciphertext) {
-          throw new Error("Invalid keystore format");
-        }
-
-        setKeystoreFile({ keystore: parsed, file });
-        setOnSubmit(() => handleKeystoreSubmit);
-        setIsOpen(true);
-      } catch (error) {
-        if (error instanceof Error) {
-          onError?.(error);
-        } else {
-          onError?.(new Error("Invalid keystore file"));
-        }
-      }
-    },
-    [handleKeystoreSubmit, onError, setKeystoreFile, setOnSubmit, setOnCancel, setIsOpen],
-  );
-
-  const handleConnect = useCallback(
-    async (option: WalletOption) => {
-      if (!swapKit) {
-        onError?.(new Error("SwapKit not initialized"));
-        return;
-      }
-
-      setLoadingWallet(option);
-
-      try {
-        if (option === WalletOption.KEYSTORE) {
-          const input = document.createElement("input");
-          input.type = "file";
-          input.accept = ".txt,.json";
-          input.style.display = "none";
-          document.body.appendChild(input);
-
-          const cleanup = () => {
-            document.body.removeChild(input);
-          };
-
-          await new Promise<void>((resolve) => {
-            input.onchange = async (e) => {
-              const file = (e.target as HTMLInputElement).files?.[0];
-              if (!file) {
-                onError?.(new Error("No file selected"));
-                cleanup();
-                resolve();
-                return;
-              }
-              try {
-                await handleKeystoreFile(file);
-              } catch (error) {
-                onError?.(
-                  error instanceof Error ? error : new Error("Failed to read keystore file"),
-                );
-              } finally {
-                cleanup();
-                resolve();
-              }
-            };
-
-            input.click();
-          });
-          return;
-        }
-
-        await connectWallet(option, chains);
-        onSuccess?.();
-      } catch (error) {
-        if (error instanceof Error) {
-          onError?.(error);
-        } else {
-          onError?.(new Error(`Failed to connect ${option}`));
-        }
-      } finally {
-        setLoadingWallet(null);
-      }
-    },
-    [chains, swapKit, connectWallet, handleKeystoreFile, onSuccess, onError],
-  );
-
-  if (chains.length === 0) {
-    return (
-      <div className="p-4 text-center text-sm text-muted-foreground">
-        Select chains to see compatible wallets
-      </div>
-    );
-  }
-
-  const supportedWallets = Object.entries(WALLET_GROUPS)
-    .map(([groupName, wallets]) => {
-      const groupWallets = wallets.filter((wallet) => {
-        const supportedChains = WALLET_CHAIN_SUPPORT[wallet];
-        return chains.every((chain) => supportedChains?.includes(chain));
-      });
-
-      if (groupWallets.length === 0) return null;
-
-      return (
-        <div key={groupName}>
-          <DropdownMenuLabel className="font-bold">{groupName}</DropdownMenuLabel>
-          {groupWallets.map((wallet) => (
-            <DropdownMenuItem
-              key={wallet}
-              onClick={() => handleConnect(wallet)}
-              disabled={loadingWallet !== null}
-              className="cursor-pointer pl-4"
-            >
-              <WalletIcon wallet={wallet} className="mr-2" />
-              <span className="flex-1">{wallet}</span>
-              {loadingWallet === wallet && (
-                <span className="text-xs text-muted-foreground">Connecting...</span>
-              )}
-            </DropdownMenuItem>
+  return (
+    <div className="grid grid-cols-2 divide-x">
+      <div className="pr-2">
+        <DropdownMenuLabel className="font-bold text-center">Select Chains</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <div className="max-h-[400px] overflow-y-auto">
+          {Object.entries(CHAIN_GROUPS).map(([groupName, chains]) => (
+            <div key={groupName} className="px-2 py-1.5">
+              <DropdownMenuLabel className="font-bold text-sm">{groupName}</DropdownMenuLabel>
+              <div className="grid grid-cols-1 gap-1">
+                {chains.map((chain) => {
+                  const isSelected = selectedChains.includes(chain);
+                  return (
+                    <Button
+                      key={chain}
+                      variant={isSelected ? "default" : "outline"}
+                      size="sm"
+                      className="justify-start"
+                      onClick={() => {
+                        setSelectedChains((prev) =>
+                          isSelected ? prev.filter((c) => c !== chain) : [...prev, chain],
+                        );
+                      }}
+                    >
+                      <ChainIcon chain={chain} className="mr-2" />
+                      <span className="truncate">{chain}</span>
+                    </Button>
+                  );
+                })}
+              </div>
+            </div>
           ))}
-          <DropdownMenuSeparator />
         </div>
-      );
-    })
-    .filter(Boolean);
-
-  if (supportedWallets.length === 0) {
-    return (
-      <div className="p-4 text-center text-sm text-muted-foreground">
-        No wallets support this combination of chains. Please select different chains.
       </div>
-    );
-  }
 
-  return <div className="max-h-[400px] overflow-y-auto">{supportedWallets}</div>;
+      <div className="pl-2">
+        <DropdownMenuLabel className="font-bold text-center">
+          Select Wallet
+          {selectedChains.length > 0 && (
+            <div className="font-normal text-xs text-muted-foreground mt-1 flex flex-wrap gap-1">
+              {selectedChains.map((chain) => (
+                <span key={chain} className="inline-flex items-center">
+                  <ChainIcon chain={chain} className="mr-1" />
+                  {chain}
+                </span>
+              ))}
+            </div>
+          )}
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+
+        {selectedChains.length === 0 ? (
+          <div className="p-4 text-center text-sm text-muted-foreground">
+            Select chains to see compatible wallets
+          </div>
+        ) : (
+          <div className="max-h-[400px] overflow-y-auto">
+            {(() => {
+              const supportedWallets = Object.entries(WALLET_GROUPS)
+                .map(([groupName, wallets]) => {
+                  const groupWallets = wallets.filter((wallet) => {
+                    const supportedChains = WALLET_CHAIN_SUPPORT[wallet];
+                    return selectedChains.every((chain) => supportedChains?.includes(chain));
+                  });
+
+                  if (groupWallets.length === 0) return null;
+
+                  return (
+                    <div key={groupName}>
+                      <DropdownMenuLabel className="font-bold">{groupName}</DropdownMenuLabel>
+                      {groupWallets.map((wallet) => (
+                        <DropdownMenuItem
+                          key={wallet}
+                          onClick={() => handleConnect(wallet)}
+                          disabled={loadingWallet !== null}
+                          className="cursor-pointer pl-4"
+                        >
+                          <WalletIcon wallet={wallet} className="mr-2" />
+                          <span className="flex-1">{wallet}</span>
+                          {loadingWallet === wallet && (
+                            <span className="text-xs text-muted-foreground">Connecting...</span>
+                          )}
+                        </DropdownMenuItem>
+                      ))}
+                      <DropdownMenuSeparator />
+                    </div>
+                  );
+                })
+                .filter(Boolean);
+
+              if (supportedWallets.length === 0) {
+                return (
+                  <div className="p-4 text-center text-sm text-muted-foreground">
+                    No wallets support this combination of chains. Please select different chains.
+                  </div>
+                );
+              }
+
+              return supportedWallets;
+            })()}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };

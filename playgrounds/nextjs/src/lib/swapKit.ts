@@ -1,13 +1,8 @@
 "use client";
 
 import type { SwapKit } from "@swapkit/core";
-import {
-  type AssetValue,
-  type Chain,
-  type EVMChain,
-  NetworkDerivationPath,
-  WalletOption,
-} from "@swapkit/helpers";
+import type { AssetValue, Chain, EVMChain } from "@swapkit/helpers";
+import { NetworkDerivationPath, WalletOption } from "@swapkit/helpers";
 import type { ChainflipPlugin } from "@swapkit/plugin-chainflip";
 import type { KadoPlugin } from "@swapkit/plugin-kado";
 import type { MayachainPlugin, ThorchainPlugin } from "@swapkit/plugin-thorchain";
@@ -160,19 +155,31 @@ export const useSwapKit = () => {
             await swapKit?.connectTalisman(chains);
             break;
 
-          default:
+          default: {
             console.warn(`Unsupported wallet option: ${option}`);
             return;
+          }
         }
 
-        setWalletState({ connected: !!swapKit?.getAddress(chains[0]), type: option });
-        await getBalances(true);
+        const isConnected = chains.some((chain) => !!swapKit?.getAddress(chain));
+        setWalletState({ connected: isConnected, type: option });
+
+        if (isConnected) {
+          const balancePromises = chains.map(async (chain) => {
+            const wallet = await swapKit?.getWalletWithBalance(chain);
+            if (!wallet || !("balance" in wallet)) return [];
+            return wallet.balance as AssetValue[];
+          });
+          const chainBalances = await Promise.all(balancePromises);
+          const allBalances = chainBalances.flat();
+          setBalances(allBalances.sort((a, b) => a.getValue("number") - b.getValue("number")));
+        }
       } catch (error) {
         console.error(`Failed to connect ${option}:`, error);
         setWalletState({ connected: false, type: null });
       }
     },
-    [setWalletState, getBalances, swapKit],
+    [setWalletState, setBalances, swapKit],
   );
 
   const disconnectWallet = useCallback(() => {

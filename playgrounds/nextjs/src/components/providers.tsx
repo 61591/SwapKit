@@ -4,8 +4,8 @@ import { Provider as JotaiProvider } from "jotai";
 import type { PropsWithChildren } from "react";
 
 import { GlobalKeystoreDialog } from "./GlobalKeystoreDialog";
+import { KeystoreProvider } from "./KeystoreContext";
 import { ThemeProvider } from "./containers/Theme";
-import { KeystoreProvider } from "./providers/KeystoreContext";
 import { Toaster } from "./ui/sonner";
 import { TooltipProvider } from "./ui/tooltip";
 
