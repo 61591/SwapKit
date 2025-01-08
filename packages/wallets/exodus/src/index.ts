@@ -11,14 +11,9 @@ import {
   prepareNetworkSwitch,
   setRequestClientConfig,
 } from "@swapkit/helpers";
-import {
-  type AVAXToolbox,
-  BrowserProvider,
-  type Eip1193Provider,
-  getProvider,
-  getToolboxByChain,
-} from "@swapkit/toolbox-evm";
+import { type AVAXToolbox, getProvider, getToolboxByChain } from "@swapkit/toolbox-evm";
 import { BTCToolbox, Psbt, type UTXOTransferParams } from "@swapkit/toolbox-utxo";
+import { BrowserProvider, type Eip1193Provider } from "ethers";
 import {
   AddressPurpose,
   BitcoinNetworkType,

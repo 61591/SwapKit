@@ -3,7 +3,6 @@
 import { Chain, EVMChains, WalletOption } from "@swapkit/helpers";
 import { BITGET_SUPPORTED_CHAINS } from "@swapkit/wallet-bitget";
 import { PHANTOM_SUPPORTED_CHAINS } from "@swapkit/wallet-phantom";
-import { useWalletConnect } from "~/hooks/useWalletConnect";
 
 export const CHAIN_GROUPS: Record<string, Chain[]> = {
   "EVM Chains": [

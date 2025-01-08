@@ -1,6 +1,6 @@
 "use client";
 
-import { Chain, WalletOption } from "@swapkit/helpers";
+import type { Chain, WalletOption } from "@swapkit/helpers";
 import { useCallback, useState } from "react";
 import { useSwapKit } from "~/lib/swapKit";
 

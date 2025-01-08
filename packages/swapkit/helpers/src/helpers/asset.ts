@@ -260,7 +260,7 @@ export async function findAssetBy(
 ) {
   const tokenPackages = await import("@swapkit/tokens");
 
-  for (const tokenList of Object.values(tokenPackages)) {
+  for (const tokenList of Object.values(tokenPackages.tokenLists)) {
     for (const { identifier, chain: tokenChain, ...rest } of tokenList.tokens) {
       if ("identifier" in params && identifier === params.identifier) {
         return identifier as TokenNames;

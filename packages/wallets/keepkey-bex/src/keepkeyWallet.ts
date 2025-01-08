@@ -13,7 +13,8 @@ import {
   filterSupportedChains,
   setRequestClientConfig,
 } from "@swapkit/helpers";
-import type { ARBToolbox, AVAXToolbox, BSCToolbox, Eip1193Provider } from "@swapkit/toolbox-evm";
+import type { ARBToolbox, AVAXToolbox, BSCToolbox } from "@swapkit/toolbox-evm";
+import type { Eip1193Provider } from "ethers";
 import {
   type WalletTxParams,
   cosmosTransfer,
@@ -115,14 +116,9 @@ async function getWalletMethodsForChain({
     case Chain.Polygon:
     case Chain.Avalanche: {
       const { prepareNetworkSwitch, addEVMWalletNetwork } = await import("@swapkit/helpers");
-      const {
-        getToolboxByChain,
-        getBalance,
-        covalentApi,
-        ethplorerApi,
-        getProvider,
-        BrowserProvider,
-      } = await import("@swapkit/toolbox-evm");
+      const { getToolboxByChain, getBalance, covalentApi, ethplorerApi, getProvider } =
+        await import("@swapkit/toolbox-evm");
+      const { BrowserProvider } = await import("ethers");
       const ethereumWindowProvider = getKEEPKEYProvider(chain) as Eip1193Provider;
 
       if (!ethereumWindowProvider) {
@@ -160,8 +156,7 @@ async function getWalletMethodsForChain({
           : covalentApi({ apiKey: apiKeys.covalentApiKey, chainId: ChainToChainId[chain] });
 
       return prepareNetworkSwitch({
-        //@ts-expect-error
-        provider: window.keepkey?.ethereum,
+        provider,
         chainId: ChainToHexChainId[chain],
         toolbox: {
           ...toolbox,

@@ -29,6 +29,7 @@ declare const window: {
   coinbaseWalletExtension: EthereumWindowProvider;
   braveSolana: any;
   bitkeep?: { ethereum: EthereumWindowProvider };
+  xfi?: { ethereum: EthereumWindowProvider };
 } & Window;
 
 type NetworkParams = {
@@ -130,7 +131,6 @@ export const switchEVMWalletNetwork = (provider: BrowserProvider, chainId = Chai
 
 export const addAccountsChangedCallback = (callback: () => void) => {
   window.ethereum?.on("accountsChanged", () => callback());
-  // @ts-expect-error that should be implemented in ctrl and hooked up via swapkit core
   window.xfi?.ethereum.on("accountsChanged", () => callback());
 };
 

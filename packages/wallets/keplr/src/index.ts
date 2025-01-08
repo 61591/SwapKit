@@ -19,8 +19,8 @@ declare global {
   }
 }
 
-const keplrSupportedChainIds = [ChainId.Cosmos, ChainId.THORChain] as const;
-const KEPLR_SUPPORTED_CHAINS = [Chain.Cosmos, Chain.THORChain] as const;
+const keplrSupportedChainIds = [ChainId.Cosmos, ChainId.Kujira, ChainId.THORChain] as const;
+const KEPLR_SUPPORTED_CHAINS = [Chain.Cosmos, Chain.Kujira, Chain.THORChain] as const;
 
 type TransferParams = WalletTxParams & { assetValue: AssetValue };
 

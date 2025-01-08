@@ -74,7 +74,7 @@ export default function SwapPage() {
   };
 
   const swap = async (route: QuoteResponseRoute, inputAssetValue?: AssetValue) => {
-    if (!inputAssetValue || !swapKit) return;
+    if (!(inputAssetValue && swapKit)) return;
 
     try {
       const isChainFlip = route?.providers?.includes(ProviderName.CHAINFLIP);
@@ -104,7 +104,7 @@ export default function SwapPage() {
   };
 
   const updateEstimatedOutput = useCallback(async () => {
-    if (!inputAsset || !outputAsset || !amount || !swapKit) {
+    if (!(inputAsset && outputAsset && amount && swapKit)) {
       setEstimatedOutput(undefined);
       setRoutes([]);
       return;
@@ -250,9 +250,9 @@ export default function SwapPage() {
       <CardFooter>
         <Button
           className="w-full"
-          disabled={!inputAsset || !outputAsset || !amount || isSwapping || !isWalletConnected}
+          disabled={!(inputAsset && outputAsset && amount) || isSwapping || !isWalletConnected}
           onClick={async () => {
-            if (!routes.length || !inputAsset) return;
+            if (!(routes.length && inputAsset)) return;
             try {
               const assetValue = await AssetValue.fromString(inputAsset);
               const amountValue = assetValue.set(amount);
@@ -271,12 +271,14 @@ export default function SwapPage() {
               Swapping...
             </>
           ) : isWalletConnected ? (
-            !inputAsset || !outputAsset ? (
-              "Select Assets"
-            ) : amount ? (
-              "Swap"
+            inputAsset && outputAsset ? (
+              amount ? (
+                "Swap"
+              ) : (
+                "Enter Amount"
+              )
             ) : (
-              "Enter Amount"
+              "Select Assets"
             )
           ) : (
             "Connect Wallet to Swap"

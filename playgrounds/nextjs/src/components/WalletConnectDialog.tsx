@@ -7,12 +7,7 @@ import { X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { ChainIcon } from "~/components/ui/chain-icon";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "~/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "~/components/ui/dialog";
 import { WalletIcon } from "~/components/ui/wallet-icon";
 import { useWalletConnect } from "~/hooks/useWalletConnect";
 
@@ -218,7 +213,9 @@ export function WalletConnectDialog({ open, onOpenChange }: WalletConnectDialogP
             <div className="flex flex-col overflow-hidden">
               <div className="p-6 pb-4">
                 <Button
-                  variant={selectedChains.length === AllChainsSupported.length ? "default" : "outline"}
+                  variant={
+                    selectedChains.length === AllChainsSupported.length ? "default" : "outline"
+                  }
                   size="sm"
                   className="w-full"
                   onClick={() => {
@@ -229,7 +226,9 @@ export function WalletConnectDialog({ open, onOpenChange }: WalletConnectDialogP
                     }
                   }}
                 >
-                  {selectedChains.length === AllChainsSupported.length ? "Deselect All" : "Select All Chains"}
+                  {selectedChains.length === AllChainsSupported.length
+                    ? "Deselect All"
+                    : "Select All Chains"}
                 </Button>
               </div>
 
@@ -248,7 +247,11 @@ export function WalletConnectDialog({ open, onOpenChange }: WalletConnectDialogP
                       >
                         {groupName}
                         <span className="text-xs text-muted-foreground">
-                          {allSelected ? "(All Selected)" : someSelected ? "(Some Selected)" : "(None Selected)"}
+                          {allSelected
+                            ? "(All Selected)"
+                            : someSelected
+                              ? "(Some Selected)"
+                              : "(None Selected)"}
                         </span>
                       </Button>
                       <div className="grid grid-cols-2 gap-2">
@@ -326,7 +329,9 @@ export function WalletConnectDialog({ open, onOpenChange }: WalletConnectDialogP
                                   <div className="flex flex-col items-start">
                                     <span className="font-medium">{wallet}</span>
                                     {loadingWallet === wallet && (
-                                      <span className="text-xs text-muted-foreground">Connecting...</span>
+                                      <span className="text-xs text-muted-foreground">
+                                        Connecting...
+                                      </span>
                                     )}
                                   </div>
                                 </Button>
@@ -343,7 +348,8 @@ export function WalletConnectDialog({ open, onOpenChange }: WalletConnectDialogP
                           <div className="max-w-sm">
                             <h3 className="font-semibold mb-2">No Compatible Wallets</h3>
                             <p className="text-sm text-muted-foreground">
-                              No wallets support this combination of chains. Please select different chains.
+                              No wallets support this combination of chains. Please select different
+                              chains.
                             </p>
                           </div>
                         </div>

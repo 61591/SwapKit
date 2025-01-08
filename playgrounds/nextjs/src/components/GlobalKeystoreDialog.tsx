@@ -35,7 +35,7 @@ export const GlobalKeystoreDialog = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedPassword = password.trim();
-    if (!trimmedPassword || !keystoreFile) return;
+    if (!(trimmedPassword && keystoreFile)) return;
     await connectKeystore(trimmedPassword);
   };
 

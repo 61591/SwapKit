@@ -13,14 +13,9 @@ import {
   getRPCUrl,
 } from "@swapkit/helpers";
 import type { TransferParams } from "@swapkit/toolbox-cosmos";
-import type {
-  ApproveParams,
-  BrowserProvider,
-  CallParams,
-  EVMTxParams,
-  Eip1193Provider,
-} from "@swapkit/toolbox-evm";
+import type { ApproveParams, CallParams, EVMTxParams } from "@swapkit/toolbox-evm";
 import type { PublicKey, SOLToolbox, SolanaProvider } from "@swapkit/toolbox-solana";
+import type { BrowserProvider, Eip1193Provider } from "ethers";
 
 type TransactionMethod = "transfer" | "deposit";
 

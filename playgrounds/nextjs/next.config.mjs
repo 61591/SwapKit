@@ -12,9 +12,9 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'storage.googleapis.com',
-        pathname: '/token-list-swapkit/**',
+        protocol: "https",
+        hostname: "storage.googleapis.com",
+        pathname: "/token-list-swapkit/**",
       },
     ],
   },

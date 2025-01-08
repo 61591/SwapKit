@@ -15,7 +15,9 @@ export function ChainIcon({ chain, className }: ChainIconProps) {
 
   if (!iconUrl) {
     return (
-      <div className={`rounded-full bg-accent flex items-center justify-center text-xs font-medium ${className}`}>
+      <div
+        className={`rounded-full bg-accent flex items-center justify-center text-xs font-medium ${className}`}
+      >
         {chain.slice(0, 2)}
       </div>
     );

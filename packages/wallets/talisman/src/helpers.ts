@@ -14,11 +14,11 @@ import type {
   ARBToolbox,
   BASEToolbox,
   BSCToolbox,
-  Eip1193Provider,
   MATICToolbox,
   OPToolbox,
 } from "@swapkit/toolbox-evm";
 import type { InjectedWindow } from "@swapkit/toolbox-substrate";
+import type { Eip1193Provider } from "ethers";
 
 declare const window: {
   talismanEth: EthereumWindowProvider;
@@ -42,7 +42,8 @@ export const getWeb3WalletMethods = async ({
   covalentApiKey?: string;
   ethplorerApiKey?: string;
 }) => {
-  const { BrowserProvider, getToolboxByChain } = await import("@swapkit/toolbox-evm");
+  const { getToolboxByChain } = await import("@swapkit/toolbox-evm");
+  const { BrowserProvider } = await import("ethers");
 
   if (!ethereumWindowProvider) {
     throw new SwapKitError({

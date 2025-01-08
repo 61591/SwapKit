@@ -176,13 +176,12 @@ export const useSwapKit = () => {
         if (isConnected) {
           const balancePromises = chains.map(async (chain) => {
             const wallet = await swapKit?.getWalletWithBalance(chain);
-            if (!wallet || !("balance" in wallet)) return [];
+            if (!(wallet && "balance" in wallet)) return [];
             return wallet.balance as AssetValue[];
           });
           const chainBalances = await Promise.all(balancePromises);
           const allBalances = chainBalances.flat();
           setBalances(allBalances.sort((a, b) => a.getValue("number") - b.getValue("number")));
-          console.log(swapKit?.getAllWallets());
         }
       } catch (error) {
         console.error(`Failed to connect ${option}:`, error);
@@ -208,7 +207,7 @@ export const useSwapKit = () => {
 
   const connectKeystore = useCallback(
     async (password: string) => {
-      if (!keystoreFile || !swapKit) return;
+      if (!(keystoreFile && swapKit)) return;
 
       try {
         setIsKeystoreDecrypting(true);
@@ -223,7 +222,7 @@ export const useSwapKit = () => {
 
         const balancePromises = keystoreFile.chains.map(async (chain) => {
           const wallet = await swapKit?.getWalletWithBalance(chain);
-          if (!wallet || !("balance" in wallet)) return [];
+          if (!(wallet && "balance" in wallet)) return [];
           return wallet.balance as AssetValue[];
         });
         const chainBalances = await Promise.all(balancePromises);

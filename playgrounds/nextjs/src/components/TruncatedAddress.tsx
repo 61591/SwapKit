@@ -3,6 +3,7 @@
 import { Copy } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Button } from "./ui/button";
 
 interface TruncatedAddressProps {
   address: string;
@@ -19,18 +20,18 @@ export function TruncatedAddress({ address }: TruncatedAddressProps) {
       setIsCopied(true);
       toast.success("Address copied to clipboard");
       setTimeout(() => setIsCopied(false), 2000);
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to copy address");
     }
   };
 
   return (
-    <button
+    <Button
       onClick={handleCopy}
       className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
     >
       <span className="font-mono">{truncated}</span>
       <Copy className={`h-3 w-3 ${isCopied ? "text-green-500" : ""}`} />
-    </button>
+    </Button>
   );
 }

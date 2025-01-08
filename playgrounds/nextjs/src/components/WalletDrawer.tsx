@@ -75,7 +75,10 @@ export function WalletDrawer({ open, onOpenChange }: WalletDrawerProps) {
                     </div>
                   )}
                   {otherBalances.map((balance) => (
-                    <TokenBalance key={`${balance.chain}-${balance.ticker || balance.symbol}`} balance={balance} />
+                    <TokenBalance
+                      key={`${balance.chain}-${balance.ticker || balance.symbol}`}
+                      balance={balance}
+                    />
                   ))}
                   {chainBalances.length === 0 && (
                     <div className="text-sm text-muted-foreground">No balances found</div>

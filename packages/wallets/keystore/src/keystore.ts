@@ -34,8 +34,6 @@ const KEYSTORE_SUPPORTED_CHAINS = [
   Chain.Solana,
 ] as const;
 
-type KeystoreSupportedChain = Exclude<Chain, Chain.Fiat | Chain.Radix>;
-
 type KeystoreOptions = {
   ethplorerApiKey?: string;
   blockchairApiKey?: string;
@@ -70,7 +68,8 @@ const getWalletMethodsForChain = async ({
     case Chain.Ethereum:
     case Chain.Optimism:
     case Chain.Polygon: {
-      const { HDNodeWallet, getProvider, getToolboxByChain } = await import("@swapkit/toolbox-evm");
+      const { getProvider, getToolboxByChain } = await import("@swapkit/toolbox-evm");
+      const { HDNodeWallet } = await import("ethers");
 
       const keys = ensureEVMApiKeys({ chain, covalentApiKey, ethplorerApiKey });
       const provider = getProvider(chain, rpcUrl);

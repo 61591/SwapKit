@@ -121,14 +121,9 @@ async function getWalletMethodsForChain({
     case Chain.Optimism:
     case Chain.Polygon: {
       const { prepareNetworkSwitch, addEVMWalletNetwork } = await import("@swapkit/helpers");
-      const {
-        getProvider,
-        getToolboxByChain,
-        covalentApi,
-        ethplorerApi,
-        getBalance,
-        BrowserProvider,
-      } = await import("@swapkit/toolbox-evm");
+      const { getProvider, getToolboxByChain, covalentApi, ethplorerApi, getBalance } =
+        await import("@swapkit/toolbox-evm");
+      const { BrowserProvider } = await import("ethers");
       const ethereumWindowProvider = getCtrlProvider(chain);
 
       if (!ethereumWindowProvider) {
@@ -166,7 +161,6 @@ async function getWalletMethodsForChain({
           : covalentApi({ apiKey: apiKeys.covalentApiKey, chainId: ChainToChainId[chain] });
 
       return prepareNetworkSwitch({
-        //@ts-expect-error
         provider: window.xfi?.ethereum,
         chainId: ChainToHexChainId[chain],
         toolbox: {
