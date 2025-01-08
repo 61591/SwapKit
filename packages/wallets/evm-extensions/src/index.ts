@@ -3,14 +3,17 @@ import {
   ChainToHexChainId,
   type ConnectWalletParams,
   type EVMChain,
+  EVMChains,
   type EthereumWindowProvider,
   WalletOption,
-  addEVMWalletNetwork,
   ensureEVMApiKeys,
+  filterSupportedChains,
   prepareNetworkSwitch,
   setRequestClientConfig,
+  switchEVMWalletNetwork,
 } from "@swapkit/helpers";
-import type { AVAXToolbox, BrowserProvider, Eip1193Provider } from "@swapkit/toolbox-evm";
+import type { AVAXToolbox } from "@swapkit/toolbox-evm";
+import type { BrowserProvider, Eip1193Provider } from "ethers";
 
 declare const window: {
   ethereum: EthereumWindowProvider;
@@ -70,15 +73,11 @@ export const getWeb3WalletMethods = async ({
 
   if (chain !== Chain.Ethereum) {
     const currentNetwork = await provider.getNetwork();
-    /**
-     * if the selected network is other than Ethereum e.g. Arbitrum
-     * and if the selected network is the current network e.g. Arbitrum on MetaMask
-     * addEVMWalletNetwork is redundant and also throws an error failing the connection
-     */
     if (currentNetwork.chainId.toString() !== ChainToHexChainId[chain]) {
       try {
-        await addEVMWalletNetwork(
+        await switchEVMWalletNetwork(
           provider,
+          ChainToHexChainId[chain],
           (toolbox as ReturnType<typeof AVAXToolbox>).getNetworkParams(),
         );
       } catch (_error) {
@@ -99,14 +98,17 @@ function connectEVMWallet({
   config: { covalentApiKey, ethplorerApiKey, thorswapApiKey },
 }: ConnectWalletParams) {
   return async function connectEVMWallet(
-    chains: EVMChain[],
+    chains: Chain[],
     walletType: EVMWalletOptions = WalletOption.METAMASK,
     eip1193Provider?: Eip1193Provider,
   ) {
     setRequestClientConfig({ apiKey: thorswapApiKey });
 
-    const promises = chains.map(async (chain) => {
-      const { BrowserProvider, getProvider } = await import("@swapkit/toolbox-evm");
+    const supportedChains = filterSupportedChains(chains, EVMChains, walletType);
+
+    const promises = supportedChains.map(async (chain) => {
+      const { getProvider } = await import("@swapkit/toolbox-evm");
+      const { BrowserProvider } = await import("ethers");
 
       if (walletType === WalletOption.EIP6963) {
         if (!eip1193Provider) throw new Error("Missing provider");

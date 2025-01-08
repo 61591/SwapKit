@@ -267,8 +267,10 @@ export const BaseThorchainToolbox = ({
     if (!signer) throw new Error("Signer not defined");
 
     const registry = createDefaultRegistry();
+    const aminoTypes = createDefaultAminoTypes(chain);
     const signingClient = await createSigningStargateClient(rpcUrl, signer, {
       registry,
+      aminoTypes,
     });
 
     const msgSign = convertToSignable(

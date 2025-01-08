@@ -6,19 +6,19 @@ import {
   type EthereumWindowProvider,
   SwapKitError,
   WalletOption,
-  addEVMWalletNetwork,
   ensureEVMApiKeys,
   prepareNetworkSwitch,
+  switchEVMWalletNetwork,
 } from "@swapkit/helpers";
 import type {
   ARBToolbox,
   BASEToolbox,
   BSCToolbox,
-  Eip1193Provider,
   MATICToolbox,
   OPToolbox,
 } from "@swapkit/toolbox-evm";
 import type { InjectedWindow } from "@swapkit/toolbox-substrate";
+import type { Eip1193Provider } from "ethers";
 
 declare const window: {
   talismanEth: EthereumWindowProvider;
@@ -42,7 +42,8 @@ export const getWeb3WalletMethods = async ({
   covalentApiKey?: string;
   ethplorerApiKey?: string;
 }) => {
-  const { BrowserProvider, getToolboxByChain } = await import("@swapkit/toolbox-evm");
+  const { getToolboxByChain } = await import("@swapkit/toolbox-evm");
+  const { BrowserProvider } = await import("ethers");
 
   if (!ethereumWindowProvider) {
     throw new SwapKitError({
@@ -59,8 +60,9 @@ export const getWeb3WalletMethods = async ({
 
   try {
     chain !== Chain.Ethereum &&
-      (await addEVMWalletNetwork(
+      (await switchEVMWalletNetwork(
         provider,
+        ChainToHexChainId[chain],
         (
           toolbox as
             | ReturnType<typeof ARBToolbox>
