@@ -174,7 +174,7 @@ or by passing asyncTokenLookup: true to the from() function, which will make it 
             for (const tokenList of Object.values(tokenPackage.tokenLists)) {
               for (const { identifier, chain, ...rest } of tokenList.tokens) {
                 staticTokensMap.set(
-                  chain !== "SOL" ? (identifier.toUpperCase() as TokenNames) : identifier,
+                  chain === "SOL" ? identifier : (identifier.toUpperCase() as TokenNames),
                   {
                     identifier,
                     decimal: "decimals" in rest ? rest.decimals : BaseDecimal[chain as Chain],

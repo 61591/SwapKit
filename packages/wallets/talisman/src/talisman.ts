@@ -20,6 +20,7 @@ const TALISMAN_SUPPORTED_CHAINS = [
 
 function connectTalisman({
   addChain,
+  apis,
   config: { thorswapApiKey, covalentApiKey, ethplorerApiKey },
 }: ConnectWalletParams) {
   return async function connectTalisman(chains: Chain[]) {
@@ -33,6 +34,7 @@ function connectTalisman({
 
     const promises = supportedChains.map(async (chain) => {
       const { address, walletMethods } = await getWalletForChain({
+        apis,
         chain,
         covalentApiKey,
         ethplorerApiKey,

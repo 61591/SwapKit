@@ -11,6 +11,7 @@ import {
 import type { BrowserProvider, JsonRpcProvider, Provider } from "ethers";
 
 import {
+  type AlchemyApiType,
   type CovalentApiType,
   type EIP1559TxParams,
   type EVMMaxSendableAmountsParams,
@@ -87,7 +88,7 @@ export const getBalance = async ({
   potentialScamFilter,
 }: {
   provider: JsonRpcProvider | BrowserProvider;
-  api: CovalentApiType | EthplorerApiType;
+  api: CovalentApiType | EthplorerApiType | AlchemyApiType;
   address: string;
   chain: EVMChain;
   potentialScamFilter?: boolean;
