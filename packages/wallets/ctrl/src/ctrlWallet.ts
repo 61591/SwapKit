@@ -124,8 +124,7 @@ async function getWalletMethodsForChain({
     case Chain.Optimism:
     case Chain.Polygon: {
       const { prepareNetworkSwitch, switchEVMWalletNetwork } = await import("@swapkit/helpers");
-      const { getProvider, getToolboxByChain, covalentApi, ethplorerApi, getBalance } =
-        await import("@swapkit/toolbox-evm");
+      const { getToolboxByChain } = await import("@swapkit/toolbox-evm");
       const { BrowserProvider } = await import("ethers");
       const ethereumWindowProvider = getCtrlProvider(chain);
 
