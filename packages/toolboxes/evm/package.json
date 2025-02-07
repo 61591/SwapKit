@@ -2,6 +2,7 @@
   "author": "swapkit-oss",
   "dependencies": {
     "@swapkit/helpers": "workspace:*",
+    "@swapkit/tokens": "workspace:*",
     "ethers": "6.13.5"
   },
   "description": "SwapKit - Toolbox evm",

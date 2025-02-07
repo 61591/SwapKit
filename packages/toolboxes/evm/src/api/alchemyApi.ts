@@ -39,9 +39,9 @@ import("@swapkit/tokens").then((tokenPackage) => {
   }
 });
 
-export const alchemyApi = ({ apiKey, chainId }: { apiKey: string; chainId: ChainId }) => {
+export const alchemyApi = ({ apiKey }: { apiKey: string; chainId: ChainId }) => {
   return {
-    getBalance: async (address: string) => {
+    getBalance: async (address: string, chainId: ChainId) => {
       const alchemyNetwork = ChainIdToAlchemyNetwork[chainId];
 
       if (!alchemyNetwork) {

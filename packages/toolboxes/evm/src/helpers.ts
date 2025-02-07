@@ -1,6 +1,7 @@
 import {
   AssetValue,
   BaseDecimal,
+  ChainToChainId,
   type EVMChain,
   FeeOption,
   SwapKitNumber,
@@ -93,7 +94,7 @@ export const getBalance = async ({
   chain: EVMChain;
   potentialScamFilter?: boolean;
 }) => {
-  const tokenBalances = await api.getBalance(address);
+  const tokenBalances = await api.getBalance(address, ChainToChainId[chain]);
   const evmGasTokenBalance = await provider.getBalance(address);
   const balances = [
     {

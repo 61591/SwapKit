@@ -6,7 +6,7 @@ import type { ChainWallet, CryptoChain } from "./wallet";
 /**
  * @optional for swapkit API access
  */
-type SwapkitConfig = {
+export type SwapkitConfig = {
   swapkitConfig?: {
     isDev?: boolean;
     swapkitApiKey?: string;
