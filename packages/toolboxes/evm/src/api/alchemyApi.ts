@@ -14,7 +14,7 @@ const ChainIdToAlchemyNetwork: Partial<Record<ChainId, string>> = {
   [ChainId.Arbitrum]: "arb",
   [ChainId.Avalanche]: "avax",
   [ChainId.Base]: "base",
-  [ChainId.BinanceSmartChain]: "bsc",
+  [ChainId.BinanceSmartChain]: "bnb",
   [ChainId.Ethereum]: "eth",
   [ChainId.Optimism]: "opt",
   [ChainId.Polygon]: "polygon",
