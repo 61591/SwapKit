@@ -186,9 +186,12 @@ export const BaseSubstrateToolbox = ({
   transfer: (params: SubstrateTransferParams) => transfer(api, signer, params),
   estimateTransactionFee: (params: SubstrateTransferParams) =>
     estimateTransactionFee(api, signer, gasAsset, params),
-  sign: (tx: SubmittableExtrinsic<"promise">) => {
+  sign: (tx: SubmittableExtrinsic<"promise">, address: string) => {
     if (isKeyringPair(signer)) {
       return sign(signer, tx);
+    }
+    if (signer) {
+      return tx.signAndSend(address, { signer });
     }
     throw new SwapKitError(
       "core_wallet_not_keypair_wallet",
