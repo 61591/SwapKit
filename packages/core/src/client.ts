@@ -7,7 +7,6 @@ import {
   Chain,
   type ChainWallet,
   type ConditionalAssetValueReturn,
-  type CryptoChain,
   type EVMChain,
   EVMChains,
   type FeeOption,
@@ -16,9 +15,9 @@ import {
   SKConfig,
   type SKConfigState,
   SwapKitError,
-  type SwapKitPluginParams,
-  type SwapKitWallet,
   type SwapParams,
+  type createPlugin,
+  type createWallet,
 } from "@swapkit/helpers";
 import type { TransferParams as CosmosTransferParams } from "@swapkit/toolboxes/cosmos";
 import type { TransferParams as EVMTransferParams } from "@swapkit/toolboxes/evm";
@@ -29,28 +28,16 @@ import {
   getExplorerTxUrl as getTxUrl,
 } from "./helpers/explorerUrls";
 
-export type PluginsType = {
-  [key in string]: {
-    plugin: (params: SwapKitPluginParams) => any;
-    config?: any;
-  };
-};
-
-export type WalletsType = {
-  [key in string]: SwapKitWallet<any[]>;
-};
-
 export type SwapKitParams<P, W> = {
   config?: SKConfigState;
   plugins?: P;
   wallets?: W;
 };
 
-export function SwapKit<Plugins extends PluginsType, Wallets extends WalletsType>({
-  config,
-  plugins,
-  wallets = {} as Wallets,
-}: SwapKitParams<Plugins, Wallets> = {}) {
+export function SwapKit<
+  Plugins extends ReturnType<typeof createPlugin>,
+  Wallets extends ReturnType<typeof createWallet>,
+>({ config, plugins, wallets = {} as Wallets }: SwapKitParams<Plugins, Wallets> = {}) {
   if (config) {
     SKConfig.set(config);
   }
@@ -59,25 +46,27 @@ export function SwapKit<Plugins extends PluginsType, Wallets extends WalletsType
   const connectedWallets = {} as FullWallet;
 
   const availablePlugins = Object.entries(plugins || {}).reduce(
-    (acc, [pluginName, { plugin }]) => {
+    (acc, [pluginName, plugin]) => {
       const methods = plugin({ getWallet });
 
       // @ts-expect-error key is generic and cannot be indexed
       acc[pluginName] = methods;
       return acc;
     },
-    {} as { [key in PluginName]: ReturnType<Plugins[key]["plugin"]> },
+    {} as { [key in PluginName]: ReturnType<Plugins[key]> },
   );
 
-  const connectWalletMethods = Object.entries(wallets).reduce(
+  const connectWalletMethods = Object.entries(wallets || {}).reduce(
     (acc, [walletName, wallet]) => {
-      const connectWallet = wallet(addChain);
+      const connectWallet = wallet.connectWallet({ addChain });
 
-      // @ts-expect-error walletName is generic and cannot be indexed
+      // @ts-expect-error key is generic and cannot be indexed
       acc[walletName] = connectWallet;
       return acc;
     },
-    {} as { [key in keyof Wallets]: ReturnType<Wallets[key]> },
+    {} as {
+      [key in keyof typeof wallets]: ReturnType<(typeof wallets)[key]["connectWallet"]>;
+    },
   );
 
   function getSwapKitPlugin<T extends PluginName>(pluginName: T) {
@@ -90,7 +79,7 @@ export function SwapKit<Plugins extends PluginsType, Wallets extends WalletsType
     return plugin;
   }
 
-  function getSwapKitPluginForSKProvider(pluginName: PluginNameEnum): Plugins[keyof Plugins] {
+  function getSwapKitPluginForSKProvider(pluginName: PluginNameEnum) {
     const plugin = Object.values(availablePlugins).find((plugin) =>
       plugin.supportedSwapkitProviders?.includes(pluginName),
     );
@@ -102,7 +91,7 @@ export function SwapKit<Plugins extends PluginsType, Wallets extends WalletsType
     return plugin;
   }
 
-  function addChain<T extends CryptoChain>(connectWallet: ChainWallet<T>) {
+  function addChain<T extends Chain>(connectWallet: ChainWallet<T>) {
     const currentWallet = getWallet(connectWallet.chain);
 
     connectedWallets[connectWallet.chain] = { ...currentWallet, ...connectWallet };
@@ -122,9 +111,11 @@ export function SwapKit<Plugins extends PluginsType, Wallets extends WalletsType
 
     if (plugin) {
       if (type === ApproveMode.CheckOnly && "isAssetValueApproved" in plugin) {
+        // @ts-expect-error TODO: add optional approve for plugin
         return plugin.isAssetValueApproved({ assetValue }) as ApproveReturnType<T>;
       }
       if (type === ApproveMode.Approve && "approveAssetValue" in plugin) {
+        // @ts-expect-error TODO: add optional approve for plugin
         return plugin.approveAssetValue({ assetValue }) as ApproveReturnType<T>;
       }
 
@@ -392,27 +383,6 @@ export function SwapKit<Plugins extends PluginsType, Wallets extends WalletsType
         return baseValue;
     }
   }
-
-  // TODO: REMOVE THAT:
-  // const swapkitConfig = config.swapkitConfig || {};
-  // const swapkitApiKey = swapkitConfig?.swapkitApiKey || config?.swapkitApiKey;
-  // const referer = swapkitConfig.useHashedApiKey ? swapkitConfig.referer : undefined;
-
-  // const api = swapkitApiKey
-  //   ? {
-  //       getGasRate: () => SwapKitApi.getGasRate(isDev, swapkitApiKey, referer),
-  //       getPrice: (body: PriceRequest) => SwapKitApi.getPrice(body, isDev, swapkitApiKey, referer),
-  //       getSwapQuote: (params: QuoteRequest) =>
-  //         SwapKitApi.getSwapQuote(params, isDev, swapkitApiKey, referer),
-  //       getTokenList: (provider: string) => SwapKitApi.getTokenList(provider),
-  //       getTokenListProviders: () =>
-  //         SwapKitApi.getTokenListProvidersV2(isDev, swapkitApiKey, referer),
-  //       getTokenTradingPairs: (providers: PluginNameEnum[]) =>
-  //         SwapKitApi.getTokenTradingPairs(providers, isDev, swapkitApiKey, referer),
-  //       getTrackerDetails: (payload: TrackerParams) =>
-  //         SwapKitApi.getTrackerDetails(payload, swapkitApiKey, referer),
-  //     }
-  //   : { undefined };
 
   return {
     ...availablePlugins,
