@@ -131,12 +131,15 @@ export async function getWalletMethods(chain: Chain) {
         isProgramDerivedAddress,
         memo,
       }: WalletTxParams & { assetValue: AssetValue; isProgramDerivedAddress?: boolean }) => {
-        if (!(isProgramDerivedAddress || toolbox.validateAddress(recipient))) {
+        const validateAddress = await toolbox.getAddressValidator();
+
+        if (!(isProgramDerivedAddress || validateAddress(recipient))) {
           throw new SwapKitError("core_transaction_invalid_recipient_address");
         }
         const { PublicKey } = await import("@solana/web3.js");
         const fromPublicKey = new PublicKey(address);
 
+        const connection = await toolbox.getConnection();
         const transaction = await toolbox.createSolanaTransaction({
           recipient,
           assetValue,
@@ -145,7 +148,7 @@ export async function getWalletMethods(chain: Chain) {
           isProgramDerivedAddress,
         });
 
-        const blockHash = await toolbox.connection.getLatestBlockhash();
+        const blockHash = await connection.getLatestBlockhash();
         transaction.recentBlockhash = blockHash.blockhash;
         transaction.feePayer = fromPublicKey;
 

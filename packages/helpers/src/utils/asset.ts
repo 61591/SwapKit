@@ -154,6 +154,8 @@ export const isGasAsset = ({ chain, symbol }: { chain: Chain; symbol: string }) 
       return symbol === "BNB";
     case Chain.THORChain:
       return symbol === "RUNE";
+    case Chain.Radix:
+      return `${chain}.${symbol}` === getCommonAssetInfo(chain).identifier;
 
     default:
       return symbol === chain;
@@ -213,6 +215,11 @@ export const getAssetType = ({ chain, symbol }: { chain: Chain; symbol: string }
   if (symbol.includes("/")) return "Synth";
 
   switch (chain) {
+    case Chain.Radix:
+      return symbol === Chain.Radix || `${chain}.${symbol}` === getCommonAssetInfo(chain).identifier
+        ? "Native"
+        : chain;
+
     case Chain.Arbitrum:
     case Chain.Optimism:
     case Chain.Base:

@@ -24,15 +24,8 @@ jobs:
       - name: Setup Repo
         uses: ./tools/github/setup-repo
 
-      - name: Build
-        run: bun install; bun run build
-
-      - name: Lint Packages
-        run: |
-          bun --filter='./packages/toolboxes/**' lint && bun --filter='./packages/toolboxes/**' type-check
-          bun --filter='./packages/wallets/**' lint && bun --filter='./packages/wallets/**' type-check
-          bun --filter='./packages/plugins/**' lint && bun --filter='./packages/plugins/**' type-check
-          bun --filter='./packages/swapkit/**' lint && bun --filter='./packages/swapkit/**' type-check
+      - run: bun build:ci
+      - run: bun lint:ci
 
       - name: Lint Playgrounds
         continue-on-error: true
@@ -40,7 +33,7 @@ jobs:
 
       - name: Test
         if: contains(github.ref_name, 'nightly') == false
-        run: bun run test
+        run: bun test:ci
 
   publish:
     if: contains(github.ref_name, 'develop') || contains(github.ref_name, 'nightly') || contains(github.ref_name, 'beta')
@@ -58,15 +51,15 @@ jobs:
 
       - name: Change nightly changeset
         if: contains(github.ref_name, 'nightly')
+        continue-on-error: true
         run: |
           bun changeset version --snapshot nightly
 
       - name: Change beta changeset
         if: contains(github.ref_name, 'beta')
+        continue-on-error: true
         run: |
-          echo 'publishName="Beta"' >> $GITHUB_OUTPUT
           bun changeset pre enter beta
-          bun changeset version
 
       - name: Set job params
         shell: bash

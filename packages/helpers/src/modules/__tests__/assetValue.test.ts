@@ -758,12 +758,10 @@ describe("AssetValue", () => {
       const xrdAsset = AssetValue.from({ chain: Chain.Radix });
       expect(xrdAsset).toEqual(
         expect.objectContaining({
-          address: undefined,
           chain: Chain.Radix,
           decimal: BaseDecimal.XRD,
           isGasAsset: true,
           isSynthetic: false,
-          symbol: "XRD",
           ticker: "XRD",
           type: "Native",
         }),

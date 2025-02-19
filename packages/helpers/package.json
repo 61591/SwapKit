@@ -44,7 +44,7 @@
     "lint": "biome check --write ./src",
     "generate-tokens": "bun --bun ./fetchTokenLists.ts",
     "test": "bun test",
-    "test:coverage": "bun test --coverage",
+    "test:ci": "bun test --coverage",
     "type-check": "tsc --noEmit"
   },
   "type": "module",

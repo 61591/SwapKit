@@ -1,5 +1,7 @@
 import { resolve } from "path";
+import reactScan from "@react-scan/vite-plugin-react-scan";
 import react from "@vitejs/plugin-react";
+import { visualizer } from "rollup-plugin-visualizer";
 import { defineConfig } from "vite";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 import topLevelAwait from "vite-plugin-top-level-await";
@@ -26,15 +28,27 @@ export default defineConfig({
       },
     }),
     react(),
+    reactScan({ autoDisplayNames: true, debug: true }),
     wasm(),
     topLevelAwait(),
-  ],
+  ].concat(
+    process.env.VISUALISE === "true"
+      ? [
+          visualizer({
+            gzipSize: true,
+            open: true,
+            sourcemap: true,
+            filename: "dist/stats.html",
+          }),
+        ]
+      : [],
+  ),
   resolve: {
     alias: {
-      "@swapkit/core": resolve("../../packages/swapkit/core/src"),
-      "@swapkit/helpers": resolve("../../packages/swapkit/helpers/src"),
+      "@swapkit/core": resolve("../../packages/core/src"),
+      "@swapkit/helpers": resolve("../../packages/helpers/src"),
       "@swapkit/plugins": resolve("../../packages/plugins/src"),
-      "@swapkit/sdk": resolve("../../packages/swapkit/sdk/src"),
+      "@swapkit/sdk": resolve("../../packages/sdk/src"),
       "@swapkit/toolboxes": resolve("../../packages/toolboxes/src"),
       "@swapkit/wallets": resolve("../../packages/wallets/src"),
 
@@ -55,7 +69,6 @@ export default defineConfig({
       transformMixedEsModules: true,
     },
     rollupOptions: {
-      // @ts-expect-error
       plugins: [nodePolyfills()],
     },
   },
