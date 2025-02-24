@@ -4,10 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+    "deploy": "REFERENCES=true astro build"
   },
   "dependencies": {
     "@astrojs/react": "4.2.0",
@@ -20,7 +17,6 @@
     "@swapkit/toolboxes": "workspace:*",
     "@swapkit/wallets": "workspace:*",
     "astro": "5.3.0",
-    "expressive-code-twoslash": "0.4.0",
     "sharp": "0.33.5",
     "starlight-typedoc": "0.19.0",
     "typedoc": "0.27.7",

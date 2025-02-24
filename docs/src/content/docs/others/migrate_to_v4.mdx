@@ -4,9 +4,50 @@ description: A guide to migrate to v4 and update your codebase.
 ---
 
 ```ts twoslash
-import { EVMToolbox } from "@swapkit/toolboxes/evm"
+import { BTCToolbox } from "@swapkit/toolboxes/utxo"
+import { AVAXToolbox, ETHToolbox, getProvider } from "@swapkit/toolboxes/evm"
+import { Chain, createSwapKit, DerivationPath } from "@swapkit/sdk"
 
-const evm = EVMToolbox
+const btc = BTCToolbox()
+const eth = ETHToolbox({ provider: getProvider(Chain.Ethereum) })
+const avax = AVAXToolbox({ provider: getProvider(Chain.Avalanche) })
+
+const ethNetwork = eth.getNetworkParams()
+const avaxNetwork = avax.getNetworkParams()
+
+const btcKeys = await btc.createKeysForPath({
+  phrase: "...",
+  derivationPath: `${DerivationPath.BTC}/0`,
+})
+
+const publicKey = btcKeys.getPublicKey?.();
+
+const skClient = createSwapKit()
+
+skClient.swap
+//       ^|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -20,6 +61,7 @@ const evm = EVMToolbox
 
 ```
 
+# MIGRATE FROM CORE v3 to v4
 
 > [!IMPORTANT]Read before continue
 > We migrated to combined functionality packages to simplify developer experience. You will have to change imports to use the new version of the packages.
