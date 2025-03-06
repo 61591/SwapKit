@@ -1,11 +1,11 @@
 import type { QuoteResponse, QuoteResponseRoute } from "@swapkit/api";
 import {
   AssetValue,
+  BlockTimes,
   Chain,
   FeeTypeEnum,
   ProviderName,
   RequestClient,
-  blockTimes,
 } from "@swapkit/helpers";
 import type { SwapKitPluginParams, SwapParams } from "@swapkit/helpers";
 import { ChainToKadoChain } from "./helpers";
@@ -44,9 +44,9 @@ function mapKadoQuoteToQuoteResponse({
   const inboundChain = sellAsset.chain;
   const outboundChain = buyAsset.chain;
 
-  const inbound = Math.ceil(blockTimes[inboundChain] * 3);
+  const inbound = Math.ceil(BlockTimes[inboundChain] * 3);
   const swap = Math.ceil(60);
-  const outbound = Math.ceil(blockTimes[outboundChain]);
+  const outbound = Math.ceil(BlockTimes[outboundChain]);
   const routes: QuoteResponseRoute[] = [
     {
       providers: [ProviderName.KADO],

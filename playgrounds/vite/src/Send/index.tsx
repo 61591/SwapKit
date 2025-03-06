@@ -20,9 +20,11 @@ export default function Send({
         return;
       }
       setInputString(value);
-      setInput(inputAssetValue ? inputAssetValue.set(value) : inputAsset?.set(value));
+      setInput(
+        inputAssetValue ? inputAssetValue.set(value) : inputAsset?.set(value)
+      );
     },
-    [inputAssetValue, inputAsset],
+    [inputAssetValue, inputAsset]
   );
 
   const handleSend = useCallback(async () => {
@@ -30,7 +32,12 @@ export default function Send({
 
     const from = skClient.getAddress(inputAsset.chain);
     const txHash = await skClient
-      .getWallet(inputAssetValue.chain as Exclude<CryptoChain, Chain.Radix>)
+      .getWallet(
+        inputAssetValue.chain as Exclude<
+          CryptoChain,
+          Chain.Radix | Chain.Hyperliquid
+        >
+      )
       .transfer({
         from,
         assetValue: inputAssetValue,
@@ -39,8 +46,11 @@ export default function Send({
       });
 
     window.open(
-      `${skClient.getExplorerTxUrl({ chain: inputAssetValue.chain, txHash: txHash as string })}`,
-      "_blank",
+      `${skClient.getExplorerTxUrl({
+        chain: inputAssetValue.chain,
+        txHash: txHash as string,
+      })}`,
+      "_blank"
     );
   }, [inputAsset, inputAssetValue, skClient, recipient]);
 
@@ -64,7 +74,11 @@ export default function Send({
                 handleInputChange(e.target.value);
               }}
               placeholder=""
-              value={Number(inputString) ? inputAssetValue?.getValue("string") : inputString}
+              value={
+                Number(inputString)
+                  ? inputAssetValue?.getValue("string")
+                  : inputString
+              }
             />
           </div>
 
