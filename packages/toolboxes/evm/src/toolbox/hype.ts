@@ -1,32 +1,18 @@
-import {
-  BaseDecimal,
-  Chain,
-  ChainId,
-  ChainToExplorerUrl,
-  type FeeOption,
-  SwapKitError,
-} from "@swapkit/helpers";
+import { BaseDecimal, Chain, ChainId, ChainToExplorerUrl, SwapKitError } from "@swapkit/helpers";
 import type { BrowserProvider, JsonRpcProvider, Signer } from "ethers";
 
-import {
-  type AlchemyApiType,
-  type CovalentApiType,
-  type EVMTxBaseParams,
-  covalentApi,
-  estimateTransactionFee,
-  getBalance,
-} from "../index";
+import type { AlchemyApiType, CovalentApiType } from "../index";
 import { EVMToolbox } from "./EVMToolbox";
 
 const getNetworkParams = () => ({
-  chainId: ChainId.BinanceSmartChainHex,
+  chainId: ChainId.HyperliquidHex,
   chainName: "HyperEVM",
-  nativeCurrency: { name: "Binance Coin", symbol: "BNB", decimals: BaseDecimal.BSC },
-  rpcUrls: ["https://bsc-dataseed.binance.org"],
-  blockExplorerUrls: [ChainToExplorerUrl[Chain.BinanceSmartChain]],
+  nativeCurrency: { name: "HYPE", symbol: "HYPE", decimals: BaseDecimal.BSC },
+  rpcUrls: ["https://rpc.hyperliquid.xyz/evm"],
+  blockExplorerUrls: [ChainToExplorerUrl[Chain.Hyperliquid]],
 });
 
-export const BSCToolbox = ({
+export const HYPEToolbox = ({
   api,
   provider,
   signer,
@@ -46,27 +32,10 @@ export const BSCToolbox = ({
     });
   }
 
-  const bscApi =
-    api || covalentApi({ apiKey: apiKey as string, chainId: ChainId.BinanceSmartChain });
   const evmToolbox = EVMToolbox({ provider, signer, isEIP1559Compatible: false });
-  const chain = Chain.BinanceSmartChain;
 
   return {
     ...evmToolbox,
     getNetworkParams,
-    estimateTransactionFee: (txObject: EVMTxBaseParams, feeOptionKey: FeeOption) =>
-      estimateTransactionFee(txObject, feeOptionKey, chain, provider, false),
-    getBalance: (
-      address: string,
-      potentialScamFilter = true,
-      overwriteProvider?: JsonRpcProvider | BrowserProvider,
-    ) =>
-      getBalance({
-        provider: overwriteProvider || provider,
-        api: bscApi,
-        address,
-        chain,
-        potentialScamFilter,
-      }),
   };
 };
