@@ -26,7 +26,11 @@ export const coinbaseWallet = createWallet({
     async function connectCoinbaseWallet(chains: Chain[]) {
       const { createCoinbaseWalletSDK } = await import("@coinbase/wallet-sdk");
 
-      const filteredChains = filterSupportedChains({ chains, supportedChains, walletType });
+      const filteredChains = filterSupportedChains({
+        chains,
+        supportedChains,
+        walletType,
+      });
 
       const coinbaseConfig = SKConfig.get("integrations").coinbase || {
         appName: "Swapkit Playground",
