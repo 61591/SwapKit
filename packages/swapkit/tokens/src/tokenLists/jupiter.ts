@@ -1,4 +1,26 @@
-export const list = {
+export const list: {
+  provider: string;
+  chainId: string;
+  name: string;
+  timestamp: string;
+  version: {
+    major: number;
+    minor: number;
+    patch: number;
+  };
+  keywords: string[];
+  count: number;
+  tokens: {
+    address: string;
+    chain: string;
+    chainId: string;
+    decimals: number;
+    identifier: string;
+    logoURI: string;
+    shortCode?: string;
+    ticker: string;
+  }[];
+} = {
   provider: "JUPITER",
   chainId: "solana",
   name: "JUPITER",
