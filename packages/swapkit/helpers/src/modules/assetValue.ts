@@ -16,6 +16,8 @@ import { BigIntArithmetics, formatBigIntToSafeValue } from "./bigIntArithmetics"
 import { SwapKitError } from "./swapKitError";
 import type { SwapKitValueType } from "./swapKitNumber";
 
+export const TRADE_OR_SYNTH_ASSET_SEPERATOR = /~|\//;
+
 const staticTokensMap = new Map<
   TokenNames,
   { tax?: TokenTax; decimal: number; identifier: string }
@@ -342,7 +344,8 @@ function safeValue(value: NumberPrimitives, decimal: number) {
 function getAssetInfo(identifier: string) {
   const isSynthetic = identifier.slice(0, 14).includes("/");
   const isTradeAsset = identifier.slice(0, 14).includes("~");
-  const assetSeperator = isTradeAsset ? "~" : "/";
+  const isSynthOrTradeAsset = isSynthetic || isTradeAsset;
+  const assetSeperator = /~|\//;
 
   const isThorchain = identifier.split(".")?.[0]?.toUpperCase() === Chain.THORChain;
   const isMaya = identifier.split(".")?.[0]?.toUpperCase() === Chain.Maya;
@@ -352,7 +355,7 @@ function getAssetInfo(identifier: string) {
       ? identifier.split(".").slice(1).join().split(assetSeperator)
       : identifier.split(assetSeperator);
 
-  if ((isSynthetic || isTradeAsset) && !(synthChain && synthSymbol)) {
+  if (isSynthOrTradeAsset && !(synthChain && synthSymbol)) {
     throw new SwapKitError({
       errorKey: "helpers_invalid_asset_identifier",
       info: { identifier },
@@ -360,13 +363,13 @@ function getAssetInfo(identifier: string) {
   }
 
   const adjustedIdentifier =
-    identifier.includes(".") && !isSynthetic && !isTradeAsset
+    identifier.includes(".") && !isSynthOrTradeAsset
       ? identifier
       : `${isMaya ? Chain.Maya : Chain.THORChain}.${synthSymbol}`;
 
   const [chain, ...rest] = adjustedIdentifier.split(".") as [Chain, string];
 
-  const symbol = isSynthetic || isTradeAsset ? synthSymbol : rest.join(".");
+  const symbol = isSynthOrTradeAsset ? synthSymbol : rest.join(".");
   const splitSymbol = symbol.split("-");
   const ticker = (
     splitSymbol.length === 1 ? splitSymbol[0] : splitSymbol.slice(0, -1).join("-")
@@ -384,7 +387,7 @@ function getAssetInfo(identifier: string) {
     isTradeAsset,
     ticker,
     symbol:
-      (isSynthetic || isTradeAsset ? `${synthChain}${assetSeperator}` : "") +
+      (isSynthOrTradeAsset ? `${synthChain}${assetSeperator}` : "") +
       (address ? `${ticker}-${address ?? ""}` : symbol),
   };
 }

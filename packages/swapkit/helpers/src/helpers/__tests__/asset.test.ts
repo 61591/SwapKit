@@ -163,6 +163,7 @@ describe("assetFromString", () => {
       symbol: "RUNE",
       ticker: "RUNE",
       synth: false,
+      trade: false,
     });
   });
 
@@ -175,6 +176,31 @@ describe("assetFromString", () => {
       symbol: "PENDLE-LPT-0x1234",
       ticker: "PENDLE-LPT",
       synth: false,
+      trade: false,
+    });
+  });
+
+  test("should return the correct trade asset", () => {
+    const assetString = "ETH~PENDLE-LPT-0x1234";
+    const result = assetFromString(assetString);
+    expect(result).toEqual({
+      chain: Chain.THORChain,
+      symbol: "ETH~PENDLE-LPT-0x1234",
+      ticker: "PENDLE-LPT",
+      synth: false,
+      trade: true,
+    });
+  });
+
+  test("should return the correct synth asset", () => {
+    const assetString = "ETH/PENDLE-LPT-0x1234";
+    const result = assetFromString(assetString);
+    expect(result).toEqual({
+      chain: Chain.THORChain,
+      symbol: "ETH/PENDLE-LPT-0x1234",
+      ticker: "PENDLE-LPT",
+      synth: true,
+      trade: false,
     });
   });
 
@@ -188,6 +214,7 @@ describe("assetFromString", () => {
       symbol: "xwBTC-resource_rdx1t580qxc7upat7lww4l2c4jckacafjeudxj5wpjrrct0p3e82sq4y75",
       ticker: "xwBTC",
       synth: false,
+      trade: false,
     });
   });
 });

@@ -1,5 +1,10 @@
 import type { TxBodyEncodeObject } from "@cosmjs/proto-signing";
-import { AssetValue, Chain, ChainToChainId } from "@swapkit/helpers";
+import {
+  AssetValue,
+  Chain,
+  ChainToChainId,
+  TRADE_OR_SYNTH_ASSET_SEPERATOR,
+} from "@swapkit/helpers";
 
 import {
   createStargateClient,
@@ -200,12 +205,16 @@ export function parseAminoMessageForDirectSigning<T extends MsgDeposit | MsgSend
       ...msg.value,
       coins: (msg as MsgDeposit).value.coins.map((coin: { asset: string; amount: string }) => {
         const assetValue = AssetValue.from({ asset: coin.asset });
+        const isTradeOrSynthAsset = assetValue.isTradeAsset || assetValue.isSynthetic;
+        const assetChainSeparator = TRADE_OR_SYNTH_ASSET_SEPERATOR;
 
         const symbol = (
-          assetValue.isSynthetic ? assetValue.symbol.split("/")?.[1] : assetValue.symbol
+          isTradeOrSynthAsset
+            ? assetValue.symbol.split(assetChainSeparator)?.[1]
+            : assetValue.symbol
         )?.toUpperCase();
         const chain = (
-          assetValue.isSynthetic ? assetValue.symbol.split("/")?.[0] : assetValue.chain
+          isTradeOrSynthAsset ? assetValue.symbol.split(assetChainSeparator)?.[0] : assetValue.chain
         )?.toUpperCase();
 
         return {
@@ -215,6 +224,7 @@ export function parseAminoMessageForDirectSigning<T extends MsgDeposit | MsgSend
             symbol,
             ticker: symbol,
             synth: assetValue.isSynthetic,
+            trade: assetValue.isTradeAsset,
           },
         };
       }),

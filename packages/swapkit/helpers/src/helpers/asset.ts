@@ -1,4 +1,4 @@
-import { AssetValue } from "../modules/assetValue";
+import { AssetValue, TRADE_OR_SYNTH_ASSET_SEPERATOR } from "../modules/assetValue";
 import { RequestClient } from "../modules/requestClient";
 import { BaseDecimal, Chain, ChainToRPC, type EVMChain, EVMChains } from "../types/chains";
 import type { RadixCoreStateResourceDTO } from "../types/radix";
@@ -188,6 +188,7 @@ export const getCommonAssetInfo = (assetString: CommonAssetString) => {
 
 export const getAssetType = ({ chain, symbol }: { chain: Chain; symbol: string }) => {
   if (symbol.includes("/")) return "Synth";
+  if (symbol.includes("~")) return "Trade";
 
   switch (chain) {
     case Chain.Arbitrum:
@@ -210,8 +211,10 @@ export const getAssetType = ({ chain, symbol }: { chain: Chain; symbol: string }
 };
 
 export const assetFromString = (assetString: string) => {
-  const [chain, ...symbolArray] = assetString.split(".") as [Chain, ...(string | undefined)[]];
   const synth = assetString.includes("/");
+  const trade = assetString.includes("~");
+  const isTradeOrSynth = synth || trade;
+  const [chain, ...symbolArray] = assetString.split(".") as [Chain, ...(string | undefined)[]];
   const symbol = symbolArray.join(".");
   const splitSymbol = symbol?.split("-");
   const ticker = splitSymbol?.length
@@ -220,7 +223,24 @@ export const assetFromString = (assetString: string) => {
       : splitSymbol.slice(0, -1).join("-")
     : undefined;
 
-  return { chain, symbol, ticker, synth };
+  if (isTradeOrSynth) {
+    const tradeOrSynthSymbol = chain.concat(symbol);
+    const tradeOrSynthSplitSymbol = tradeOrSynthSymbol?.split("-");
+    const tradeOrSynthTicker = tradeOrSynthSplitSymbol?.length
+      ? tradeOrSynthSplitSymbol.length === 1
+        ? tradeOrSynthSplitSymbol[0]
+        : tradeOrSynthSplitSymbol.slice(0, -1).join("-")
+      : undefined;
+    return {
+      chain: Chain.THORChain,
+      symbol: tradeOrSynthSymbol,
+      ticker: tradeOrSynthTicker?.split(TRADE_OR_SYNTH_ASSET_SEPERATOR)?.[1],
+      synth,
+      trade,
+    };
+  }
+
+  return { chain, symbol, ticker, synth, trade };
 };
 
 const potentialScamRegex = new RegExp(
