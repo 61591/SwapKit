@@ -2,7 +2,7 @@ export const list = {
   provider: "THORCHAIN",
   chainId: "thorchain-1",
   name: "THORCHAIN",
-  timestamp: "2025-03-14T08:31:21.199Z",
+  timestamp: "2025-03-27T08:31:19.573Z",
   version: {
     major: 1,
     minor: 0,
@@ -336,7 +336,7 @@ export const list = {
     {
       chain: "LTC",
       chainId: "litecoin",
-      decimals: 8,
+      decimals: 18,
       identifier: "LTC.LTC",
       logoURI: "https://storage.googleapis.com/token-list-swapkit/images/ltc.ltc.png",
       shortCode: "l",

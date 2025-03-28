@@ -7,11 +7,10 @@ const supportedChains = [...Object.values(Chain), "TERRA"];
 export function validateIdentifier(identifier = "") {
   const uppercasedIdentifier = identifier.toUpperCase();
 
-  const [chain] = uppercasedIdentifier.split(".") as [Chain, string];
-  if (supportedChains.includes(chain)) return true;
+  const supportedThorchainSeperatorRegex = /\.|~|\//;
+  const [chain] = uppercasedIdentifier.split(supportedThorchainSeperatorRegex) as [Chain, string];
 
-  const [synthChain] = uppercasedIdentifier.split("/") as [Chain, string];
-  if (supportedChains.includes(synthChain)) return true;
+  if (supportedChains.includes(chain)) return true;
 
   throw new SwapKitError({
     errorKey: "helpers_invalid_identifier",
