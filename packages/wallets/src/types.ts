@@ -1,4 +1,15 @@
-import { WalletOption } from "@swapkit/helpers";
+import type {
+  AminoSignResponse,
+  OfflineAminoSigner,
+  StdSignDoc,
+  StdSignature,
+} from "@cosmjs/amino";
+import type { Keplr } from "@keplr-wallet/types";
+import type { Transaction } from "@solana/web3.js";
+import { type EthereumWindowProvider, WalletOption } from "@swapkit/helpers";
+import type { SolanaProvider } from "@swapkit/toolboxes/solana";
+import type { BrowserProvider, Eip1193Provider } from "ethers";
+
 import type { bitgetWallet } from "./bitget";
 import type { coinbaseWallet } from "./coinbase";
 import type { ctrlWallet } from "./ctrl";
@@ -75,3 +86,116 @@ export type SKWalletsSupportedChains = {
   [WalletOption.TRUSTWALLET_WEB]: typeof evmWallet.connectEVMWallet.supportedChains;
   [WalletOption.WALLETCONNECT]: typeof walletconnectWallet.connectWalletconnect.supportedChains;
 };
+
+type UnisatToSignInputs = {
+  index: number;
+  sighashTypes?: number[];
+  disableTweakSigner?: boolean;
+} & ({ address: string } | { publicKey: string });
+
+declare global {
+  interface Window {
+    $onekey?: any;
+    braveSolana: any;
+    coinbaseWalletExtension: EthereumWindowProvider;
+    ethereum: EthereumWindowProvider;
+    keplr: Keplr;
+    leap: Keplr;
+    trustwallet: EthereumWindowProvider;
+    phantom: {
+      solana: SolanaProvider;
+    };
+
+    xfi?: {
+      binance: Eip1193Provider;
+      bitcoin: Eip1193Provider;
+      bitcoincash: Eip1193Provider;
+      dogecoin: Eip1193Provider;
+      ethereum: BrowserProvider;
+      keplr: Keplr;
+      litecoin: Eip1193Provider;
+      thorchain: Eip1193Provider;
+      mayachain: Eip1193Provider;
+      solana: SolanaProvider & { isXDEFI: boolean };
+    };
+
+    bitkeep?: {
+      unisat: {
+        requestAccounts: () => Promise<[string, ...string[]]>;
+        signMessage: (message: string, type?: "ecdsa" | "bip322-simple") => Promise<string>;
+        signPsbt: (
+          psbtHex: string,
+          {
+            autoFinalized,
+            toSignInputs,
+          }: { autoFinalized?: boolean; toSignInputs?: UnisatToSignInputs[] },
+        ) => Promise<string>;
+      };
+      keplr: {
+        enable: (chainId: string | string[]) => Promise<void>;
+        signAmino: (
+          chainId: string,
+          signer: string,
+          signDoc: StdSignDoc,
+          signOptions: any,
+        ) => Promise<AminoSignResponse>;
+        signArbitrary: (
+          chainId: string,
+          signer: string,
+          data: string | Uint8Array,
+        ) => Promise<StdSignature>;
+        verifyArbitrary: (
+          chainId: string,
+          signer: string,
+          data: string | Uint8Array,
+          signature: StdSignature,
+        ) => Promise<boolean>;
+        getOfflineSignerOnlyAmino: (chainId: string) => OfflineAminoSigner;
+      };
+      solana: {
+        connect: () => Promise<{ publicKey: string }>;
+        getAccounts: () => Promise<{ publicKey: string }[]>;
+        signTransaction: (transaction: Transaction) => Promise<Transaction>;
+      };
+      ethereum: EthereumWindowProvider;
+    };
+
+    okxwallet?:
+      | {
+          bitcoin: {
+            connect: () => Promise<{
+              address: string;
+              publicKey: string;
+            }>;
+            disconnect: () => Promise<void>;
+            signMessage: (message: string, { from }: { from: string }) => Promise<string>;
+            signPsbt: (
+              psbtHex: string,
+              { from, type }: { from: string; type: string },
+            ) => Promise<string>;
+          };
+          keplr: {
+            enable: (chainId: string | string[]) => Promise<void>;
+            signAmino: (
+              chainId: string,
+              signer: string,
+              signDoc: StdSignDoc,
+              signOptions: any,
+            ) => Promise<AminoSignResponse>;
+            signArbitrary: (
+              chainId: string,
+              signer: string,
+              data: string | Uint8Array,
+            ) => Promise<StdSignature>;
+            verifyArbitrary: (
+              chainId: string,
+              signer: string,
+              data: string | Uint8Array,
+              signature: StdSignature,
+            ) => Promise<boolean>;
+            getOfflineSignerOnlyAmino: (chainId: string) => OfflineAminoSigner;
+          };
+        }
+      | EthereumWindowProvider;
+  }
+}

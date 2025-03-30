@@ -3,7 +3,6 @@ import {
   ChainToHexChainId,
   type EVMChain,
   EVMChains,
-  type EthereumWindowProvider,
   WalletOption,
   createWallet,
   filterSupportedChains,
@@ -12,13 +11,6 @@ import {
 } from "@swapkit/helpers";
 import type { BrowserProvider, Eip1193Provider } from "ethers";
 import { getWalletSupportedChains } from "../utils";
-
-declare const window: {
-  ethereum: EthereumWindowProvider;
-  trustwallet: EthereumWindowProvider;
-  coinbaseWalletExtension: EthereumWindowProvider;
-  braveSolana: any;
-} & Window;
 
 export type EVMWalletOptions =
   | WalletOption.BRAVE

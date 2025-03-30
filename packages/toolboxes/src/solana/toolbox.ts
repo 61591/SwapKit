@@ -22,7 +22,61 @@ export async function getAddressValidator() {
   };
 }
 
-export async function createSolanaTokenTransaction({
+export const SOLToolbox = () => {
+  return {
+    getConnection,
+    createKeysForPath,
+    getAddressFromKeys,
+    createSolanaTransaction: createSolanaTransaction(getConnection),
+    getBalance: getBalance(getConnection),
+    transfer: transfer(getConnection),
+    broadcastTransaction: broadcastTransaction(getConnection),
+    getAddressValidator,
+  };
+};
+
+async function getConnection() {
+  const { Connection } = await import("@solana/web3.js");
+  return new Connection(SKConfig.get("rpcUrls").SOL, "confirmed");
+}
+
+async function createAssetTransaction({
+  assetValue,
+  fromPublicKey,
+  recipient,
+  connection,
+}: {
+  assetValue: AssetValue;
+  fromPublicKey: PublicKey;
+  recipient: string;
+  connection: Connection;
+}) {
+  if (assetValue.isGasAsset) {
+    const { Transaction, SystemProgram, PublicKey } = await import("@solana/web3.js");
+
+    return new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey: fromPublicKey,
+        lamports: assetValue.getBaseValue("number"),
+        toPubkey: new PublicKey(recipient),
+      }),
+    );
+  }
+  if (assetValue.address) {
+    return createSolanaTokenTransaction({
+      amount: assetValue.getBaseValue("number"),
+      connection,
+      decimals: assetValue.decimal as number,
+      from: fromPublicKey,
+      recipient,
+      tokenAddress: assetValue.address,
+    });
+  }
+
+  return undefined;
+}
+
+async function createSolanaTokenTransaction({
   tokenAddress,
   recipient,
   from,
@@ -85,24 +139,6 @@ export async function createSolanaTokenTransaction({
   return transaction;
 }
 
-export const SOLToolbox = () => {
-  async function getConnection() {
-    const { Connection } = await import("@solana/web3.js");
-    return new Connection(SKConfig.get("rpcUrls").SOL, "confirmed");
-  }
-
-  return {
-    getConnection,
-    createKeysForPath,
-    getAddressFromKeys,
-    createSolanaTransaction: createSolanaTransaction(getConnection),
-    getBalance: getBalance(getConnection),
-    transfer: transfer(getConnection),
-    broadcastTransaction: broadcastTransaction(getConnection),
-    getAddressValidator,
-  };
-};
-
 function createSolanaTransaction(getConnection: () => Promise<Connection>) {
   return async ({
     recipient,
@@ -116,7 +152,7 @@ function createSolanaTransaction(getConnection: () => Promise<Connection>) {
     isProgramDerivedAddress?: boolean;
   }) => {
     const { createMemoInstruction } = await import("@solana/spl-memo");
-    const { Transaction, PublicKey, SystemProgram } = await import("@solana/web3.js");
+
     const validateAddress = await getAddressValidator();
 
     if (!(isProgramDerivedAddress || validateAddress(recipient))) {
@@ -124,25 +160,12 @@ function createSolanaTransaction(getConnection: () => Promise<Connection>) {
     }
 
     const connection = await getConnection();
-
-    const transaction = assetValue.isGasAsset
-      ? new Transaction().add(
-          SystemProgram.transfer({
-            fromPubkey: fromPublicKey,
-            lamports: assetValue.getBaseValue("number"),
-            toPubkey: new PublicKey(recipient),
-          }),
-        )
-      : assetValue.address
-        ? await createSolanaTokenTransaction({
-            amount: assetValue.getBaseValue("number"),
-            connection,
-            decimals: assetValue.decimal as number,
-            from: fromPublicKey,
-            recipient,
-            tokenAddress: assetValue.address,
-          })
-        : undefined;
+    const transaction = await createAssetTransaction({
+      assetValue,
+      fromPublicKey,
+      recipient,
+      connection,
+    });
 
     if (!transaction) {
       throw new SwapKitError("core_transaction_invalid_sender_address");

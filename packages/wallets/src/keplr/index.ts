@@ -1,4 +1,3 @@
-import type { Keplr } from "@keplr-wallet/types";
 import {
   type AssetValue,
   Chain,
@@ -10,13 +9,6 @@ import {
 } from "@swapkit/helpers";
 import type { CosmosToolboxType } from "@swapkit/toolboxes/cosmos";
 import { chainRegistry } from "./chainRegistry";
-
-declare global {
-  interface Window {
-    keplr: Keplr;
-    leap: Keplr;
-  }
-}
 
 const keplrSupportedChainIds = [ChainId.Cosmos, ChainId.Kujira, ChainId.THORChain] as const;
 

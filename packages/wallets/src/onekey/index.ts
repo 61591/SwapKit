@@ -21,12 +21,6 @@ import type {
 } from "sats-connect";
 import { getWalletSupportedChains } from "../utils";
 
-declare global {
-  interface Window {
-    $onekey?: any;
-  }
-}
-
 async function getWalletMethodsForExtension(chain: Chain) {
   switch (chain) {
     case Chain.Bitcoin: {

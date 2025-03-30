@@ -1,56 +1,32 @@
-import type { StdSignDoc, StdSignature } from "@cosmjs/amino";
-import type { AminoSignResponse, OfflineAminoSigner } from "@cosmjs/amino";
-import type { Transaction } from "@solana/web3.js";
-import type { EthereumWindowProvider } from "@swapkit/helpers";
-export { bitgetWallet, BITGET_SUPPORTED_CHAINS } from "./bitgetWallet";
+import {
+  Chain,
+  EVMChains,
+  WalletOption,
+  createWallet,
+  filterSupportedChains,
+} from "@swapkit/helpers";
 
-type UnisatToSignInputs = {
-  index: number;
-  sighashTypes?: number[];
-  disableTweakSigner?: boolean;
-} & ({ address: string } | { publicKey: string });
+import { getWalletSupportedChains } from "../utils";
+import { getWalletMethods } from "./helpers";
 
-declare global {
-  interface Window {
-    bitkeep?: {
-      unisat: {
-        requestAccounts: () => Promise<[string, ...string[]]>;
-        signMessage: (message: string, type?: "ecdsa" | "bip322-simple") => Promise<string>;
-        signPsbt: (
-          psbtHex: string,
-          {
-            autoFinalized,
-            toSignInputs,
-          }: { autoFinalized?: boolean; toSignInputs?: UnisatToSignInputs[] },
-        ) => Promise<string>;
-      };
-      keplr: {
-        enable: (chainId: string | string[]) => Promise<void>;
-        signAmino: (
-          chainId: string,
-          signer: string,
-          signDoc: StdSignDoc,
-          signOptions: any,
-        ) => Promise<AminoSignResponse>;
-        signArbitrary: (
-          chainId: string,
-          signer: string,
-          data: string | Uint8Array,
-        ) => Promise<StdSignature>;
-        verifyArbitrary: (
-          chainId: string,
-          signer: string,
-          data: string | Uint8Array,
-          signature: StdSignature,
-        ) => Promise<boolean>;
-        getOfflineSignerOnlyAmino: (chainId: string) => OfflineAminoSigner;
-      };
-      solana: {
-        connect: () => Promise<{ publicKey: string }>;
-        getAccounts: () => Promise<{ publicKey: string }[]>;
-        signTransaction: (transaction: Transaction) => Promise<Transaction>;
-      };
-      ethereum: EthereumWindowProvider;
-    };
-  }
-}
+export const bitgetWallet = createWallet({
+  name: "connectBitget",
+  walletType: WalletOption.BITGET,
+  supportedChains: [...EVMChains, Chain.Cosmos, Chain.Bitcoin, Chain.Solana],
+  connect: ({ addChain, walletType, supportedChains }) =>
+    async function connectBitget(chains: Chain[]) {
+      const filteredChains = filterSupportedChains({ chains, supportedChains, walletType });
+
+      await Promise.all(
+        filteredChains.map(async (chain) => {
+          const walletMethods = await getWalletMethods(chain);
+
+          addChain({ ...walletMethods, chain, walletType });
+        }),
+      );
+
+      return true;
+    },
+});
+
+export const BITGET_SUPPORTED_CHAINS = getWalletSupportedChains(bitgetWallet);

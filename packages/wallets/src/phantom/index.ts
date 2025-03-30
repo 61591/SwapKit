@@ -7,7 +7,6 @@ import {
   createWallet,
   filterSupportedChains,
 } from "@swapkit/helpers";
-import type { SolanaProvider } from "@swapkit/toolboxes/solana";
 import { getWalletSupportedChains } from "../utils";
 
 export const phantomWallet = createWallet({
@@ -38,14 +37,6 @@ export const phantomWallet = createWallet({
 
 export const PHANTOM_SUPPORTED_CHAINS = getWalletSupportedChains(phantomWallet);
 export type PhantomSupportedChain = (typeof PHANTOM_SUPPORTED_CHAINS)[number];
-
-declare global {
-  interface Window {
-    phantom: {
-      solana: SolanaProvider;
-    };
-  }
-}
 
 async function getWalletMethods(chain: PhantomSupportedChain) {
   const phantom: any = window?.phantom;
@@ -79,9 +70,7 @@ async function getWalletMethods(chain: PhantomSupportedChain) {
     }
 
     case Chain.Solana: {
-      const { createSolanaTokenTransaction, SOLToolbox } = await import(
-        "@swapkit/toolboxes/solana"
-      );
+      const { SOLToolbox } = await import("@swapkit/toolboxes/solana");
       const provider = phantom?.solana;
       if (!provider?.isPhantom) {
         throw new SwapKitError("wallet_phantom_not_found");
@@ -96,34 +85,21 @@ async function getWalletMethods(chain: PhantomSupportedChain) {
         assetValue,
         isProgramDerivedAddress,
       }: WalletTxParams & { assetValue: AssetValue; isProgramDerivedAddress?: boolean }) => {
-        const { PublicKey, Transaction, SystemProgram } = await import("@solana/web3.js");
+        const { PublicKey } = await import("@solana/web3.js");
         const validateAddress = await toolbox.getAddressValidator();
+
         if (!(isProgramDerivedAddress || validateAddress(recipient))) {
           throw new SwapKitError("core_transaction_invalid_recipient_address");
         }
 
-        const fromPubkey = new PublicKey(address);
-        const amount = assetValue.getBaseValue("number");
+        const fromPublicKey = new PublicKey(address);
         const connection = await toolbox.getConnection();
 
-        const transaction = assetValue.isGasAsset
-          ? new Transaction().add(
-              SystemProgram.transfer({
-                fromPubkey,
-                lamports: amount,
-                toPubkey: new PublicKey(recipient),
-              }),
-            )
-          : assetValue.address
-            ? await createSolanaTokenTransaction({
-                amount,
-                connection,
-                decimals: assetValue.decimal as number,
-                from: fromPubkey,
-                recipient,
-                tokenAddress: assetValue.address,
-              })
-            : undefined;
+        const transaction = await toolbox.createSolanaTransaction({
+          recipient,
+          assetValue,
+          fromPublicKey,
+        });
 
         if (!transaction) {
           throw new SwapKitError("core_transaction_invalid_sender_address");
@@ -131,7 +107,7 @@ async function getWalletMethods(chain: PhantomSupportedChain) {
 
         const blockHash = await connection.getLatestBlockhash();
         transaction.recentBlockhash = blockHash.blockhash;
-        transaction.feePayer = fromPubkey;
+        transaction.feePayer = fromPublicKey;
 
         const signedTransaction = await provider.signTransaction(transaction);
 
