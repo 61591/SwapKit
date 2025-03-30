@@ -34,7 +34,7 @@ async function getCovalentBalance({ chain, address }: { chain: Chain; address: s
   const apiKey = SKConfig.get("apiKeys").covalent;
 
   if (!apiKey) {
-    warnOnce(true, "No covalent api key found. Use SKConfig.setApiKey('your-api-key')");
+    warnOnce(true, "No covalent api key found. Use SKConfig.setApiKey('covalent', 'your-api-key')");
     return [];
   }
 
