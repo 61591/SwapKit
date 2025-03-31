@@ -60,6 +60,8 @@ export async function getWalletMethods(chain: Chain) {
     case Chain.Base:
     case Chain.Avalanche:
     case Chain.Arbitrum:
+    case Chain.Aurora:
+    case Chain.Gnosis:
     case Chain.Optimism:
     case Chain.Polygon:
     case Chain.BinanceSmartChain: {
