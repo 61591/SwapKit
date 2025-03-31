@@ -3,10 +3,12 @@ import type { BigNumberish, JsonFragment, Transaction } from "ethers";
 
 import type {
   ARBToolbox,
+  AURORAToolbox,
   AVAXToolbox,
   BASEToolbox,
   BSCToolbox,
   ETHToolbox,
+  GNOToolbox,
   MATICToolbox,
   OPToolbox,
   getProvider,
@@ -66,10 +68,12 @@ export type TransferParams = WalletTxParams & {
 
 export type BaseEVMToolboxType = ReturnType<
   | typeof ARBToolbox
+  | typeof AURORAToolbox
   | typeof AVAXToolbox
   | typeof BASEToolbox
   | typeof BSCToolbox
   | typeof ETHToolbox
+  | typeof GNOToolbox
   | typeof MATICToolbox
   | typeof OPToolbox
 >;
