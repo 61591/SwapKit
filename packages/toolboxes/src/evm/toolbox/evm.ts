@@ -66,9 +66,11 @@ export function ARBToolbox<P extends JsonRpcProvider | BrowserProvider, S extend
   return { ...evmToolbox, estimateGasPrices };
 }
 
+export const AURORAToolbox = createEvmToolbox(Chain.Aurora);
 export const AVAXToolbox = createEvmToolbox(Chain.Avalanche);
 export const BASEToolbox = createEvmToolbox(Chain.Base);
 export const BSCToolbox = createEvmToolbox(Chain.BinanceSmartChain);
+export const GNOToolbox = createEvmToolbox(Chain.Gnosis);
 export const MATICToolbox = createEvmToolbox(Chain.Polygon);
 
 function createEvmToolbox<C extends EVMChain>(chain: C) {
