@@ -36,6 +36,7 @@ export const walletconnectWallet = createWallet({
   walletType: WalletOption.WALLETCONNECT,
   supportedChains: [
     Chain.Arbitrum,
+    Chain.Aurora,
     Chain.Avalanche,
     Chain.Base,
     Chain.BinanceSmartChain,
@@ -124,6 +125,7 @@ async function getToolbox<T extends (typeof WC_SUPPORTED_CHAINS)[number]>({
 }) {
   switch (chain) {
     case Chain.Arbitrum:
+    case Chain.Aurora:
     case Chain.Avalanche:
     case Chain.Base:
     case Chain.BinanceSmartChain:
