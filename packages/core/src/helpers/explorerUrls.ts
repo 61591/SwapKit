@@ -12,10 +12,12 @@ export function getExplorerTxUrl({ chain, txHash }: { txHash: string; chain: Cha
       return `${baseUrl}/tx/${txHash.startsWith("0x") ? txHash.slice(2) : txHash}`;
 
     case Chain.Arbitrum:
+    case Chain.Aurora:
     case Chain.Avalanche:
     case Chain.BinanceSmartChain:
     case Chain.Base:
     case Chain.Ethereum:
+    case Chain.Gnosis:
     case Chain.Optimism:
     case Chain.Polkadot:
     case Chain.Polygon:
