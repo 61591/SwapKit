@@ -13,10 +13,12 @@ export async function getAddressValidator() {
   return function validateAddress({ address, chain }: { address: string; chain: Chain }) {
     switch (chain) {
       case Chain.Arbitrum:
+      case Chain.Aurora:
       case Chain.Avalanche:
       case Chain.Optimism:
       case Chain.BinanceSmartChain:
       case Chain.Base:
+      case Chain.Gnosis:
       case Chain.Polygon:
       case Chain.Ethereum:
         return evmValidateAddress({ address });
