@@ -27,10 +27,12 @@ import {
 
 import {
   type ARBToolbox,
+  type AURORAToolbox,
   type AVAXToolbox,
   type BASEToolbox,
   type BSCToolbox,
   type ETHToolbox,
+  type GNOToolbox,
   type MATICToolbox,
   type OPToolbox,
   toHexString,
@@ -49,10 +51,12 @@ import type {
 export type EVMWallet = ReturnType<typeof BaseEVMToolbox>;
 export type EVMWalletType = {
   [Chain.Arbitrum]: ReturnType<typeof ARBToolbox>;
+  [Chain.Aurora]: ReturnType<typeof AURORAToolbox>;
   [Chain.Avalanche]: ReturnType<typeof AVAXToolbox>;
   [Chain.Base]: ReturnType<typeof BASEToolbox>;
   [Chain.BinanceSmartChain]: ReturnType<typeof BSCToolbox>;
   [Chain.Ethereum]: ReturnType<typeof ETHToolbox>;
+  [Chain.Gnosis]: ReturnType<typeof GNOToolbox>;
   [Chain.Optimism]: ReturnType<typeof OPToolbox>;
   [Chain.Polygon]: ReturnType<typeof MATICToolbox>;
 };
@@ -169,10 +173,12 @@ export function getChecksumAddressFromAsset(asset: Asset, chain: EVMChain) {
 
 const baseAssetAddress: Record<EVMChain, string> = {
   [Chain.Arbitrum]: ContractAddress.ARB,
+  [Chain.Aurora]: ContractAddress.AURORA,
   [Chain.Avalanche]: ContractAddress.AVAX,
   [Chain.Base]: ContractAddress.BASE,
   [Chain.BinanceSmartChain]: ContractAddress.BSC,
   [Chain.Ethereum]: ContractAddress.ETH,
+  [Chain.Gnosis]: ContractAddress.GNO,
   [Chain.Optimism]: ContractAddress.OP,
   [Chain.Polygon]: ContractAddress.MATIC,
 };
