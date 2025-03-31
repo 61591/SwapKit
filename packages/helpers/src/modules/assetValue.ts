@@ -192,10 +192,13 @@ export function getMinAmountByChain(chain: Chain) {
     case Chain.Dogecoin:
       return asset.set(1.00000001);
 
-    case Chain.Avalanche:
-    case Chain.Ethereum:
     case Chain.Arbitrum:
+    case Chain.Aurora:
+    case Chain.Avalanche:
+    case Chain.Base:
     case Chain.BinanceSmartChain:
+    case Chain.Ethereum:
+    case Chain.Gnosis:
       return asset.set(0.00000001);
 
     case Chain.THORChain:
