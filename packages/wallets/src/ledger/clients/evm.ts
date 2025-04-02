@@ -174,3 +174,9 @@ export const OptimismLedger = ({ provider, derivationPath }: LedgerParams) =>
 
 export const BaseLedger = ({ provider, derivationPath }: LedgerParams) =>
   new EVMLedgerInterface({ chainId: ChainId.Base, provider, derivationPath });
+
+export const AuroraLedger = ({ provider, derivationPath }: LedgerParams) =>
+  new EVMLedgerInterface({ chainId: ChainId.Aurora, provider, derivationPath });
+
+export const GnosisLedger = ({ provider, derivationPath }: LedgerParams) =>
+  new EVMLedgerInterface({ chainId: ChainId.Gnosis, provider, derivationPath });
