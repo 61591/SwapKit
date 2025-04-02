@@ -14,6 +14,7 @@ export const AURORA_MAINNET_ID = "eip155:1313161554";
 export const OPTIMISM_MAINNET_ID = "eip155:10";
 export const POLYGON_MAINNET_ID = "eip155:137";
 export const BASE_MAINNET_ID = "eip155:8453";
+export const BERACHAIN_MAINNET_ID = "eip155:80094";
 
 export const DEFAULT_LOGGER = "debug";
 
