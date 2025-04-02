@@ -99,6 +99,7 @@ async function getWalletMethods({
       return { ...toolbox, transfer, address };
     }
     case Chain.Arbitrum:
+    case Chain.Aurora:
     case Chain.Avalanche:
     case Chain.Base:
     case Chain.BinanceSmartChain:
