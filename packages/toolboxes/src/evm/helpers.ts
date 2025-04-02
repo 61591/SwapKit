@@ -202,6 +202,11 @@ function getNetworkInfo<C extends EVMChain>({ chain }: { chain: C }) {
         chainName: "Base Mainnet",
         nativeCurrency: { name: "Ethereum", symbol: Chain.Ethereum, decimals },
       };
+    case Chain.Berachain:
+      return {
+        chainName: "Berachain Mainnet",
+        nativeCurrency: { name: "Berachain", symbol: "BERA", decimals },
+      };
     case Chain.BinanceSmartChain:
       return {
         chainName: "BNB Chain",
