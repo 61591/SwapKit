@@ -5,6 +5,7 @@ import {
   AURORA_MAINNET_ID,
   AVALANCHE_MAINNET_ID,
   BASE_MAINNET_ID,
+  BERACHAIN_MAINNET_ID,
   BSC_MAINNET_ID,
   COSMOS_HUB_MAINNET_ID,
   ETHEREUM_MAINNET_ID,
@@ -33,6 +34,8 @@ export const chainToChainId = (chain: Chain) => {
       return AURORA_MAINNET_ID;
     case Chain.Base:
       return BASE_MAINNET_ID;
+    case Chain.Berachain:
+      return BERACHAIN_MAINNET_ID;
     case Chain.BinanceSmartChain:
       return BSC_MAINNET_ID;
     case Chain.Ethereum:
