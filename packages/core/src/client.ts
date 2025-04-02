@@ -305,9 +305,12 @@ export function SwapKit<
       case Chain.Arbitrum:
       case Chain.Aurora:
       case Chain.Avalanche:
+      case Chain.Base:
+      case Chain.Berachain:
+      case Chain.BinanceSmartChain: 
       case Chain.Ethereum:
-      case Chain.BinanceSmartChain:
       case Chain.Gnosis:
+      case Chain.Optimism:
       case Chain.Polygon: {
         const wallet = getWallet(chain);
         if (type === "transfer") {
