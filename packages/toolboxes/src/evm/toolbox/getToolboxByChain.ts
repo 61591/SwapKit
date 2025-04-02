@@ -8,6 +8,7 @@ type ToolboxType = {
   AURORA: typeof AURORAToolbox;
   AVAX: typeof AVAXToolbox;
   BASE: typeof BASEToolbox;
+  BERA: typeof BERAToolbox;
   BSC: typeof BSCToolbox;
   ETH: typeof ETHToolbox;
   GNO: typeof GNOToolbox;
@@ -25,6 +26,8 @@ export const getToolboxByChain = <T extends keyof ToolboxType>(chain: T): Toolbo
       return AVAXToolbox as ToolboxType[T];
     case Chain.Base:
       return BASEToolbox as ToolboxType[T];
+    case Chain.Berachain:
+      return BERAToolbox as ToolboxType[T];
     case Chain.BinanceSmartChain:
       return BSCToolbox as ToolboxType[T];
     case Chain.Ethereum:
