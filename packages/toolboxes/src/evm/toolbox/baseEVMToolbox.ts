@@ -29,6 +29,7 @@ import {
   type ARBToolbox,
   type AURORAToolbox,
   type AVAXToolbox,
+  type BERAToolbox,
   type BASEToolbox,
   type BSCToolbox,
   type ETHToolbox,
@@ -54,6 +55,7 @@ export type EVMWalletType = {
   [Chain.Aurora]: ReturnType<typeof AURORAToolbox>;
   [Chain.Avalanche]: ReturnType<typeof AVAXToolbox>;
   [Chain.Base]: ReturnType<typeof BASEToolbox>;
+  [Chain.Berachain]: ReturnType<typeof BERAToolbox>;
   [Chain.BinanceSmartChain]: ReturnType<typeof BSCToolbox>;
   [Chain.Ethereum]: ReturnType<typeof ETHToolbox>;
   [Chain.Gnosis]: ReturnType<typeof GNOToolbox>;
@@ -176,6 +178,7 @@ const baseAssetAddress: Record<EVMChain, string> = {
   [Chain.Aurora]: ContractAddress.AURORA,
   [Chain.Avalanche]: ContractAddress.AVAX,
   [Chain.Base]: ContractAddress.BASE,
+  [Chain.Berachain]: ContractAddress.BERA,
   [Chain.BinanceSmartChain]: ContractAddress.BSC,
   [Chain.Ethereum]: ContractAddress.ETH,
   [Chain.Gnosis]: ContractAddress.GNO,
