@@ -26,6 +26,7 @@ export const ctrlWallet = createWallet({
     Chain.Aurora,
     Chain.Avalanche,
     Chain.Base,
+    Chain.Berachain,
     Chain.BinanceSmartChain,
     Chain.Bitcoin,
     Chain.BitcoinCash,
@@ -132,6 +133,7 @@ async function getWalletMethods(chain: (typeof CTRL_SUPPORTED_CHAINS)[number]) {
     case Chain.Aurora:
     case Chain.Avalanche:
     case Chain.Base:
+    case Chain.Berachain,
     case Chain.BinanceSmartChain:
     case Chain.Ethereum:
     case Chain.Gnosis:
