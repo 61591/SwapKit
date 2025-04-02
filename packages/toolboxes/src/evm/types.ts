@@ -6,6 +6,7 @@ import type {
   AURORAToolbox,
   AVAXToolbox,
   BASEToolbox,
+  BERAToolbox,
   BSCToolbox,
   ETHToolbox,
   GNOToolbox,
@@ -71,6 +72,7 @@ export type BaseEVMToolboxType = ReturnType<
   | typeof AURORAToolbox
   | typeof AVAXToolbox
   | typeof BASEToolbox
+  | typeof BERAToolbox
   | typeof BSCToolbox
   | typeof ETHToolbox
   | typeof GNOToolbox
