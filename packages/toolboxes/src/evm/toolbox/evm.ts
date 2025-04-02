@@ -69,6 +69,7 @@ export function ARBToolbox<P extends JsonRpcProvider | BrowserProvider, S extend
 export const AURORAToolbox = createEvmToolbox(Chain.Aurora);
 export const AVAXToolbox = createEvmToolbox(Chain.Avalanche);
 export const BASEToolbox = createEvmToolbox(Chain.Base);
+export const BERAToolbox = createEvmToolbox(Chain.Berachain);
 export const BSCToolbox = createEvmToolbox(Chain.BinanceSmartChain);
 export const GNOToolbox = createEvmToolbox(Chain.Gnosis);
 export const MATICToolbox = createEvmToolbox(Chain.Polygon);
