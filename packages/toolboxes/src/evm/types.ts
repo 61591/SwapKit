@@ -1,9 +1,11 @@
-import { type AssetValue, Chain, type FeeOption, type WalletTxParams } from "@swapkit/helpers";
+import type { AssetValue, ChainSigner, FeeOption, WalletTxParams } from "@swapkit/helpers";
+import { Chain } from "@swapkit/helpers";
 import type {
   BigNumberish,
   BrowserProvider,
   JsonFragment,
   JsonRpcProvider,
+  JsonRpcSigner,
   Signer,
   Transaction,
 } from "ethers";
@@ -107,7 +109,7 @@ export type EVMTxParams = EIP1559TxParams | LegacyEVMTxParams;
 
 export type EVMToolboxParams = {
   provider: BrowserProvider | JsonRpcProvider;
-  signer?: Signer;
+  signer?: (ChainSigner<TransferParams, string> & Signer) | JsonRpcSigner;
 };
 
 export type EVMToolboxes = {
