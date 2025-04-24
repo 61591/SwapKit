@@ -226,7 +226,11 @@ async function createAssetValue(identifier: string, value: NumberPrimitives = 0)
     staticTokensMap.set(modifiedIdentifier, { identifier, decimal });
   }
 
-  return new AssetValue({ decimal, value: safeValue(value, decimal), identifier });
+  return new AssetValue({
+    decimal,
+    value: safeValue(value, decimal),
+    identifier,
+  });
 }
 
 function createSyntheticAssetValue(identifier: string, value: NumberPrimitives = 0) {
@@ -242,7 +246,10 @@ function createSyntheticAssetValue(identifier: string, value: NumberPrimitives =
     : identifier.split(assetSeparator);
 
   if (!(synthChain && symbol)) {
-    throw new SwapKitError({ errorKey: "helpers_invalid_asset_identifier", info: { identifier } });
+    throw new SwapKitError({
+      errorKey: "helpers_invalid_asset_identifier",
+      info: { identifier },
+    });
   }
 
   return new AssetValue({
@@ -283,7 +290,10 @@ function getAssetInfo(identifier: string) {
     : identifier.split(assetSeparator);
 
   if (isSynthOrTrade && !(synthChain && synthSymbol)) {
-    throw new SwapKitError({ errorKey: "helpers_invalid_asset_identifier", info: { identifier } });
+    throw new SwapKitError({
+      errorKey: "helpers_invalid_asset_identifier",
+      info: { identifier },
+    });
   }
 
   const [chain, ...rest] = (

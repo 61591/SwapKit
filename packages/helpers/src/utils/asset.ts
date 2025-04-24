@@ -37,7 +37,11 @@ async function getContractDecimals({ chain, to }: { chain: EVMChain; to: string 
     const { result } = await RequestClient.post<{ result: string }>(
       SKConfig.get("rpcUrls")[chain],
       {
-        headers: { accept: "*/*", "content-type": "application/json", "cache-control": "no-cache" },
+        headers: {
+          accept: "*/*",
+          "content-type": "application/json",
+          "cache-control": "no-cache",
+        },
         body: JSON.stringify({
           id: 44,
           jsonrpc: "2.0",
@@ -64,7 +68,10 @@ async function getRadixAssetDecimal(symbol: string) {
       `${SKConfig.get("rpcUrls").XRD}/state/resource`,
       {
         headers: { Accept: "*/*", "Content-Type": "application/json" },
-        body: JSON.stringify({ network: "mainnet", resource_address: resourceAddress }),
+        body: JSON.stringify({
+          network: "mainnet",
+          resource_address: resourceAddress,
+        }),
       },
     );
 
@@ -118,15 +125,32 @@ export const getCommonAssetInfo = (assetString: CommonAssetString) => {
   const decimal = BaseDecimal[assetString as Chain];
 
   const commonAssetInfo = match(assetString)
-    .with(...ethGasChains, () => ({ identifier: `${assetString}.ETH`, decimal }))
-    .with(Chain.THORChain, () => ({ identifier: `${assetString}.RUNE`, decimal }))
-    .with(Chain.Cosmos, () => ({ identifier: `${assetString}.ATOM`, decimal }))
-    .with(Chain.Maya, () => ({ identifier: `${assetString}.CACAO`, decimal: 10 }))
-    .with(Chain.BinanceSmartChain, () => ({ identifier: `${assetString}.BNB`, decimal }))
-    .with(...UTXOChains, Chain.Chainflip, Chain.Kujira, Chain.Ripple, () => ({
-      identifier: `${assetString}.${assetString}`,
+    .with(...ethGasChains, () => ({
+      identifier: `${assetString}.ETH`,
       decimal,
     }))
+    .with(Chain.THORChain, () => ({
+      identifier: `${assetString}.RUNE`,
+      decimal,
+    }))
+    .with(Chain.Cosmos, () => ({ identifier: `${assetString}.ATOM`, decimal }))
+    .with(Chain.Maya, () => ({
+      identifier: `${assetString}.CACAO`,
+      decimal: 10,
+    }))
+    .with(Chain.BinanceSmartChain, () => ({
+      identifier: `${assetString}.BNB`,
+      decimal,
+    }))
+    .with(
+      ...UTXOChains,
+      Chain.Solana,
+      Chain.Chainflip,
+      Chain.Kujira,
+      Chain.Ripple,
+      Chain.Polkadot,
+      () => ({ identifier: `${assetString}.${assetString}`, decimal }),
+    )
     .with(Chain.Radix, "XRD.XRD", () => ({
       identifier: "XRD.XRD-resource_rdx1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxradxrd",
       decimal,
@@ -145,7 +169,9 @@ export const getCommonAssetInfo = (assetString: CommonAssetString) => {
       decimal: BaseDecimal.ETH,
     }))
     .with("MAYA.MAYA", () => ({ identifier: assetString, decimal: 4 }))
-    .otherwise(() => ({ identifier: assetString, decimal }));
+    // Just to be sure that we are not missing any chain
+    .with(Chain.Fiat, () => ({ identifier: assetString, decimal }))
+    .exhaustive();
 
   return commonAssetInfo;
 };
