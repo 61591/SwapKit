@@ -36,6 +36,7 @@ export async function ETHToolbox({ provider, ...signer }: EVMToolboxParams) {
   return { ...evmToolbox, multicall };
 }
 
+export const ARBToolbox = createEvmToolbox(Chain.Arbitrum);
 export const AURORAToolbox = createEvmToolbox(Chain.Aurora);
 export const AVAXToolbox = createEvmToolbox(Chain.Avalanche);
 export const BASEToolbox = createEvmToolbox(Chain.Base);
