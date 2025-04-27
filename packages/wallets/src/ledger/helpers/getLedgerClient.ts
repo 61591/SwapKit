@@ -70,7 +70,7 @@ export const getLedgerClient = async <T extends LedgerSupportedChain>({
     case Chain.Avalanche:
     case Chain.BinanceSmartChain:
     case Chain.Ethereum:
-    case Chain.Gnosis
+    case Chain.Gnosis:
     case Chain.Optimism:
     case Chain.Polygon:
     case Chain.Base: {
