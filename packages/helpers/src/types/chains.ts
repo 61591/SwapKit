@@ -258,7 +258,7 @@ export const RPC_URLS: Record<Chain | StagenetChain, string> = {
   [Chain.Dogecoin]: "https://node-router.thorswap.net/dogecoin",
   [Chain.Ethereum]: "https://ethereum-rpc.publicnode.com",
   [Chain.Fiat]: "",
-   [Chain.Gnosis]: "https://gnosis-rpc.publicnode.com",
+  [Chain.Gnosis]: "https://gnosis-rpc.publicnode.com",
   [Chain.Kujira]: "https://kujira-rpc.ibs.team",
   [Chain.Litecoin]: "https://node-router.thorswap.net/litecoin",
   [Chain.Maya]: "https://tendermint.mayachain.info",
@@ -282,7 +282,6 @@ export const NODE_URLS: Record<
   [StagenetChain.THORChain]: "https://stagenet-thornode.ninerealms.com",
   [StagenetChain.Maya]: "https://stagenet.mayanode.mayachain.info",
 };
-
 
 export const FALLBACK_URLS: Record<Chain | StagenetChain, string[]> = {
   [Chain.Arbitrum]: [
