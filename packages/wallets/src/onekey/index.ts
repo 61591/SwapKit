@@ -119,10 +119,12 @@ async function getWalletMethodsForExtension(chain: Chain) {
     }
 
     case Chain.Arbitrum:
+    case Chain.Aurora:
     case Chain.Avalanche:
     case Chain.Base:
     case Chain.BinanceSmartChain:
     case Chain.Ethereum:
+    case Chain.Gnosis:
     case Chain.Optimism:
     case Chain.Polygon: {
       const { getProvider, getEvmToolbox } = await import("@swapkit/toolboxes/evm");
