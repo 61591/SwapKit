@@ -23,6 +23,7 @@ export const CommonAssetStrings = [
 
 const ethGasChains = [
   Chain.Arbitrum,
+  Chain.Aurora,
   Chain.Avalanche,
   Chain.Base,
   Chain.Ethereum,
@@ -114,6 +115,8 @@ export function isGasAsset({ chain, symbol }: { chain: Chain; symbol: string }) 
   return match(chain)
     .with(...ethGasChains, () => symbol === "ETH")
     .with(Chain.BinanceSmartChain, () => symbol === "BNB")
+    .with(Chain.Berachain, () => symbol === "BERA")
+    .with(Chain.Gnosis, () => symbol === "XDAI")
     .with(Chain.Maya, () => symbol === "CACAO")
     .with(Chain.Cosmos, () => symbol === "ATOM")
     .with(Chain.THORChain, () => symbol === "RUNE")
@@ -142,6 +145,8 @@ export const getCommonAssetInfo = (assetString: CommonAssetString) => {
       identifier: `${assetString}.BNB`,
       decimal,
     }))
+    .with(Chain.Gnosis, () => ({ identifier: `${assetString}.XDAI`, decimal }))
+    .with(Chain.Berachain, () => ({ identifier: `${assetString}.BERA`, decimal }))
     .with(
       ...UTXOChains,
       Chain.Solana,
@@ -184,9 +189,11 @@ export function getAssetType({ chain, symbol }: { chain: Chain; symbol: string }
       Chain.Radix,
       () => symbol === Chain.Radix || `${chain}.${symbol}` === getCommonAssetInfo(chain).identifier,
     )
-    .with(Chain.Arbitrum, Chain.Optimism, Chain.Base, () => symbol === Chain.Ethereum)
+    .with(Chain.Arbitrum, Chain.Aurora, Chain.Optimism, Chain.Base, () => symbol === Chain.Ethereum)
     .with(Chain.Cosmos, () => symbol === "ATOM")
+    .with(Chain.Berachain, () => symbol === "BERA")
     .with(Chain.BinanceSmartChain, () => symbol === "BNB")
+    .with(Chain.Gnosis, () => symbol === "XDAI")
     .with(Chain.Maya, () => symbol === "CACAO")
     .with(Chain.THORChain, () => symbol === "RUNE")
     .otherwise(() => symbol === chain);
