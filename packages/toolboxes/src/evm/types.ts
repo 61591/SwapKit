@@ -18,10 +18,13 @@ import type {
 } from "ethers";
 import type {
   ARBToolbox,
+  AURORAToolbox,
   AVAXToolbox,
   BASEToolbox,
+  BERAToolbox,
   BSCToolbox,
   ETHToolbox,
+  GNOToolbox,
   MATICToolbox,
   OPToolbox,
 } from "./toolbox";
@@ -131,10 +134,13 @@ export type EVMToolboxParams = {
 
 export type EVMToolboxes = {
   [Chain.Arbitrum]: Awaited<ReturnType<typeof ARBToolbox>>;
+  [Chain.Aurora]: Awaited<ReturnType<typeof AURORAToolbox>>;
   [Chain.Avalanche]: Awaited<ReturnType<typeof AVAXToolbox>>;
   [Chain.Base]: Awaited<ReturnType<typeof BASEToolbox>>;
+  [Chain.Berachain]: Awaited<ReturnType<typeof BERAToolbox>>;
   [Chain.BinanceSmartChain]: Awaited<ReturnType<typeof BSCToolbox>>;
   [Chain.Ethereum]: Awaited<ReturnType<typeof ETHToolbox>>;
+  [Chain.Gnosis]: Awaited<ReturnType<typeof GNOToolbox>>;
   [Chain.Optimism]: Awaited<ReturnType<typeof OPToolbox>>;
   [Chain.Polygon]: Awaited<ReturnType<typeof MATICToolbox>>;
 };
