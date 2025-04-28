@@ -73,7 +73,7 @@ jobs:
 
       - name: Create Pull Request or Publish to npm
         id: changesets
-        uses: changesets/action@v1
+        uses: changesets/action@v1.4.10
         if: contains(github.ref_name, 'develop')
         with:
           title: ":tada: Publish ${{ steps.deployment-params.outputs.publishName }}"
@@ -83,7 +83,7 @@ jobs:
           createGithubReleases: false
 
       - name: Publish Beta to npm
-        uses: changesets/action@v1
+        uses: changesets/action@v1.4.10
         if: contains(github.ref_name, 'beta')
         with:
           title: ":tada: Publish Beta"
@@ -93,7 +93,7 @@ jobs:
           createGithubReleases: false
 
       - name: Publish Nightly to npm
-        uses: changesets/action@v1
+        uses: changesets/action@v1.4.10
         if: contains(github.ref_name, 'nightly')
         with:
           title: ":tada: Publish Nightly"
@@ -105,13 +105,16 @@ jobs:
   build-docs:
     runs-on: ubuntu-latest
     needs: [build-lint-test]
+    permissions:
+      pages: write
+      id-token: write
     steps:
       - uses: actions/checkout@v4
       - name: Setup Repo
         uses: ./tools/github/setup-repo
 
       - name: Setup Pages
-        uses: actions/configure-pages@v5.0.0
+        uses: actions/configure-pages@v5
 
       - name: Build Docs
         run: bun build:docs
@@ -123,7 +126,7 @@ jobs:
           path: "./docs/dist"
 
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v4.0.5
+        uses: actions/deploy-pages@v4
         with:
           artifact_name: docs
           token: ${{ secrets.GITHUB_TOKEN }}
