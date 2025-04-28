@@ -25,11 +25,8 @@ jobs:
         uses: ./tools/github/setup-repo
 
       - run: bun build:ci
-      - run: bun lint:ci
-
-      - name: Lint Playgrounds
-        continue-on-error: true
-        run: bun --filter='./playgrounds/**' lint && bun --filter='./playgrounds/**' type-check
+      - run: bun lint
+      - run: bun type-check:ci
 
       - name: Test
         if: contains(github.ref_name, 'nightly') == false
