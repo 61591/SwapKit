@@ -114,6 +114,7 @@ export function getGasAsset({ chain }: { chain: Chain }) {
 export function isGasAsset({ chain, symbol }: { chain: Chain; symbol: string }) {
   return match(chain)
     .with(...ethGasChains, () => symbol === "ETH")
+    .with(Chain.Avalanche, () => symbol === "AVAX")
     .with(Chain.BinanceSmartChain, () => symbol === "BNB")
     .with(Chain.Berachain, () => symbol === "BERA")
     .with(Chain.Gnosis, () => symbol === "XDAI")
@@ -147,6 +148,10 @@ export const getCommonAssetInfo = (assetString: CommonAssetString) => {
     }))
     .with(Chain.Gnosis, () => ({ identifier: `${assetString}.XDAI`, decimal }))
     .with(Chain.Berachain, () => ({ identifier: `${assetString}.BERA`, decimal }))
+    .with(Chain.Avalanche, () => ({
+      identifier: `${assetString.toUpperCase()}.AVAX`,
+      decimal,
+    }))
     .with(
       ...UTXOChains,
       Chain.Solana,

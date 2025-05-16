@@ -1,5 +1,31 @@
 # @swapkit/wallets
 
+## 3.0.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [[`299401a`](https://github.com/thorswap/SwapKit/commit/299401a194a8c31f9909f5da3f61f605ed1e41ac)]:
+  - @swapkit/helpers@3.0.0-beta.5
+  - @swapkit/toolboxes@1.0.0-beta.5
+
+## 3.0.0-beta.4
+
+### Patch Changes
+
+- [#1284](https://github.com/thorswap/SwapKit/pull/1284) [`3c195cb`](https://github.com/thorswap/SwapKit/commit/3c195cba593ff75a1eccf3a79712f538c08a617d) Thanks [@towanTG](https://github.com/towanTG)! - Improves typing of thorname related methods and switched node:crypto back to crypto
+
+- Updated dependencies [[`3c195cb`](https://github.com/thorswap/SwapKit/commit/3c195cba593ff75a1eccf3a79712f538c08a617d), [`3c195cb`](https://github.com/thorswap/SwapKit/commit/3c195cba593ff75a1eccf3a79712f538c08a617d), [`3c195cb`](https://github.com/thorswap/SwapKit/commit/3c195cba593ff75a1eccf3a79712f538c08a617d)]:
+  - @swapkit/toolboxes@1.0.0-beta.4
+  - @swapkit/helpers@3.0.0-beta.4
+
+## 3.0.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [[`54fb82a`](https://github.com/thorswap/SwapKit/commit/54fb82a0a13e63a22ba208af3ab76efe59d9a20e), [`54fb82a`](https://github.com/thorswap/SwapKit/commit/54fb82a0a13e63a22ba208af3ab76efe59d9a20e)]:
+  - @swapkit/helpers@3.0.0-beta.3
+  - @swapkit/toolboxes@1.0.0-beta.3
+
 ## 3.0.0-beta.2
 
 ### Patch Changes

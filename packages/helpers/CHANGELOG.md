@@ -1,5 +1,29 @@
 # @swapkit/helpers
 
+## 3.0.0-beta.5
+
+### Patch Changes
+
+- [#1286](https://github.com/thorswap/SwapKit/pull/1286) [`299401a`](https://github.com/thorswap/SwapKit/commit/299401a194a8c31f9909f5da3f61f605ed1e41ac) Thanks [@towanTG](https://github.com/towanTG)! - Improves tokenmap handling when setting static assets
+
+## 3.0.0-beta.4
+
+### Minor Changes
+
+- [#1284](https://github.com/thorswap/SwapKit/pull/1284) [`3c195cb`](https://github.com/thorswap/SwapKit/commit/3c195cba593ff75a1eccf3a79712f538c08a617d) Thanks [@towanTG](https://github.com/towanTG)! - Adds setStaticAssets method to assetValue to manually overwrite the tokenlist used
+
+### Patch Changes
+
+- [#1284](https://github.com/thorswap/SwapKit/pull/1284) [`3c195cb`](https://github.com/thorswap/SwapKit/commit/3c195cba593ff75a1eccf3a79712f538c08a617d) Thanks [@towanTG](https://github.com/towanTG)! - Improves typing of thorname related methods and switched node:crypto back to crypto
+
+## 3.0.0-beta.3
+
+### Minor Changes
+
+- [#1282](https://github.com/thorswap/SwapKit/pull/1282) [`54fb82a`](https://github.com/thorswap/SwapKit/commit/54fb82a0a13e63a22ba208af3ab76efe59d9a20e) Thanks [@towanTG](https://github.com/towanTG)! - Fix Avax common asset info
+
+- [#1282](https://github.com/thorswap/SwapKit/pull/1282) [`54fb82a`](https://github.com/thorswap/SwapKit/commit/54fb82a0a13e63a22ba208af3ab76efe59d9a20e) Thanks [@towanTG](https://github.com/towanTG)! - Update more avax ug logic
+
 ## 3.0.0-beta.2
 
 ### Patch Changes
