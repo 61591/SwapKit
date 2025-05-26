@@ -293,7 +293,7 @@ function validateAssetChain(assetOrChain: AssetIdentifier) {
     "chain" in assetOrChain ? assetOrChain.chain : assetFromString(assetOrChain.asset).chain;
 
   // TODO: move to SKConfig chains once we support it throughout sdk
-  if (!(chain in Chain)) {
+  if (!Object.values(Chain).includes(chain)) {
     throw new SwapKitError({
       errorKey: "helpers_invalid_asset_identifier",
       info: { message: "Please use the AssetValue constructor for unsupported chains" },
