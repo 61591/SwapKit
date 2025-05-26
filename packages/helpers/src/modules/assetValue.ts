@@ -290,7 +290,11 @@ function safeValue(value: NumberPrimitives, decimal: number) {
 
 function validateAssetChain(assetOrChain: AssetIdentifier) {
   const chain =
-    "chain" in assetOrChain ? assetOrChain.chain : assetFromString(assetOrChain.asset).chain;
+    "chain" in assetOrChain
+      ? assetOrChain.chain
+      : assetFromString(assetOrChain.asset).synth
+        ? Chain.THORChain
+        : assetFromString(assetOrChain.asset).chain;
 
   // TODO: move to SKConfig chains once we support it throughout sdk
   if (!Object.values(Chain).includes(chain)) {
