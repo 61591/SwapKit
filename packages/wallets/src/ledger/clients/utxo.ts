@@ -22,7 +22,7 @@ const signUTXOTransaction = async (
   { psbt, inputUtxos, btcApp, derivationPath }: Params,
   options?: Partial<CreateTransactionArg>,
 ) => {
-  const { Transaction } = (await import("bitcoinjs-lib")).default;
+  const { Transaction } = await import("bitcoinjs-lib");
 
   const inputs = inputUtxos.map((item) => {
     const utxoTx = Transaction.fromHex(item.txHex || "");

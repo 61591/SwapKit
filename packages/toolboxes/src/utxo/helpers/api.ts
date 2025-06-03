@@ -261,8 +261,8 @@ export function getUtxoApi(chain: UTXOChain) {
 
 export async function getUtxoNetwork() {
   // @ts-ignore
-  const coininfo = await import("coininfo");
-  const { networks } = (await import("bitcoinjs-lib")).default;
+  const coininfo = (await import("coininfo")).default;
+  const { networks } = await import("bitcoinjs-lib");
 
   return function getNetwork(chain: Chain) {
     switch (chain) {

@@ -38,7 +38,7 @@ export async function getWalletMethods(chain: Chain) {
       }
       const { unisat: wallet } = bitget;
 
-      const { Psbt } = (await import("bitcoinjs-lib")).default;
+      const { Psbt } = await import("bitcoinjs-lib");
       const { getUtxoToolbox } = await import("@swapkit/toolboxes/utxo");
       const [address] = await wallet.requestAccounts();
 

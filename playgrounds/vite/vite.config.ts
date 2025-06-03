@@ -1,3 +1,4 @@
+import { resolve } from "node:path";
 import reactScan from "@react-scan/vite-plugin-react-scan";
 import react from "@vitejs/plugin-react";
 import { visualizer } from "rollup-plugin-visualizer";
@@ -44,16 +45,15 @@ export default defineConfig({
   ),
   resolve: {
     alias: {
-      // "@swapkit/core": resolve("../../packages/core/src"),
-      // "@swapkit/helpers": resolve("../../packages/helpers/src"),
-      // "@swapkit/plugins": resolve("../../packages/plugins/src"),
-      // "@swapkit/sdk": resolve("../../packages/sdk/src"),
-      // "@swapkit/toolboxes": resolve("../../packages/toolboxes/src"),
-      // "@swapkit/ui": resolve("../../packages/ui/src"),
-      // "@swapkit/wallets": resolve("../../packages/wallets/src"),
+      "@swapkit/core": resolve("../../packages/core/src"),
+      "@swapkit/helpers": resolve("../../packages/helpers/src"),
+      "@swapkit/plugins": resolve("../../packages/plugins/src"),
+      "@swapkit/sdk": resolve("../../packages/sdk/src"),
+      "@swapkit/toolboxes": resolve("../../packages/toolboxes/src"),
+      "@swapkit/ui": resolve("../../packages/ui/src"),
+      "@swapkit/wallets": resolve("../../packages/wallets/src"),
 
       crypto: "crypto-browserify",
-      // "node:crypto": "crypto-browserify",
       stream: "stream-browserify",
       http: "stream-http",
       https: "https-browserify",
