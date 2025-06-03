@@ -81,6 +81,7 @@ export async function getSignerFromPrivateKey({
 const SafeDefaultFeeValues = {
   [Chain.Cosmos]: 500,
   [Chain.Kujira]: 1000,
+  [Chain.Noble]:
   [Chain.THORChain]: 5000000,
   [Chain.Maya]: 5000000,
 };
@@ -279,6 +280,7 @@ function getMinTransactionFee(chain: Chain) {
     {
       [Chain.Cosmos]: 0.007,
       [Chain.Kujira]: 0.02,
+      [Chain.Noble]:
       [Chain.THORChain]: 0.02,
       [Chain.Maya]: 0.02,
     }[chain as CosmosChain] || 0
