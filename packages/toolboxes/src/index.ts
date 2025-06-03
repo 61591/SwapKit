@@ -45,7 +45,7 @@ export async function getAddressValidator() {
       .with(Chain.Litecoin, Chain.Dash, Chain.Dogecoin, Chain.BitcoinCash, Chain.Bitcoin, () =>
         utxoValidateAddress({ address, chain: chain as UTXOChain }),
       )
-      .with(Chain.Cosmos, Chain.Kujira, Chain.Maya, Chain.THORChain, () =>
+      .with(Chain.Cosmos, Chain.Kujira, Chain.Noble, Chain.Maya, Chain.THORChain, () =>
         cosmosValidateAddress({ address, chain: chain as CosmosChain }),
       )
       .with(Chain.Chainflip, Chain.Polkadot, () =>
@@ -94,6 +94,7 @@ export async function getFeeEstimator<T extends keyof CreateTransactionParams>(c
       case Chain.THORChain:
       case Chain.Maya:
       case Chain.Kujira:
+      case Chain.Noble:
       case Chain.Cosmos: {
         const { estimateTransactionFee } = await import("@swapkit/toolboxes/cosmos");
         return estimateTransactionFee(params);
@@ -186,6 +187,7 @@ export async function getToolbox<T extends keyof Toolboxes>(
 
     case Chain.Cosmos:
     case Chain.Kujira:
+    case Chain.Noble:
     case Chain.Maya:
     case Chain.THORChain: {
       const { getCosmosToolbox } = await import("@swapkit/toolboxes/cosmos");
