@@ -81,7 +81,7 @@ export async function getWalletMethods(chain: Chain) {
       if (!(window.okxwallet && "bitcoin" in window.okxwallet)) {
         throw new Error("No bitcoin okxwallet found");
       }
-      const { Psbt } = await import("bitcoinjs-lib");
+      const { Psbt } = (await import("bitcoinjs-lib")).default;
       const { getUtxoToolbox } = await import("@swapkit/toolboxes/utxo");
 
       const { bitcoin: wallet } = window.okxwallet;

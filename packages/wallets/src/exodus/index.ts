@@ -34,7 +34,7 @@ async function getWalletMethods({
 }) {
   switch (chain) {
     case Chain.Bitcoin: {
-      const { Psbt } = await import("bitcoinjs-lib");
+      const { Psbt } = (await import("bitcoinjs-lib")).default;
       const { getUtxoToolbox } = await import("@swapkit/toolboxes/utxo");
 
       let address = "";

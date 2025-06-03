@@ -135,7 +135,7 @@ async function createTransaction({
     TransactionBuilder,
     address: bchAddress,
     // @ts-ignore
-  } = await import("@psf/bitcoincashjs-lib");
+  } = (await import("@psf/bitcoincashjs-lib")).default;
   if (!bchValidateAddress(recipient)) throw new Error("Invalid address");
   const utxos = await getUtxoApi(chain).scanUTXOs({
     address: stripToCashAddress(sender),
@@ -226,7 +226,7 @@ function transfer({
 
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: TODO: refactor
 async function buildTx({ assetValue, recipient, memo, feeRate, sender }: UTXOBuildTxParams) {
-  const { Psbt } = await import("bitcoinjs-lib");
+  const { Psbt } = (await import("bitcoinjs-lib")).default;
   const recipientCashAddress = toCashAddress(recipient);
   if (!bchValidateAddress(recipientCashAddress)) throw new Error("Invalid address");
 

@@ -17,7 +17,7 @@ const TX_INPUT_BASE = 32 + 4 + 1 + 4; // 41
 const TX_INPUT_PUBKEYHASH = 107;
 
 export async function compileMemo(memo: string) {
-  const { script, opcodes } = await import("bitcoinjs-lib");
+  const { script, opcodes } = (await import("bitcoinjs-lib")).default;
   const data = Buffer.from(memo, "utf8"); // converts MEMO to buffer
   return script.compile([opcodes.OP_RETURN as number, data]); // Compile OP_RETURN script
 }
