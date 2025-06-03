@@ -14,7 +14,7 @@ const getLedgerDevices = async () => {
   const navigatorUsb = getNavigatorUsb();
 
   if (typeof navigatorUsb?.getDevices !== "function") return [];
-  const { ledgerUSBVendorId } = await import("@ledgerhq/devices");
+  const { ledgerUSBVendorId } = (await import("@ledgerhq/devices")).default;
 
   const devices = await navigatorUsb?.getDevices();
   const existingDevices = devices.filter((d) => d.vendorId === ledgerUSBVendorId);
@@ -57,11 +57,11 @@ export const getLedgerTransport = async () => {
     throw new SwapKitError("wallet_ledger_connection_claimed", error);
   }
 
-  const { default: Transport } = await import("@ledgerhq/hw-transport-webusb");
+  const Transport = (await import("@ledgerhq/hw-transport-webusb")).default;
   const isSupported = await Transport.isSupported();
   if (!isSupported) throw new Error("WebUSB not supported");
 
-  const { DisconnectedDevice } = await import("@ledgerhq/errors");
+  const { DisconnectedDevice } = (await import("@ledgerhq/errors")).default;
 
   const transport = new Transport(device, iface.interfaceNumber);
 

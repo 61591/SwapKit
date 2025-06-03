@@ -43,8 +43,8 @@ function secp256k1HdWalletFromMnemonic({
   derivationPath?: string;
 }) {
   return async function secp256k1HdWalletFromMnemonic(mnemonic: string, index = 0) {
-    const { Secp256k1HdWallet } = await import("@cosmjs/amino");
-    const { stringToPath } = await import("@cosmjs/crypto");
+    const { Secp256k1HdWallet } = (await import("@cosmjs/amino")).default;
+    const { stringToPath } = (await import("@cosmjs/crypto")).default;
 
     return Secp256k1HdWallet.fromMnemonic(mnemonic, {
       hdPaths: [stringToPath(`${derivationPath}/${index}`)],
@@ -114,8 +114,8 @@ function broadcastMultisigTx({
     threshold: number,
     bodyBytes: Uint8Array,
   ) {
-    const { encodeSecp256k1Pubkey, pubkeyToAddress } = await import("@cosmjs/amino");
-    const { makeMultisignedTxBytes } = await import("@cosmjs/stargate");
+    const { encodeSecp256k1Pubkey, pubkeyToAddress } = (await import("@cosmjs/amino")).default;
+    const { makeMultisignedTxBytes } = (await import("@cosmjs/stargate")).default;
 
     const { sequence, fee } = JSON.parse(tx);
     const multisigPubkey = await createMultisig(membersPubKeys, threshold);
@@ -142,7 +142,8 @@ function broadcastMultisigTx({
 }
 
 async function createMultisig(pubKeys: string[], threshold: number, noSortPubKeys = true) {
-  const { createMultisigThresholdPubkey, encodeSecp256k1Pubkey } = await import("@cosmjs/amino");
+  const { createMultisigThresholdPubkey, encodeSecp256k1Pubkey } = (await import("@cosmjs/amino"))
+    .default;
   return createMultisigThresholdPubkey(
     pubKeys.map((pubKey) => encodeSecp256k1Pubkey(base64.decode(pubKey))),
     threshold,
@@ -161,7 +162,7 @@ async function signWithPrivateKey({
   privateKey: Uint8Array;
   message: string;
 }) {
-  const { Secp256k1 } = await import("@cosmjs/crypto");
+  const { Secp256k1 } = (await import("@cosmjs/crypto")).default;
 
   const signature = await Secp256k1.createSignature(base64.decode(message), privateKey);
   return base64.encode(Buffer.concat([signature.r(32), signature.s(32)]));
@@ -301,7 +302,7 @@ export async function createThorchainToolbox({
     signWithPrivateKey,
     transfer,
     pubkeyToAddress: async (pubkey: Pubkey) => {
-      const { pubkeyToAddress } = await import("@cosmjs/amino");
+      const { pubkeyToAddress } = (await import("@cosmjs/amino")).default;
       return pubkeyToAddress(pubkey, chainPrefix);
     },
   };

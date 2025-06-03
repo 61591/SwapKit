@@ -226,7 +226,7 @@ function transfer({
 
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: TODO: refactor
 async function buildTx({ assetValue, recipient, memo, feeRate, sender }: UTXOBuildTxParams) {
-  const { Psbt } = await import("bitcoinjs-lib");
+  const { Psbt } = (await import("bitcoinjs-lib")).default;
   const recipientCashAddress = toCashAddress(recipient);
   if (!bchValidateAddress(recipientCashAddress)) throw new Error("Invalid address");
 

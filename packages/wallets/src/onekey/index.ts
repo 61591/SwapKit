@@ -27,7 +27,7 @@ async function getWalletMethodsForExtension(chain: Chain) {
         });
       }
 
-      const { Psbt } = await import("bitcoinjs-lib");
+      const { Psbt } = (await import("bitcoinjs-lib")).default;
       const { getUtxoToolbox } = await import("@swapkit/toolboxes/utxo");
       const {
         signTransaction: satsSignTransaction,

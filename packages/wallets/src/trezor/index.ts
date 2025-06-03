@@ -68,7 +68,7 @@ async function getTrezorWallet<T extends Chain>({
       const coin = chain.toLowerCase();
 
       const getAddress = async (path: DerivationPathArray = derivationPath) => {
-        const { default: TrezorConnect } = await import("@trezor/connect-web");
+        const TrezorConnect = (await import("@trezor/connect-web")).default;
         const { success, payload } = await TrezorConnect.getAddress({
           path: derivationPathToString(path),
           coin,
@@ -95,7 +95,7 @@ async function getTrezorWallet<T extends Chain>({
       const address = await getAddress();
 
       const signTransaction = async (psbt: Psbt, inputs: UTXOType[], memo = "") => {
-        const { default: TrezorConnect } = await import("@trezor/connect-web");
+        const TrezorConnect = (await import("@trezor/connect-web")).default;
         const address_n = derivationPath.map((pathElement, index) =>
           index < 3 ? ((pathElement as number) | 0x80000000) >>> 0 : (pathElement as number),
         );
@@ -229,7 +229,7 @@ export const trezorWallet = createWallet({
         });
       }
 
-      const { default: TrezorConnect } = await import("@trezor/connect-web");
+      const TrezorConnect = (await import("@trezor/connect-web")).default;
       const { success } = await TrezorConnect.getDeviceState();
 
       if (!success) {

@@ -36,7 +36,6 @@ const initialState = {
 
   apiKeys: {
     blockchair: "",
-    kado: "",
     keepKey: "",
     swapKit: "",
     walletConnectProjectId: "",

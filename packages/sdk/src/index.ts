@@ -1,7 +1,6 @@
 import { SwapKit } from "@swapkit/core";
 import { ChainflipPlugin } from "@swapkit/plugins/chainflip";
 import { EVMPlugin } from "@swapkit/plugins/evm";
-import { KadoPlugin } from "@swapkit/plugins/kado";
 import { RadixPlugin } from "@swapkit/plugins/radix";
 import { SolanaPlugin } from "@swapkit/plugins/solana";
 import { MayachainPlugin, ThorchainPlugin } from "@swapkit/plugins/thorchain";
@@ -38,7 +37,6 @@ export * from "@swapkit/toolboxes/utxo";
 export * from "@swapkit/plugins";
 export * from "@swapkit/plugins/chainflip";
 export * from "@swapkit/plugins/evm";
-export * from "@swapkit/plugins/kado";
 export * from "@swapkit/plugins/radix";
 export * from "@swapkit/plugins/thorchain";
 export * from "@swapkit/plugins/solana";
@@ -69,7 +67,6 @@ export {
 export const defaultPlugins = {
   ...ChainflipPlugin,
   ...EVMPlugin,
-  ...KadoPlugin,
   ...MayachainPlugin,
   ...ThorchainPlugin,
   ...RadixPlugin,

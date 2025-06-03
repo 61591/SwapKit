@@ -35,7 +35,7 @@ export async function getEVMSigner({ chain, derivationPath, provider }: TrezorEV
 
     getAddress = async () => {
       if (!this.address) {
-        const { default: TrezorConnect } = await import("@trezor/connect-web");
+        const TrezorConnect = (await import("@trezor/connect-web")).default;
 
         const result = await TrezorConnect.ethereumGetAddress({
           path: derivationPathToString(this.derivationPath),
@@ -56,7 +56,7 @@ export async function getEVMSigner({ chain, derivationPath, provider }: TrezorEV
     };
 
     signMessage = async (message: string) => {
-      const { default: TrezorConnect } = await import("@trezor/connect-web");
+      const TrezorConnect = (await import("@trezor/connect-web")).default;
 
       const result = await TrezorConnect.ethereumSignMessage({
         path: derivationPathToString(this.derivationPath),
@@ -107,7 +107,7 @@ export async function getEVMSigner({ chain, derivationPath, provider }: TrezorEV
         throw new SwapKitError({ errorKey: "wallet_missing_params", info: { gasPrice } });
       }
 
-      const { default: TrezorConnect } = await import("@trezor/connect-web");
+      const TrezorConnect = (await import("@trezor/connect-web")).default;
       const { toHexString } = await import("@swapkit/toolboxes/evm");
       const { Transaction } = await import("ethers");
 

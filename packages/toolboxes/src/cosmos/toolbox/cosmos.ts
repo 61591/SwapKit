@@ -52,8 +52,8 @@ export async function getSignerFromPhrase({
   | { chain: Chain; index?: number }
   | { derivationPath: string }
 )) {
-  const { DirectSecp256k1HdWallet } = await import("@cosmjs/proto-signing");
-  const { stringToPath } = await import("@cosmjs/crypto");
+  const { DirectSecp256k1HdWallet } = (await import("@cosmjs/proto-signing")).default;
+  const { stringToPath } = (await import("@cosmjs/crypto")).default;
 
   const derivationPath =
     "derivationPath" in derivationParams
@@ -73,7 +73,7 @@ export async function getSignerFromPrivateKey({
   privateKey: Uint8Array;
   prefix: string;
 }) {
-  const { DirectSecp256k1Wallet } = await import("@cosmjs/proto-signing");
+  const { DirectSecp256k1Wallet } = (await import("@cosmjs/proto-signing")).default;
 
   return DirectSecp256k1Wallet.fromKey(privateKey, prefix);
 }
@@ -97,7 +97,7 @@ export function verifySignature(getAccount: (address: string) => Promise<Account
   }) {
     const account = await getAccount(address);
     if (!account?.pubkey) throw new SwapKitError("toolbox_cosmos_verify_signature_no_pubkey");
-    const { Secp256k1Signature, Secp256k1 } = await import("@cosmjs/crypto");
+    const { Secp256k1Signature, Secp256k1 } = (await import("@cosmjs/crypto")).default;
 
     const secpSignature = Secp256k1Signature.fromFixedLength(base64.decode(signature));
     return Secp256k1.verifySignature(secpSignature, base64.decode(message), account.pubkey.value);
@@ -197,7 +197,7 @@ export async function createCosmosToolbox({ chain, ...toolboxParams }: CosmosToo
         index,
       }),
     getSignerFromPrivateKey: async (privateKey: Uint8Array) => {
-      const { DirectSecp256k1Wallet } = await import("@cosmjs/proto-signing");
+      const { DirectSecp256k1Wallet } = (await import("@cosmjs/proto-signing")).default;
       return DirectSecp256k1Wallet.fromKey(privateKey, chainPrefix);
     },
     createPrivateKeyFromPhrase: createPrivateKeyFromPhrase(derivationPath),

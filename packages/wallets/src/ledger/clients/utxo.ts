@@ -22,7 +22,7 @@ const signUTXOTransaction = async (
   { psbt, inputUtxos, btcApp, derivationPath }: Params,
   options?: Partial<CreateTransactionArg>,
 ) => {
-  const { Transaction } = await import("bitcoinjs-lib");
+  const { Transaction } = (await import("bitcoinjs-lib")).default;
 
   const inputs = inputUtxos.map((item) => {
     const utxoTx = Transaction.fromHex(item.txHex || "");
@@ -75,7 +75,7 @@ const BaseLedgerUTXO = ({
 
   async function createTransportWebUSB() {
     transport = await getLedgerTransport();
-    const { default: BitcoinApp } = await import("@ledgerhq/hw-app-btc");
+    const BitcoinApp = (await import("@ledgerhq/hw-app-btc")).default;
 
     btcApp = new BitcoinApp({ transport, currency: chain });
   }
@@ -91,7 +91,7 @@ const BaseLedgerUTXO = ({
     return {
       connect: async () => {
         await checkBtcAppAndCreateTransportWebUSB(false);
-        const { default: BitcoinApp } = await import("@ledgerhq/hw-app-btc");
+        const BitcoinApp = (await import("@ledgerhq/hw-app-btc")).default;
 
         btcApp = new BitcoinApp({ transport, currency: chain });
       },

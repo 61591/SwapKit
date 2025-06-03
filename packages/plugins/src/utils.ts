@@ -12,10 +12,6 @@ export async function loadPlugin<P extends PluginName>(pluginName: P) {
       const { ThorchainPlugin } = await import("./thorchain");
       return ThorchainPlugin;
     })
-    .with("kado", async () => {
-      const { KadoPlugin } = await import("./kado");
-      return KadoPlugin;
-    })
     .with("radix", async () => {
       const { RadixPlugin } = await import("./radix");
       return RadixPlugin;

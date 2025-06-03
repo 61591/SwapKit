@@ -62,8 +62,8 @@ async function addInputsAndOutputs({
     psbt.addInput({ hash: utxo.hash, index: utxo.index, ...witnessInfo, ...nonWitnessInfo });
   }
 
-  const { initEccLib } = await import("bitcoinjs-lib");
-  const secp256k1 = await import("@bitcoinerlab/secp256k1");
+  const { initEccLib } = (await import("bitcoinjs-lib")).default;
+  const secp256k1 = (await import("@bitcoinerlab/secp256k1")).default;
 
   for (const output of outputs) {
     const address = "address" in output && output.address ? output.address : sender;
@@ -104,7 +104,7 @@ async function createTransaction({
 }> {
   const chain = assetValue.chain as UTXOChain;
 
-  const { Psbt } = await import("bitcoinjs-lib");
+  const { Psbt } = (await import("bitcoinjs-lib")).default;
   const compiledMemo = memo ? await compileMemo(memo) : null;
 
   const inputsAndOutputs = await getInputsAndTargetOutputs({
@@ -141,8 +141,8 @@ async function createTransaction({
 }
 
 export async function getUTXOAddressValidator() {
-  const secp256k1 = await import("@bitcoinerlab/secp256k1");
-  const { initEccLib, address: btcLibAddress } = await import("bitcoinjs-lib");
+  const secp256k1 = (await import("@bitcoinerlab/secp256k1")).default;
+  const { initEccLib, address: btcLibAddress } = (await import("bitcoinjs-lib")).default;
   const getNetwork = await getUtxoNetwork();
 
   return function validateAddress({ address, chain }: { address: string; chain: UTXOChain }) {
@@ -360,7 +360,7 @@ export async function getCreateKeysForPath<T extends keyof CreateKeysForPathRetu
   }) => CreateKeysForPathReturnType[T]
 > {
   const { ECPairFactory } = await import("ecpair");
-  const secp256k1 = await import("@bitcoinerlab/secp256k1");
+  const secp256k1 = (await import("@bitcoinerlab/secp256k1")).default;
   const { HDKey } = await import("@scure/bip32");
   const { mnemonicToSeedSync } = await import("@scure/bip39");
   const getNetwork = await getUtxoNetwork();
@@ -427,7 +427,7 @@ export async function getCreateKeysForPath<T extends keyof CreateKeysForPathRetu
 }
 
 export async function addressFromKeysGetter(chain: UTXOChain) {
-  const { payments } = await import("bitcoinjs-lib");
+  const { payments } = (await import("bitcoinjs-lib")).default;
   const getNetwork = await getUtxoNetwork();
 
   return function getAddressFromKeys(keys: ECPairInterface | BchECPair) {

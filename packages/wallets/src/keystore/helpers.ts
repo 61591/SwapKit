@@ -1,3 +1,4 @@
+import { createCipheriv, createDecipheriv, pbkdf2Sync, randomBytes } from "node:crypto";
 import { generateMnemonic, validateMnemonic } from "@scure/bip39";
 import { wordlist } from "@scure/bip39/wordlists/english";
 
@@ -15,7 +16,7 @@ export type Keystore = {
 };
 
 async function blake256(initData: Buffer | string) {
-  const { blake2bFinal, blake2bInit, blake2bUpdate } = await import("blakejs");
+  const { blake2bFinal, blake2bInit, blake2bUpdate } = (await import("blakejs")).default;
   let data = initData;
 
   if (!(data instanceof Buffer)) {
@@ -32,8 +33,6 @@ async function blake256(initData: Buffer | string) {
 }
 
 export async function encryptToKeyStore(phrase: string, password: string) {
-  const { pbkdf2Sync, randomBytes, createCipheriv } = await import("crypto");
-
   const cipher = "aes-128-ctr";
   const iv = randomBytes(16);
   const salt = randomBytes(32);
@@ -71,7 +70,6 @@ export function validatePhrase(phrase: string) {
 }
 
 export async function decryptFromKeystore(keystore: Keystore, password: string) {
-  const { createDecipheriv, pbkdf2Sync } = await import("crypto");
   const { SwapKitError } = await import("@swapkit/helpers");
 
   switch (keystore.version) {

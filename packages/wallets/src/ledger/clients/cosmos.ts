@@ -64,8 +64,8 @@ export class CosmosLedger extends CosmosLedgerInterface {
       throw new Error(`Address ${signerAddress} not found in wallet`);
     }
 
-    const { encodeSecp256k1Signature, serializeSignDoc } = await import("@cosmjs/amino");
-    const { Secp256k1Signature } = await import("@cosmjs/crypto");
+    const { encodeSecp256k1Signature, serializeSignDoc } = (await import("@cosmjs/amino")).default;
+    const { Secp256k1Signature } = (await import("@cosmjs/crypto")).default;
 
     const message = serializeSignDoc(signDoc);
     const signature = await this.ledgerApp.sign(this.derivationPath, message);

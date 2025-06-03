@@ -32,7 +32,7 @@ export abstract class CosmosLedgerInterface {
         }
 
         case "cosmos": {
-          const { default: CosmosApp } = await import("@ledgerhq/hw-app-cosmos");
+          const CosmosApp = (await import("@ledgerhq/hw-app-cosmos")).default;
           this.ledgerApp =
             forceReconnect || !this.ledgerApp ? new CosmosApp(this.transport) : this.ledgerApp;
         }
