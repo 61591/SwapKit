@@ -14,13 +14,15 @@ const getLedgerDevices = async () => {
   const navigatorUsb = getNavigatorUsb();
 
   if (typeof navigatorUsb?.getDevices !== "function") return [];
-  const { ledgerUSBVendorId } = (await import("@ledgerhq/devices")).default;
+  const { ledgerUSBVendorId } = await import("@ledgerhq/devices");
 
   const devices = await navigatorUsb?.getDevices();
   const existingDevices = devices.filter((d) => d.vendorId === ledgerUSBVendorId);
   if (existingDevices.length > 0) return existingDevices[0];
 
-  return navigatorUsb?.requestDevice({ filters: [{ vendorId: ledgerUSBVendorId }] });
+  return navigatorUsb?.requestDevice({
+    filters: [{ vendorId: ledgerUSBVendorId }],
+  });
 };
 
 export const getLedgerTransport = async () => {
