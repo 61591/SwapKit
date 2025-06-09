@@ -13,6 +13,12 @@ import { Client, type Payment, Wallet, isValidAddress, xrpToDrops } from "xrpl";
 
 export type RippleWallet = Awaited<ReturnType<typeof getRippleToolbox>>;
 
+export { hashes, type Transaction } from "xrpl";
+
+const RIPPLE_ERROR_CODES = {
+  ACCOUNT_NOT_FOUND: 19,
+} as const;
+
 // Note: Ripple seeds generate a single address, no derivation path/index support.
 function createSigner(phrase: string): ChainSigner<Transaction, { tx_blob: string; hash: string }> {
   const wallet = Wallet.fromMnemonic(phrase);
@@ -64,11 +70,7 @@ export const getRippleToolbox = async (params: RippleToolboxParams = {}) => {
     const addr = address || (await getAddress());
 
     try {
-      await client.connect();
-      const accountInfo = await client.request({
-        command: "account_info",
-        account: addr,
-      });
+      const accountInfo = await client.request({ command: "account_info", account: addr });
 
       const balance = accountInfo.result.account_data.Balance;
 
@@ -81,7 +83,7 @@ export const getRippleToolbox = async (params: RippleToolboxParams = {}) => {
       ];
     } catch (error) {
       // empty account
-      if ((error as any).data.error_code === 19) {
+      if ((error as any).data.error_code === RIPPLE_ERROR_CODES.ACCOUNT_NOT_FOUND) {
         return [
           AssetValue.from({
             chain: Chain.Ripple,
@@ -148,22 +150,15 @@ export const getRippleToolbox = async (params: RippleToolboxParams = {}) => {
 
   const broadcastTransaction = async (signedTxHex: string) => {
     const submitResult = await client.submitAndWait(signedTxHex);
-    // Cast result to any to bypass potential type mismatches in xrpl.js definitions
-    const result: any = submitResult.result;
+    const result = submitResult.result;
 
-    // Check engine_result directly on result
-    if (result.engine_result === "tesSUCCESS" || result.engine_result === "terQUEUED") {
-      // Access hash from tx_json if available, otherwise fallback to result.hash
-      return result.tx_json?.hash || result.hash;
+    if (result.validated) {
+      return result.hash;
     }
-
-    const message = result.engine_result_message || "Unknown error";
-    const code = result.engine_result || "Unknown code";
 
     throw new SwapKitError({
       errorKey: "toolbox_ripple_broadcast_error",
-      info: { chain: Chain.Ripple, message, code, result },
-      // Remove explicit message when using object format
+      info: { chain: Chain.Ripple },
     });
   };
 
@@ -177,9 +172,7 @@ export const getRippleToolbox = async (params: RippleToolboxParams = {}) => {
     return broadcastTransaction(signedTx.tx_blob);
   };
 
-  // Disconnect client on demand or handle elsewhere?
-  // For now, let's assume connection is managed outside or persists.
-  // const disconnect = () => client.disconnect();
+  const disconnect = () => client.disconnect();
 
   return {
     // Signer related
@@ -194,6 +187,6 @@ export const getRippleToolbox = async (params: RippleToolboxParams = {}) => {
     broadcastTransaction,
     transfer,
     estimateTransactionFee,
-    // disconnect, // Optional: expose disconnect
+    disconnect,
   };
 };
