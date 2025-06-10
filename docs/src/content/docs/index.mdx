@@ -16,6 +16,7 @@ hero:
     - text: View on GitHub
       link: https://github.com/thorswap/swapkit
       icon: external
+      variant: secondary
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
@@ -61,7 +62,7 @@ const btcBalance = await swapKit.getBalance(Chain.Bitcoin);
 const xrpBalance = await swapKit.getBalance(Chain.Ripple);
 
 // Get a swap quote
-const quoteResponse = await SwapKitApi.getSwapQuote({
+const { routes } = await SwapKitApi.getSwapQuote({
   sellAsset: 'ETH.ETH',
   sellAmount: '1000000000000000000', // 1 ETH in wei
   buyAsset: 'BTC.BTC',
@@ -71,8 +72,8 @@ const quoteResponse = await SwapKitApi.getSwapQuote({
 });
 
 // Execute the swap
-if (quoteResponse.success && quoteResponse.data.routes.length > 0) {
-  const txHash = await swapKit.swap({ route: quoteResponse.data.routes[0] });
+if (routes.length > 0) {
+  const txHash = await swapKit.swap({ route: routes[0] });
 }
 ```
 

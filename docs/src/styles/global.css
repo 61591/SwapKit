@@ -32,15 +32,35 @@
   --sl-color-accent: var(--sk-logo-green);
   --sl-color-accent-high: var(--sk-button-green);
   --sl-color-accent-low: rgba(146, 249, 201, 0.15);
+  --sl-color-text-accent: var(--sk-logo-green);
+}
 
+/* Dark theme specific overrides */
+:root:not([data-theme="light"]) {
   /* Dark theme adjustments */
   --sl-color-bg: var(--sk-black);
   --sl-color-bg-nav: var(--sk-dark-gray);
   --sl-color-bg-sidebar: var(--sk-black);
   --sl-color-hairline: var(--sk-light-gray);
+}
 
-  /* Text colors */
-  --sl-color-text-accent: var(--sk-logo-green);
+/* Light theme overrides */
+:root[data-theme="light"] {
+  /* Override Starlight colors for proper light theme */
+  --sl-color-accent: var(--sk-button-green);
+  --sl-color-accent-low: rgba(0, 109, 53, 0.15);
+  --sl-color-bg: #ffffff;
+  --sl-color-bg-nav: #fafafa;
+  --sl-color-bg-sidebar: #f8f8f8;
+  --sl-color-hairline: #e0e0e0;
+  --sl-color-text: #24292e;
+  --sl-color-text-accent: var(--sk-button-green);
+  --sl-color-gray-1: #717171;
+  --sl-color-gray-2: #5a5a5a;
+  --sl-color-gray-3: #424242;
+  --sl-color-gray-4: #2b2b2b;
+  --sl-color-gray-5: #1a1a1a;
+  --sl-color-gray-6: #0a0a0a;
 }
 
 /* Font styling to match SwapKit */
@@ -211,10 +231,25 @@ main[data-pagefind-body] {
   }
 }
 
+/* Light theme breathing animation - defined globally */
+@keyframes breathing-rise-light {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 0 30px rgba(0, 109, 53, 0.4), 0 0 60px rgba(0, 109, 53, 0.3), 0 0 90px
+      rgba(0, 109, 53, 0.15);
+  }
+  50% {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 0 40px rgba(0, 109, 53, 0.6), 0 0 80px rgba(0, 109, 53, 0.4), 0 0 120px
+      rgba(0, 109, 53, 0.2), 0 10px 40px rgba(0, 109, 53, 0.15);
+  }
+}
+
 /* Light theme adjustments */
 @media (prefers-color-scheme: light) {
   .hero img {
-    background: var(--sk-white);
+    background: #ffffff;
     box-shadow: 0 0 30px rgba(0, 109, 53, 0.4), 0 0 60px rgba(0, 109, 53, 0.3), 0 0 90px
       rgba(0, 109, 53, 0.15);
     animation: breathing-rise-light 3s ease-in-out infinite;
@@ -226,40 +261,55 @@ main[data-pagefind-body] {
       rgba(0, 109, 53, 0.2), 0 10px 30px rgba(0, 109, 53, 0.2);
   }
 
-  /* Light theme breathing animation */
-  @keyframes breathing-rise-light {
-    0%,
-    100% {
-      transform: translateY(0) scale(1);
-      box-shadow: 0 0 30px rgba(0, 109, 53, 0.4), 0 0 60px rgba(0, 109, 53, 0.3), 0 0 90px
-        rgba(0, 109, 53, 0.15);
-    }
-    50% {
-      transform: translateY(-5px) scale(1.05);
-      box-shadow: 0 0 40px rgba(0, 109, 53, 0.6), 0 0 80px rgba(0, 109, 53, 0.4), 0 0 120px
-        rgba(0, 109, 53, 0.2), 0 10px 40px rgba(0, 109, 53, 0.15);
-    }
-  }
-
   /* Adjust logo color in light theme */
   .site-title {
     color: var(--sk-button-green) !important;
   }
 }
 
+/* Light theme with data-theme selector - higher specificity */
+:root[data-theme="light"] .hero img {
+  background: #ffffff !important;
+  box-shadow: 0 0 30px rgba(0, 109, 53, 0.4), 0 0 60px rgba(0, 109, 53, 0.3), 0 0 90px
+    rgba(0, 109, 53, 0.15);
+  animation: breathing-rise-light 3s ease-in-out infinite;
+  will-change: transform, box-shadow;
+}
+
+:root[data-theme="light"] .hero img:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 0 40px rgba(0, 109, 53, 0.5), 0 0 80px rgba(0, 109, 53, 0.4), 0 0 120px
+    rgba(0, 109, 53, 0.2), 0 10px 30px rgba(0, 109, 53, 0.2);
+}
+
 /* Card styling to match SwapKit */
 .card {
-  background: var(--sk-gray);
-  border: 1px solid var(--sk-light-gray);
   border-radius: 12px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   padding: 1rem !important;
   position: relative;
 }
 
-.card:hover {
+/* Dark theme cards */
+:root:not([data-theme="light"]) .card {
+  background: var(--sk-gray);
+  border: 1px solid var(--sk-light-gray);
+}
+
+:root:not([data-theme="light"]) .card:hover {
   border-color: var(--sk-logo-green);
   box-shadow: 0 0 0 1px var(--sk-logo-green), 0 4px 12px rgba(146, 249, 201, 0.1);
+}
+
+/* Light theme cards */
+:root[data-theme="light"] .card {
+  background: #f8f8f8;
+  border: 1px solid #e5e5e5;
+}
+
+:root[data-theme="light"] .card:hover {
+  border-color: var(--sk-button-green);
+  box-shadow: 0 0 0 1px var(--sk-button-green), 0 4px 12px rgba(0, 109, 53, 0.1);
 }
 
 /* Reduce card grid spacing */
@@ -313,68 +363,144 @@ pre {
   top: 0.5rem;
 }
 
-/* Hero buttons - sleek modern design */
-.hero .action {
-  padding: 0.75rem 2rem;
-  border-radius: 12px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 0.95rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  position: relative;
-  text-decoration: none;
+/* Hero buttons - Starlight sl-link-button with glassmorphism */
+.hero .sl-link-button {
+  padding: 0.75rem 2rem !important;
+  border-radius: 16px !important;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
+  text-decoration: none !important;
+  position: relative !important;
+  overflow: hidden !important;
+  transform: translateY(0) !important;
+  will-change: transform, box-shadow !important;
 }
 
-/* Primary button - solid green with depth */
-.hero .action.primary {
-  background: var(--sk-logo-green);
-  color: var(--sk-black);
-  border: none;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(146, 249, 201, 0.3);
-}
-
-.hero .action.primary:hover {
-  transform: translateY(-1px);
-  background: #7ee2b8;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 6px 20px rgba(146, 249, 201, 0.4);
-}
-
-.hero .action.primary:active {
-  transform: translateY(0);
-}
-
-/* Secondary button - ghost style */
-.hero .action:not(.primary) {
-  background: transparent;
-  color: var(--sk-white);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  position: relative;
-  overflow: hidden;
-}
-
-.hero .action:not(.primary)::before {
+/* Animated spotlight effect */
+.hero .sl-link-button::after {
   content: "";
   position: absolute;
   top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(146, 249, 201, 0.1);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.3s ease;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(146, 249, 201, 0.3) 50%, transparent 100%);
+  transform: skewX(-20deg);
+  opacity: 0;
+  transition: all 0.5s ease;
+  pointer-events: none;
 }
 
-.hero .action:not(.primary):hover {
-  color: var(--sk-logo-green);
-  border-color: rgba(146, 249, 201, 0.4);
+.hero .sl-link-button:hover::after {
+  opacity: 1;
+  left: 100%;
+  animation: shimmer 0.8s ease-out;
 }
 
-.hero .action:not(.primary):hover::before {
-  transform: scaleX(1);
+@keyframes shimmer {
+  0% {
+    left: -100%;
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+/* Primary button - glassy with floating effect */
+.hero .sl-link-button.primary {
+  background: linear-gradient(135deg, var(--sk-logo-green) 0%, #7ee2b8 100%) !important;
+  color: var(--sk-black) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(146, 249, 201, 0.2), 0 16px 32px
+    rgba(146, 249, 201, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+
+.hero .sl-link-button.primary:hover {
+  transform: translateY(-4px) scale(1.02) !important;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15), 0 12px 24px rgba(146, 249, 201, 0.3), 0 24px 48px
+    rgba(146, 249, 201, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+}
+
+.hero .sl-link-button.primary:active {
+  transform: translateY(-2px) scale(1.01) !important;
+}
+
+/* Secondary button - outlined glass */
+.hero .sl-link-button:not(.primary) {
+  background: rgba(146, 249, 201, 0.08) !important;
+  color: var(--sk-logo-green) !important;
+  border: 2px solid rgba(146, 249, 201, 0.5) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(146, 249, 201, 0.1), inset 0 1px 0
+    rgba(255, 255, 255, 0.1) !important;
+}
+
+.hero .sl-link-button:not(.primary):hover {
+  background: rgba(146, 249, 201, 0.15) !important;
+  border-color: var(--sk-logo-green) !important;
+  transform: translateY(-4px) scale(1.02) !important;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15), 0 12px 24px rgba(146, 249, 201, 0.2), 0 24px 48px
+    rgba(146, 249, 201, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Light theme button overrides */
+:root[data-theme="light"] .hero .sl-link-button.primary {
+  background: linear-gradient(135deg, var(--sk-button-green) 0%, #005a2b 100%) !important;
+  color: var(--sk-white) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 109, 53, 0.2), 0 16px 32px
+    rgba(0, 109, 53, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+:root[data-theme="light"] .hero .sl-link-button.primary:hover {
+  transform: translateY(-4px) scale(1.02) !important;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15), 0 12px 24px rgba(0, 109, 53, 0.3), 0 24px 48px
+    rgba(0, 109, 53, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Light theme secondary button - outlined glass */
+:root[data-theme="light"] .hero .sl-link-button:not(.primary) {
+  background: rgba(0, 109, 53, 0.04) !important;
+  color: var(--sk-button-green) !important;
+  border: 2px solid rgba(0, 109, 53, 0.3) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05), 0 8px 16px rgba(0, 109, 53, 0.08), inset 0 1px 0
+    rgba(255, 255, 255, 0.6) !important;
+}
+
+:root[data-theme="light"] .hero .sl-link-button:not(.primary):hover {
+  background: rgba(0, 109, 53, 0.08) !important;
+  border-color: var(--sk-button-green) !important;
+  transform: translateY(-4px) scale(1.02) !important;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1), 0 12px 24px rgba(0, 109, 53, 0.15), 0 24px 48px
+    rgba(0, 109, 53, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Light theme spotlight effect */
+:root[data-theme="light"] .hero .sl-link-button::after {
+  background: radial-gradient(circle, rgba(0, 109, 53, 0.3) 0%, transparent 70%);
+}
+
+/* Light theme hero text */
+:root[data-theme="light"] .hero h1 {
+  background: linear-gradient(135deg, var(--sk-button-green) 0%, #003d1f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+:root[data-theme="light"] .hero .tagline {
+  color: #4a4a4a;
+  opacity: 1;
 }
 
 /* Headings */
@@ -472,7 +598,7 @@ nav [aria-current="page"] {
 }
 
 /* Inline code styling */
-:not(pre) > code {
+:root:not([data-theme="light"]) :not(pre) > code {
   background-color: rgba(146, 249, 201, 0.1);
   color: var(--sk-logo-green);
   padding: 0.125rem 0.375rem;
@@ -481,15 +607,89 @@ nav [aria-current="page"] {
   font-weight: 500;
 }
 
+:root[data-theme="light"] :not(pre) > code {
+  background-color: rgba(0, 109, 53, 0.08);
+  color: var(--sk-button-green);
+  padding: 0.125rem 0.375rem;
+  border-radius: 4px;
+  font-size: 0.875em;
+  font-weight: 500;
+}
+
 /* Search input */
-[type="search"] {
+:root:not([data-theme="light"]) [type="search"] {
   background-color: var(--sk-gray);
   border-color: var(--sk-light-gray);
 }
 
-[type="search"]:focus {
+:root:not([data-theme="light"]) [type="search"]:focus {
   border-color: var(--sk-logo-green);
   box-shadow: 0 0 0 1px var(--sk-logo-green);
+}
+
+/* Light theme search - target site-search component */
+:root[data-theme="light"] site-search [type="search"],
+:root[data-theme="light"] site-search input,
+:root[data-theme="light"] .site-search [type="search"],
+:root[data-theme="light"] .site-search input {
+  background-color: #ffffff !important;
+  border-color: #d1d5da !important;
+  color: #24292e !important;
+}
+
+:root[data-theme="light"] site-search [type="search"]::placeholder,
+:root[data-theme="light"] site-search input::placeholder,
+:root[data-theme="light"] .site-search [type="search"]::placeholder,
+:root[data-theme="light"] .site-search input::placeholder {
+  color: #6e7781 !important;
+  opacity: 1 !important;
+}
+
+:root[data-theme="light"] site-search [type="search"]:focus,
+:root[data-theme="light"] site-search input:focus,
+:root[data-theme="light"] .site-search [type="search"]:focus,
+:root[data-theme="light"] .site-search input:focus {
+  border-color: var(--sk-button-green) !important;
+  box-shadow: 0 0 0 1px var(--sk-button-green) !important;
+  color: #24292e !important;
+}
+
+/* Search button in light theme */
+:root[data-theme="light"] site-search button,
+:root[data-theme="light"] .site-search button,
+:root[data-theme="light"] site-search button[data-open-modal],
+:root[data-theme="light"] .site-search button[data-open-modal] {
+  color: #24292e !important;
+  background: #f6f8fa !important;
+  border-color: #d1d5da !important;
+}
+
+:root[data-theme="light"] site-search button:hover,
+:root[data-theme="light"] .site-search button:hover {
+  background: #f0f2f5 !important;
+  border-color: #c9cdd1 !important;
+}
+
+/* Search button icon/svg in light theme */
+:root[data-theme="light"] site-search button svg,
+:root[data-theme="light"] .site-search button svg {
+  color: #57606a !important;
+  fill: #57606a !important;
+}
+
+/* Light theme kbd - colors only, keeping dark theme structure */
+:root[data-theme="light"] site-search kbd {
+  background: #e1e4e8 !important;
+  color: #24292e !important;
+  border-color: #d1d5da !important;
+  box-shadow: inset 0 -1px 0 #c9cdd1 !important;
+}
+
+/* Dialog within site-search */
+:root[data-theme="light"] site-search dialog,
+:root[data-theme="light"] .site-search dialog {
+  background: #ffffff !important;
+  color: #24292e !important;
 }
 
 /* Twoslash tooltip fixes */
@@ -560,12 +760,23 @@ nav [aria-current="page"] {
   height: 8px;
 }
 
-::-webkit-scrollbar-track {
+/* Dark theme scrollbar */
+:root:not([data-theme="light"]) ::-webkit-scrollbar-track {
   background: var(--sk-dark-gray);
 }
 
-::-webkit-scrollbar-thumb {
+:root:not([data-theme="light"]) ::-webkit-scrollbar-thumb {
   background: var(--sk-light-gray);
+  border-radius: 4px;
+}
+
+/* Light theme scrollbar */
+:root[data-theme="light"] ::-webkit-scrollbar-track {
+  background: #f6f8fa;
+}
+
+:root[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: #d1d5da;
   border-radius: 4px;
 }
 

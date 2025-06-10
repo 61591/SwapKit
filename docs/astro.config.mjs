@@ -13,10 +13,19 @@ export default defineConfig({
   markdown: {
     syntaxHighlight: "shiki",
     shikiConfig: {
-      theme: "github-dark",
       transformers: [
         transformerTwoslash({
-          renderer: rendererRich(),
+          twoslashOptions: {
+            handbookOptions: { noErrorValidation: true, showEmit: false },
+            filterNode: (node) => {
+              for (const keyword of ["console", "error", "HTML"]) {
+                if (node.text?.includes(keyword)) return false;
+              }
+
+              return true;
+            },
+          },
+          renderer: rendererRich({ errorRendering: "hover" }),
         }),
       ],
       wrap: true,
