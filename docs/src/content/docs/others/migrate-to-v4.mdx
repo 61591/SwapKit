@@ -3,60 +3,191 @@ title: Migrate to v4
 description: Guide for upgrading from SwapKit v3 to v4
 ---
 
-# Migrating from SwapKit v3 to v4
+This guide provides a comprehensive overview of all breaking changes and migration steps from SwapKit v3 to v4.
 
-This guide helps you upgrade your SwapKit integration from v3 to v4.
+## Major Breaking Changes
 
-## Breaking Changes
+### 1. Package Restructuring
 
-### 1. Package Structure
+v4 fundamentally changes how packages are organized:
 
-v4 consolidates multiple packages into monolithic packages with submodule exports:
+**v3 Structure**: Individual packages for each component
+```bash
+@swapkit/plugin-chainflip
+@swapkit/plugin-evm
+@swapkit/toolbox-cosmos
+@swapkit/wallet-keystore
+@swapkit/api
+```
 
-```diff
-// v3
-- import { NearPlugin } from "@swapkit/plugin-near";
-- import { getToolboxByChain } from "@swapkit/toolbox-cosmos";
-- import { keystoreWallet } from "@swapkit/wallet-keystore";
-
-// v4
-+ import { NearPlugin } from "@swapkit/plugins/near";
-+ import { getCosmosToolbox } from "@swapkit/toolboxes/cosmos";
-+ import { keystoreWallet } from "@swapkit/wallets/keystore";
+**v4 Structure**: Consolidated monolithic packages with submodule exports
+```bash
+@swapkit/plugins/*     # All plugins in one package
+@swapkit/toolboxes/*   # All toolboxes in one package  
+@swapkit/wallets/*     # All wallets in one package
+@swapkit/helpers       # Utilities and API (previously @swapkit/api)
+@swapkit/sdk          # Complete bundle with everything
 ```
 
 ### 2. Import Path Changes
 
-All imports must be updated to use the new submodule syntax:
+All imports must be updated:
 
-| v3 Package | v4 Import |
-|------------|-----------|
-| `@swapkit/plugin-*` | `@swapkit/plugins/*` |
-| `@swapkit/toolbox-*` | `@swapkit/toolboxes/*` |
-| `@swapkit/wallet-*` | `@swapkit/wallets/*` |
+```diff
+// Plugins
+- import { ChainflipPlugin } from "@swapkit/plugin-chainflip";
+- import { EVMPlugin } from "@swapkit/plugin-evm";
++ import { ChainflipPlugin } from "@swapkit/plugins/chainflip";
++ import { EVMPlugin } from "@swapkit/plugins/evm";
 
-### 3. Plugin Interface Changes
+// Toolboxes  
+- import { getToolboxByChain } from "@swapkit/toolbox-cosmos";
+- import { EVMToolbox } from "@swapkit/toolbox-evm";
++ import { getCosmosToolbox } from "@swapkit/toolboxes/cosmos";
++ import { getEvmToolbox } from "@swapkit/toolboxes/evm";
 
-The plugin initialization has changed:
+// Wallets
+- import { keystoreWallet } from "@swapkit/wallet-keystore";
++ import { keystoreWallet } from "@swapkit/wallets/keystore";
+
+// API (moved to helpers)
+- import { SwapKitApi } from "@swapkit/api";
++ import { SwapKitApi } from "@swapkit/helpers/api";
+```
+
+### 3. Client Initialization Changes
+
+The SwapKit client initialization has changed:
 
 ```diff
 // v3
-- function plugin({ getWallet, config }: SwapKitPluginParams<ConnectConfig>) {
--   return { swap, supportedSwapkitProviders: [ProviderName.NEAR] };
+- import { SwapKit } from "@swapkit/core";
+- const client = SwapKit({
+-   apis: { /* custom APIs */ },
+-   rpcUrls: { /* RPC URLs */ },
+-   config: { stagenet: false },
+-   plugins: { ...ThorchainPlugin },
+-   wallets: { ...keystoreWallet }
+- });
+
+// v4
++ import { SwapKit } from "@swapkit/core";
++ const client = SwapKit({
++   config: { 
++     rpcUrls: { /* RPC URLs */ },
++     apiKeys: { /* API keys */ }
++   },
++   plugins: { ...ThorchainPlugin },
++   wallets: { ...keystoreWallet }
++ });
+```
+
+### 4. Configuration System (SKConfig)
+
+v4 introduces a centralized configuration system:
+
+```diff
+// v3 - Direct configuration
+- const client = SwapKit({
+-   apis: { [Chain.Ethereum]: customEthApi },
+-   rpcUrls: { [Chain.Ethereum]: "https://eth-rpc.com" }
+- });
+
+// v4 - SKConfig system
++ import { SKConfig } from "@swapkit/helpers";
++ SKConfig.set({
++   rpcUrls: { [Chain.Ethereum]: "https://eth-rpc.com" },
++   apiKeys: { 
++     blockchair: "YOUR_KEY",
++     swapKit: "YOUR_KEY" 
++   }
++ });
+```
+
+### 5. Plugin Interface Changes
+
+Plugins now use the `createPlugin` helper:
+
+```diff
+// v3
+- export function plugin({ getWallet, config }: SwapKitPluginParams<ConnectConfig>) {
+-   return { 
+-     swap,
+-     supportedSwapkitProviders: [ProviderName.THORCHAIN]
+-   };
 - }
 
 // v4
-+ export function NearPlugin({ getWallet }: { getWallet: (chain: any) => any }) {
-+   return { swap, supportedSwapkitProviders: [ProviderName.NEAR] };
-+ }
++ import { createPlugin } from "@swapkit/helpers";
++ export const MyPlugin = createPlugin({
++   name: "myPlugin", 
++   properties: { supportedSwapkitProviders: [ProviderName.THORCHAIN] },
++   methods: ({ getWallet }) => ({ swap })
++ });
 ```
 
-### 4. Missing Features
+### 6. Wallet Interface Changes
 
-Some v3 features are not yet available in v4:
+Wallets now use the `createWallet` helper:
 
-- **NEAR Support**: Plugin created but requires API endpoint implementation
-- **EVM API Balance**: Different architecture in v4, use standard balance methods
+```diff
+// v3
+- export const keystoreWallet: SwapKitWallet<[chains: CryptoChain[], phrase: string]> = 
+-   ({ addChain, apis, rpcUrls }) => {
+-     return async (chains, phrase) => { /* ... */ };
+-   };
+
+// v4
++ import { createWallet } from "@swapkit/helpers";
++ export const keystoreWallet = createWallet({
++   name: "keystore",
++   hooks: ({ config }) => ({
++     async connectWallet(chains: Chain[], phrase: string) { /* ... */ }
++   })
++ });
+```
+
+### 7. Toolbox Constructor Changes
+
+Toolboxes no longer accept RPC URLs directly:
+
+```diff
+// v3
+- const toolbox = getToolboxByChain(chain, { 
+-   api: customApi,
+-   rpcUrl: "https://rpc.url",
+-   signer 
+- });
+
+// v4 - RPC URLs from SKConfig only
++ const toolbox = getEvmToolbox(chain, { signer });
+// RPC URL automatically retrieved from SKConfig
+```
+
+### 8. Type Changes
+
+Several type imports have changed:
+
+```diff
+// Wallet types
+- import type { EVMWallets } from "@swapkit/toolbox-evm";
++ import type { EVMToolboxes } from "@swapkit/toolboxes/evm";
+
+// API types
+- import type { QuoteRequest } from "@swapkit/api";
++ import type { QuoteRequest } from "@swapkit/helpers/api";
+
+// Plugin params simplified
+- SwapKitPluginParams<ConnectConfig>
++ SwapKitPluginParams
+```
+
+### 9. Removed Features
+
+- **`ChainApis` type**: Use SKConfig system instead
+- **Direct API parameter**: Configure via SKConfig
+- **`walletAddressValidator` helper**: Removed from core exports
+- **Individual package installations**: Must use consolidated packages
 
 ## Migration Steps
 
@@ -122,34 +253,77 @@ await client.connectKeystore(chains, phrase);
 
 ## New Features in v4
 
-### Enhanced Solana Support
+### 1. Standardized Creation Helpers
+- **`createPlugin`**: Streamlined plugin creation with consistent interface
+- **`createWallet`**: Simplified wallet adapter development
 
-v4 includes improved Solana token balance fetching with Jupiter API integration for real-time token metadata.
+### 2. Enhanced Chain Support
+- **Improved Solana Support**: Jupiter API integration for real-time token metadata
+- **Dynamic Cosmos Fees**: Automatic fee estimation when not provided
+- **Ripple Support**: Full XRP toolbox implementation
+- **OneKey Wallet**: New wallet integration
 
-### Dynamic Cosmos Fees
+### 3. Centralized Configuration
+- **SKConfig System**: Unified configuration management
+- **Runtime Updates**: Dynamic configuration changes without restart
 
-Cosmos toolbox now supports dynamic fee estimation when no fee is provided.
+## Common Migration Issues
 
-## Common Issues
+### 1. TypeScript Errors
 
-### TypeScript Errors
+```typescript
+// @errors: 2305
+// Error: Module '@swapkit/api' has no exported member 'SwapKitApi'
 
-If you encounter type errors after migration:
+// Solution: Update import
+import { SwapKitApi } from "@swapkit/helpers/api";
+```
 
-1. Ensure all imports use the new paths
-2. Update plugin interfaces to match v4 signatures
-3. Check that wallet connection methods match the new types
+### 2. Missing RPC URL Parameter
 
-### Missing Functionality
+```typescript
+// @noErrorValidation
+// Error: Argument of type '{ signer }' is not assignable...
 
-If a v3 feature is missing:
+// Solution: Configure via SKConfig
+import { SKConfig, Chain } from "@swapkit/helpers";
+import { getEvmToolbox } from "@swapkit/toolboxes/evm";
 
-1. Check if it's been moved to a different module
-2. Some features may need different implementation approaches in v4
-3. Refer to the API documentation for alternatives
+SKConfig.set({ rpcUrls: { [Chain.Ethereum]: "https://..." } });
+const signer = /* your signer instance */;
+const toolbox = getEvmToolbox(Chain.Ethereum, { signer });
+```
+
+### 3. Plugin Interface Mismatch
+
+```typescript
+// @noErrorValidation
+// Error: Type '{ swap }' is not assignable...
+
+// Solution: Use createPlugin helper
+import { createPlugin } from "@swapkit/helpers";
+
+const swap = async (params) => { /* implementation */ };
+
+export const MyPlugin = createPlugin({
+  name: "myPlugin",
+  methods: ({ getWallet }) => ({ swap })
+});
+```
+
+## Migration Checklist
+
+- [ ] Update all package dependencies
+- [ ] Replace all import paths
+- [ ] Update client initialization code
+- [ ] Configure SKConfig for RPC URLs and API keys
+- [ ] Update custom plugins to use `createPlugin`
+- [ ] Update custom wallets to use `createWallet`
+- [ ] Remove direct API/RPC parameters from toolboxes
+- [ ] Test all functionality thoroughly
 
 ## Need Help?
 
-- Check the [API documentation](/docs/api-reference)
-- Report issues on [GitHub](https://github.com/thorswap/SwapKit/issues)
-- Join our community for support
+- 💬 [Join our Discord](https://discord.gg/swapkit) for migration support
+- 🐛 [Report issues on GitHub](https://github.com/thorswap/SwapKit/issues)
+- 📚 Check the [Getting Started guide](/guides/getting-started) for v4 patterns

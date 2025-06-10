@@ -27,8 +27,8 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 SwapKit provides everything you need to integrate blockchain functionality into your application with a single, unified API.
 
 <CardGrid stagger>
-  <Card title="20+ Blockchains" icon="rocket">
-    Support for EVM chains, Bitcoin, Cosmos ecosystem, Solana, and more - all through one consistent interface.
+  <Card title="30+ Blockchains" icon="rocket">
+    Support for EVM chains, Bitcoin, Cosmos ecosystem, Solana, Ripple (XRP), and more - all through one consistent interface.
   </Card>
   <Card title="Multi-Wallet Support" icon="open">
     Connect with 20+ wallets including MetaMask, WalletConnect, Ledger, Keystore, and hardware wallets.
@@ -45,20 +45,23 @@ SwapKit provides everything you need to integrate blockchain functionality into 
 
 ```typescript
 // @noErrorValidation
-import { createSwapKit, Chain, SwapKitApi } from '@swapkit/sdk';
+import { createSwapKit } from '@swapkit/sdk';
+import { Chain } from '@swapkit/helpers';
+import { SwapKitApi } from '@swapkit/helpers/api';
 
 // Initialize SwapKit
 const swapKit = createSwapKit();
 
-// Connect a keystore wallet
-await swapKit.connectKeystore([Chain.Ethereum, Chain.Bitcoin], 'your mnemonic phrase');
+// Connect a keystore wallet (supports 30+ chains)
+await swapKit.connectKeystore([Chain.Ethereum, Chain.Bitcoin, Chain.Ripple], 'your mnemonic phrase');
 
 // Get wallet balances
 const ethBalance = await swapKit.getBalance(Chain.Ethereum);
 const btcBalance = await swapKit.getBalance(Chain.Bitcoin);
+const xrpBalance = await swapKit.getBalance(Chain.Ripple);
 
 // Get a swap quote
-const { routes } = await SwapKitApi.getSwapQuote({
+const quoteResponse = await SwapKitApi.getSwapQuote({
   sellAsset: 'ETH.ETH',
   sellAmount: '1000000000000000000', // 1 ETH in wei
   buyAsset: 'BTC.BTC',
@@ -68,7 +71,9 @@ const { routes } = await SwapKitApi.getSwapQuote({
 });
 
 // Execute the swap
-const txHash = await swapKit.swap({ route: routes[0] });
+if (quoteResponse.success && quoteResponse.data.routes.length > 0) {
+  const txHash = await swapKit.swap({ route: quoteResponse.data.routes[0] });
+}
 ```
 
 ## Why SwapKit?

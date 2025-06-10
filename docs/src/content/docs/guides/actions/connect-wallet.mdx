@@ -3,8 +3,6 @@ title: Connecting Wallets
 description: How to connect different types of wallets with SwapKit
 ---
 
-# Connecting Wallets with SwapKit
-
 SwapKit provides multiple ways to connect wallets for different blockchain networks. This guide demonstrates how to connect various wallet types using both granular and all-in-one approaches.
 
 ## Two Approaches to Using SwapKit
@@ -108,6 +106,10 @@ async function connectWithKeystore(
     return { success: false, error };
   }
 }
+
+// Example: Connect multiple chains including Ripple
+const chains = [Chain.Ethereum, Chain.Bitcoin, Chain.Ripple];
+await connectWithKeystore(keystoreFile, password, chains);
 ```
 
 ### All-in-one Approach

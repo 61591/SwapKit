@@ -3,20 +3,19 @@ title: Using SwapKit Toolboxes
 description: How to use different blockchain toolboxes in SwapKit
 ---
 
-# SwapKit Toolboxes
-
 SwapKit toolboxes provide chain-specific utility functions for various blockchain networks. These toolboxes are used by wallet adapters and plugins, but can also be used directly for custom implementations.
 
 ## Available Toolboxes
 
 SwapKit provides specialized toolboxes for different blockchain ecosystems:
 
-- **EVM Toolbox**: For Ethereum, BSC, Arbitrum, Avalanche, Polygon, etc.
-- **UTXO Toolbox**: For Bitcoin, Litecoin, Dogecoin, etc.
-- **Cosmos Toolbox**: For ATOM, THORChain, Kujira, etc.
+- **EVM Toolbox**: For Ethereum, BSC, Arbitrum, Avalanche, Polygon, Optimism, Base, etc.
+- **UTXO Toolbox**: For Bitcoin, Bitcoin Cash, Litecoin, Dogecoin, Dash, Zcash
+- **Cosmos Toolbox**: For ATOM, THORChain, Maya, Kujira, etc.
 - **Solana Toolbox**: For Solana blockchain
 - **Substrate Toolbox**: For Polkadot, Chainflip, etc.
 - **Radix Toolbox**: For Radix ecosystem
+- **Ripple Toolbox**: For XRP Ledger
 
 Each toolbox can be imported individually, which is preferred for frontend applications to minimize bundle size.
 
@@ -558,6 +557,72 @@ async function substrateTransfer() {
   } catch (error) {
     throw error;
   }
+}
+```
+
+## Ripple Toolbox
+
+### Importing and Initializing
+
+```ts twoslash
+// @noErrorValidation
+import { Chain } from "@swapkit/helpers";
+import { getRippleToolbox } from "@swapkit/toolboxes/ripple";
+
+// Initialize with a mnemonic phrase
+const xrpToolbox = await getRippleToolbox({
+  phrase: "your twelve word secret phrase here"
+});
+
+// Or initialize as read-only (no signer)
+const xrpReadOnlyToolbox = await getRippleToolbox();
+```
+
+### Sending XRP Transactions
+
+```ts twoslash
+// @noErrorValidation
+import { Chain, AssetValue, FeeOption } from "@swapkit/helpers";
+import { getRippleToolbox } from "@swapkit/toolboxes/ripple";
+
+async function sendXRP() {
+  const xrpToolbox = await getRippleToolbox({
+    phrase: "your twelve word secret phrase here"
+  });
+
+  // Get sender address
+  const address = await xrpToolbox.getAddress();
+
+  // Create and send transaction
+  const txHash = await xrpToolbox.transfer({
+    assetValue: AssetValue.from({ chain: Chain.Ripple, value: "10" }), // 10 XRP
+    recipient: "rBaaxNpAKxELKXkJpSCCJQTkQMTYrcPQPv",
+    memo: "123456", // Optional destination tag
+    feeOptionKey: FeeOption.Fast
+  });
+
+  return txHash;
+}
+```
+
+### Balance and Validation
+
+```ts twoslash
+// @noErrorValidation
+import { Chain } from "@swapkit/helpers";
+import { getRippleToolbox, rippleValidateAddress } from "@swapkit/toolboxes/ripple";
+
+async function getRippleData() {
+  const xrpToolbox = await getRippleToolbox();
+
+  // Get balance for an address
+  const address = "rBaaxNpAKxELKXkJpSCCJQTkQMTYrcPQPv";
+  const balance = await xrpToolbox.getBalance(address);
+
+  // Validate XRP address
+  const isValid = rippleValidateAddress(address);
+
+  return { balance, isValid };
 }
 ```
 

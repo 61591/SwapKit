@@ -1,0 +1,162 @@
+---
+title: Expo/React Native
+description: A guide to integrate SwapKit with Expo and React Native applications.
+---
+
+This guide will help you integrate SwapKit into your React Native or Expo application.
+
+:::caution[Work in Progress]
+React Native integration is currently being developed. The setup process may change as we improve support for mobile platforms.
+:::
+
+## Installation
+
+Install SwapKit and its dependencies:
+
+```bash
+# Using npm
+npm install @swapkit/sdk
+
+# Using yarn
+yarn add @swapkit/sdk
+
+# Using Expo
+expo install @swapkit/sdk
+```
+
+## Required Polyfills
+
+React Native requires several polyfills for crypto and Node.js functionality:
+
+```bash
+# Core polyfills
+npm install --save \
+  react-native-crypto \
+  react-native-randombytes \
+  react-native-get-random-values \
+  events \
+  stream-browserify \
+  readable-stream \
+  buffer \
+  process
+
+# Additional dependencies for wallet connections
+npm install --save \
+  @walletconnect/react-native-compat \
+  react-native-modal \
+  react-native-svg
+```
+
+## Metro Configuration
+
+**TODO**: Configure Metro bundler for crypto modules and WASM support
+
+```javascript
+// metro.config.js
+// Configuration pending - check back for updates
+```
+
+## Polyfill Setup
+
+**TODO**: Set up global polyfills in your app entry point
+
+```javascript
+// index.js or App.js
+// Import order is important!
+// Polyfill setup pending - check back for updates
+```
+
+## Basic Implementation
+
+**TODO**: Implement SwapKit in React Native components
+
+```tsx
+// @noErrorValidation
+// Example implementation coming soon
+import { createSwapKit } from '@swapkit/sdk';
+
+// React Native specific setup pending
+```
+
+## Expo Configuration
+
+**TODO**: Configure Expo plugins and build settings
+
+```json
+// app.json or app.config.js
+// Expo configuration pending
+```
+
+## Wallet Connection
+
+**TODO**: Implement mobile wallet connections
+
+- WalletConnect v2 integration
+- Deep linking setup
+- Universal links configuration
+- Mobile wallet adapters
+
+## Platform-Specific Considerations
+
+### iOS
+
+**TODO**: iOS-specific setup
+
+- Info.plist configurations
+- Universal links
+- Keychain access
+
+### Android
+
+**TODO**: Android-specific setup
+
+- AndroidManifest.xml configurations
+- Deep link intent filters
+- ProGuard rules
+
+## Common Issues
+
+**TODO**: Document common React Native integration issues
+
+- Crypto module conflicts
+- Metro bundler issues
+- Platform-specific errors
+- Performance optimizations
+
+## Testing
+
+**TODO**: Testing setup for React Native
+
+- Unit testing with Jest
+- E2E testing with Detox
+- Mocking crypto modules
+
+## Example App
+
+**TODO**: Create example React Native app
+
+A complete example application demonstrating SwapKit integration with React Native is currently in development.
+
+## Next Steps
+
+While we work on complete React Native support:
+
+1. **Join the Community**: Get updates and share feedback in our [Discord](https://discord.gg/swapkit)
+2. **Follow Development**: Track progress on [GitHub](https://github.com/swapkit/swapkit)
+3. **Web Alternative**: Consider using SwapKit in a mobile-optimized web app as an interim solution
+
+## Contributing
+
+We welcome contributions to improve React Native support! If you have experience with React Native and crypto libraries, please consider:
+
+- Testing the current implementation
+- Reporting issues and edge cases
+- Submitting pull requests with improvements
+- Sharing your integration experiences
+
+Check our [contribution guidelines](https://github.com/swapkit/swapkit/blob/develop/CONTRIBUTING.md) for more information.
+
+
+
+
+

@@ -1,9 +1,199 @@
 ---
 title: Vite
-description: A guide to integrate with Vite.
+description: A guide to integrate SwapKit with Vite applications.
 ---
 
-TODO
+This guide will help you integrate SwapKit into your Vite application with proper Node.js polyfills and WebAssembly support.
+
+## Installation
+
+Install SwapKit and required dependencies:
+
+```bash
+bun add @swapkit/sdk vite-plugin-node-polyfills
+# or
+npm install @swapkit/sdk vite-plugin-node-polyfills
+# or
+yarn add @swapkit/sdk vite-plugin-node-polyfills
+```
+
+## Vite Configuration
+
+Update your `vite.config.ts` to include necessary polyfills and WebAssembly support:
+
+```typescript
+// @noErrorValidation
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import wasm from "vite-plugin-wasm";
+import topLevelAwait from "vite-plugin-top-level-await";
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
+
+export default defineConfig({
+  plugins: [
+    react(),
+    wasm(),
+    topLevelAwait(),
+    nodePolyfills({
+      exclude: ['fs'],
+      globals: {
+        Buffer: true,
+        global: true,
+        process: true,
+      },
+      protocolImports: true,
+    }),
+  ],
+  define: {
+    'process.env': {},
+    global: 'globalThis',
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      target: 'esnext',
+    },
+  },
+  build: {
+    target: 'esnext',
+  },
+});
+```
+
+## Basic Setup
+
+Create a SwapKit client instance:
+
+```typescript
+// @noErrorValidation
+// src/swapKitClient.ts
+import { createSwapKit } from '@swapkit/sdk';
+
+export const swapKitClient = createSwapKit();
+```
+
+## React Component Example
+
+Here's a basic example of using SwapKit in a React component:
+
+```tsx
+// @noErrorValidation
+// src/App.tsx
+import { useState, useEffect } from 'react';
+import { swapKitClient } from './swapKitClient';
+import { Chain, WalletOption } from '@swapkit/helpers';
+
+function App() {
+  const [isConnected, setIsConnected] = useState(false);
+  const [address, setAddress] = useState<string>('');
+
+  const connectWallet = async () => {
+    try {
+      const connectedChains = await swapKitClient.connectWallet(
+        WalletOption.METAMASK,
+        [Chain.Ethereum]
+      );
+      
+      if (connectedChains.length > 0) {
+        setIsConnected(true);
+        const ethAddress = await swapKitClient.getAddress(Chain.Ethereum);
+        setAddress(ethAddress);
+      }
+    } catch (error) {
+      console.error('Failed to connect wallet:', error);
+    }
+  };
+
+  const disconnectWallet = () => {
+    swapKitClient.disconnectWallet(Chain.Ethereum);
+    setIsConnected(false);
+    setAddress('');
+  };
+
+  return (
+    <div>
+      <h1>SwapKit + Vite</h1>
+      {!isConnected ? (
+        <button onClick={connectWallet}>Connect Wallet</button>
+      ) : (
+        <div>
+          <p>Connected: {address}</p>
+          <button onClick={disconnectWallet}>Disconnect</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default App;
+```
+
+## Environment Variables
+
+For environment variables in Vite, use the `VITE_` prefix:
+
+```bash
+# .env
+VITE_SWAPKIT_API_KEY=your_api_key_here
+VITE_WALLETCONNECT_PROJECT_ID=your_project_id_here
+```
+
+Then configure SwapKit:
+
+```typescript
+// @noErrorValidation
+import { createSwapKit } from '@swapkit/sdk';
+import { SKConfig } from '@swapkit/helpers';
+
+// Configure API keys
+SKConfig.setApiKey('swapKit', import.meta.env.VITE_SWAPKIT_API_KEY);
+SKConfig.setApiKey('walletConnectProjectId', import.meta.env.VITE_WALLETCONNECT_PROJECT_ID);
+
+export const swapKitClient = createSwapKit();
+```
+
+## Common Issues
+
+### WebAssembly Support
+
+If you encounter WebAssembly-related errors, ensure you have the required plugins installed:
+
+```bash
+bun add -D vite-plugin-wasm vite-plugin-top-level-await
+```
+
+### Buffer is not defined
+
+This error occurs when Node.js globals aren't properly polyfilled. Make sure `nodePolyfills` is configured with `globals.Buffer: true`.
+
+### Crypto module errors
+
+The crypto polyfills are automatically handled by `vite-plugin-node-polyfills`. If you still encounter issues, you may need to add:
+
+```typescript
+// @noErrorValidation
+resolve: {
+  alias: {
+    crypto: 'crypto-browserify',
+  },
+},
+```
+
+## Production Build
+
+For production builds, ensure your build target supports modern JavaScript:
+
+```typescript
+// @noErrorValidation
+build: {
+  target: 'esnext',
+  // Enable source maps for debugging
+  sourcemap: true,
+}
+```
+
+## Example Repository
+
+For a complete working example, check out the [Vite playground](https://github.com/swapkit/swapkit/tree/develop/playgrounds/vite) in the SwapKit repository.
 
 
 
