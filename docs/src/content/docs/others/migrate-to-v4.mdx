@@ -23,7 +23,7 @@ v4 fundamentally changes how packages are organized:
 **v4 Structure**: Consolidated monolithic packages with submodule exports
 ```bash
 @swapkit/plugins/*     # All plugins in one package
-@swapkit/toolboxes/*   # All toolboxes in one package  
+@swapkit/toolboxes/*   # All toolboxes in one package
 @swapkit/wallets/*     # All wallets in one package
 @swapkit/helpers       # Utilities and API (previously @swapkit/api)
 @swapkit/sdk          # Complete bundle with everything
@@ -40,7 +40,7 @@ All imports must be updated:
 + import { ChainflipPlugin } from "@swapkit/plugins/chainflip";
 + import { EVMPlugin } from "@swapkit/plugins/evm";
 
-// Toolboxes  
+// Toolboxes
 - import { getToolboxByChain } from "@swapkit/toolbox-cosmos";
 - import { EVMToolbox } from "@swapkit/toolbox-evm";
 + import { getCosmosToolbox } from "@swapkit/toolboxes/cosmos";
@@ -73,7 +73,7 @@ The SwapKit client initialization has changed:
 // v4
 + import { SwapKit } from "@swapkit/core";
 + const client = SwapKit({
-+   config: { 
++   config: {
 +     rpcUrls: { /* RPC URLs */ },
 +     apiKeys: { /* API keys */ }
 +   },
@@ -97,9 +97,9 @@ v4 introduces a centralized configuration system:
 + import { SKConfig } from "@swapkit/helpers";
 + SKConfig.set({
 +   rpcUrls: { [Chain.Ethereum]: "https://eth-rpc.com" },
-+   apiKeys: { 
++   apiKeys: {
 +     blockchair: "YOUR_KEY",
-+     swapKit: "YOUR_KEY" 
++     swapKit: "YOUR_KEY"
 +   }
 + });
 ```
@@ -111,7 +111,7 @@ Plugins now use the `createPlugin` helper:
 ```diff
 // v3
 - export function plugin({ getWallet, config }: SwapKitPluginParams<ConnectConfig>) {
--   return { 
+-   return {
 -     swap,
 -     supportedSwapkitProviders: [ProviderName.THORCHAIN]
 -   };
@@ -120,7 +120,7 @@ Plugins now use the `createPlugin` helper:
 // v4
 + import { createPlugin } from "@swapkit/helpers";
 + export const MyPlugin = createPlugin({
-+   name: "myPlugin", 
++   name: "myPlugin",
 +   properties: { supportedSwapkitProviders: [ProviderName.THORCHAIN] },
 +   methods: ({ getWallet }) => ({ swap })
 + });
@@ -132,7 +132,7 @@ Wallets now use the `createWallet` helper:
 
 ```diff
 // v3
-- export const keystoreWallet: SwapKitWallet<[chains: CryptoChain[], phrase: string]> = 
+- export const keystoreWallet: SwapKitWallet<[chains: CryptoChain[], phrase: string]> =
 -   ({ addChain, apis, rpcUrls }) => {
 -     return async (chains, phrase) => { /* ... */ };
 -   };
@@ -153,10 +153,10 @@ Toolboxes no longer accept RPC URLs directly:
 
 ```diff
 // v3
-- const toolbox = getToolboxByChain(chain, { 
+- const toolbox = getToolboxByChain(chain, {
 -   api: customApi,
 -   rpcUrl: "https://rpc.url",
--   signer 
+-   signer
 - });
 
 // v4 - RPC URLs from SKConfig only
@@ -326,4 +326,4 @@ export const MyPlugin = createPlugin({
 
 - 💬 [Join our Discord](https://discord.gg/swapkit) for migration support
 - 🐛 [Report issues on GitHub](https://github.com/thorswap/SwapKit/issues)
-- 📚 Check the [Getting Started guide](/guides/getting-started) for v4 patterns
+- 📚 Check the [Getting Started guide](/start/getting-started) for v4 patterns

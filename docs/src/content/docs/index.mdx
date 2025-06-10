@@ -3,14 +3,14 @@ title: SwapKit - Multi-Chain DeFi SDK
 description: Build powerful cross-chain applications with a unified API for 20+ blockchains
 hero:
   title: SwapKit
-  tagline: The Ultimate Multi-Chain SDK for DeFi Applications
+  tagline: Cross-chain swaps made easy
   image:
-    dark: '../../assets/swapkit-logo.jpg'
-    light: '../../assets/swapkit-logo-light.jpg'
+    dark: '../../assets/logo-white.png'
+    light: '../../assets/logo-black.png'
     alt: SwapKit logo
   actions:
     - text: Get Started
-      link: /guides/getting-started
+      link: /start/getting-started
       icon: right-arrow
       variant: primary
     - text: View on GitHub
@@ -27,7 +27,7 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 SwapKit provides everything you need to integrate blockchain functionality into your application with a single, unified API.
 
 <CardGrid stagger>
-  <Card title="30+ Blockchains" icon="rocket">
+  <Card title="20+ Blockchains" icon="rocket">
     Support for EVM chains, Bitcoin, Cosmos ecosystem, Solana, Ripple (XRP), and more - all through one consistent interface.
   </Card>
   <Card title="Multi-Wallet Support" icon="open">
@@ -52,7 +52,7 @@ import { SwapKitApi } from '@swapkit/helpers/api';
 // Initialize SwapKit
 const swapKit = createSwapKit();
 
-// Connect a keystore wallet (supports 30+ chains)
+// Connect a keystore wallet (supports 20+ chains)
 await swapKit.connectKeystore([Chain.Ethereum, Chain.Bitcoin, Chain.Ripple], 'your mnemonic phrase');
 
 // Get wallet balances
@@ -120,10 +120,9 @@ import { createSwapKit } from '@swapkit/sdk';
 
 const swapKit = createSwapKit({
   config: {
-    // Optional: Add your API keys for enhanced functionality
+    // Optional: Add SwapKit API key for enhanced features
     apiKeys: {
-      walletConnectProjectId: 'your-project-id',
-      blockchair: 'your-api-key',
+      swapKit: 'your-swapkit-api-key', // Get from https://api.swapkit.dev
     }
   }
 });

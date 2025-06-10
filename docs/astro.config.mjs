@@ -30,7 +30,11 @@ export default defineConfig({
       expressiveCode: false,
       lastUpdated: true,
       plugins: [...docsPlugins],
-      title: "SwapKit Docs",
+      title: "",
+      logo: {
+        dark: "./src/assets/logo-vertical-white.png",
+        light: "./src/assets/logo-vertical-black.png",
+      },
       social: [
         { icon: "github", label: "GitHub", href: "https://github.com/thorswap/swapkit" },
         { icon: "x.com", label: "X", href: "https://x.com/SwapKitPowered" },
@@ -38,12 +42,17 @@ export default defineConfig({
       ],
       sidebar: [
         {
+          label: "Start Here",
+          items: [
+            { label: "Getting started", link: "/start/getting-started" },
+            { label: "Toolbox usage", link: "/start/toolbox-usage" },
+          ],
+        },
+        {
           label: "Guides",
           items: [
-            { label: "Getting started", link: "/guides/getting-started" },
             { label: "Create custom plugin", link: "/guides/create-plugin" },
             { label: "Create custom wallet", link: "/guides/create-wallet" },
-            { label: "Toolbox usage", link: "/guides/toolbox-usage" },
             {
               label: "Actions",
               autogenerate: { directory: "guides/actions", collapsed: true },

@@ -60,7 +60,10 @@
         "noExplicitAny": "off",
         "noReactSpecificProps": "off"
       },
-      "nursery": { "recommended": true }
+      "nursery": {
+        "recommended": true,
+        "noDescendingSpecificity": "off"
+      }
     }
   }
 }
