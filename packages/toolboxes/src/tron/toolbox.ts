@@ -60,7 +60,7 @@ async function createKeysForPath({
 }: {
   phrase: string;
   derivationPath: string;
-}): Promise<TronSigner> {
+}) {
   const { HDKey } = await import("@scure/bip32");
   const { mnemonicToSeedSync } = await import("@scure/bip39");
 
@@ -124,11 +124,6 @@ export const createTronToolbox = async (options: TronToolboxOptions = {}) => {
 
   const validateAddress = (address: string) => {
     return tronWeb.isAddress(address);
-  };
-
-  const getContractAddress = (assetValue: AssetValue) => {
-    // Use asset.address for TRC20 contracts instead of parsing string
-    return assetValue.address;
   };
 
   const calculateFeeLimit = () => {
@@ -214,7 +209,7 @@ export const createTronToolbox = async (options: TronToolboxOptions = {}) => {
     }
 
     // TRC20 Token Transfer
-    const contractAddress = getContractAddress(assetValue);
+    const contractAddress = assetValue.address;
     if (!contractAddress) {
       throw new SwapKitError("toolbox_tron_invalid_token_identifier", {
         identifier: assetValue.toString(),
@@ -257,8 +252,6 @@ export const createTronToolbox = async (options: TronToolboxOptions = {}) => {
   };
 
   const createTransaction = async (params: TronTransferParams) => {
-    if (!signer) throw new SwapKitError("toolbox_tron_no_signer");
-
     const { recipient, assetValue, memo } = params;
     const from = await getAddress();
     const isNative = assetValue.isGasAsset;
@@ -274,12 +267,12 @@ export const createTronToolbox = async (options: TronToolboxOptions = {}) => {
         return tronWeb.transactionBuilder.addUpdateData(transaction, memo, "utf8");
       }
 
-      return transaction;
+      return transaction.raw_data_hex;
     }
 
     // For TRC20, we would need to build the transaction manually
     // This is a simplified version - in practice, you'd build the contract call transaction
-    const contractAddress = getContractAddress(assetValue);
+    const contractAddress = assetValue.address;
     if (!contractAddress) {
       throw new SwapKitError("toolbox_tron_invalid_token_identifier", {
         identifier: assetValue.toString(),
@@ -301,7 +294,7 @@ export const createTronToolbox = async (options: TronToolboxOptions = {}) => {
       from,
     );
 
-    return result.transaction;
+    return result.transaction.raw_data_hex;
   };
 
   const signTransaction = async (transaction: TronTransaction) => {

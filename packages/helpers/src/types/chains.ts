@@ -66,7 +66,8 @@ export enum ChainId {
   THORChain = "thorchain-1",
   THORChainStagenet = "thorchain-stagenet-v2",
   Solana = "solana",
-  Tron = "tron",
+  Tron = "728126428",
+  TronHex = "0x2b6653dc",
 }
 
 export const ChainIdToChain: Record<ChainId, Chain> = {
@@ -103,6 +104,7 @@ export const ChainIdToChain: Record<ChainId, Chain> = {
   [ChainId.THORChainStagenet]: Chain.THORChain,
   [ChainId.THORChain]: Chain.THORChain,
   [ChainId.Tron]: Chain.Tron,
+  [ChainId.TronHex]: Chain.Tron,
 };
 
 type ChainNameType = keyof typeof Chain;
@@ -253,7 +255,7 @@ export const RPC_URLS: Record<Chain | StagenetChain, string> = {
   [Chain.Ripple]: "wss://xrpl.ws/",
   [Chain.Solana]: "https://solana-rpc.publicnode.com",
   [Chain.THORChain]: "https://rpc.thorswap.net",
-  [Chain.Tron]: "https://api.trongrid.io",
+  [Chain.Tron]: "https://tron-rpc.publicnode.com",
   [StagenetChain.Maya]: "https://stagenet.tendermint.mayachain.info",
   [StagenetChain.THORChain]: "https://stagenet-rpc.ninerealms.com",
 };
