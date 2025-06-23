@@ -8,7 +8,6 @@ import {
   updateDerivationPath,
   warnOnce,
 } from "@swapkit/helpers";
-import { TronWeb } from "tronweb";
 import { P, match } from "ts-pattern";
 
 import { trc20ABI } from "./helpers/trc20.abi.js";
@@ -21,8 +20,11 @@ import type {
 } from "./types.js";
 
 export async function getTronAddressValidator() {
-  const { TronWeb } = await import("tronweb");
-  return (address: string) => TronWeb.isAddress(address);
+  const { TronWeb } = require("tronweb");
+
+  return (address: string) => {
+    return TronWeb.isAddress(address);
+  };
 }
 
 export async function getTronPrivateKeyFromMnemonic({
@@ -63,6 +65,7 @@ async function createKeysForPath({
 }) {
   const { HDKey } = await import("@scure/bip32");
   const { mnemonicToSeedSync } = await import("@scure/bip39");
+  const { TronWeb } = require("tronweb");
 
   const seed = mnemonicToSeedSync(phrase);
   const hdKey = HDKey.fromMasterSeed(seed);
@@ -93,6 +96,7 @@ async function createKeysForPath({
 }
 
 export const createTronToolbox = async (options: TronToolboxOptions = {}) => {
+  const { TronWeb } = require("tronweb");
   // Always get configuration from SKConfig
   const rpcUrl = SKConfig.get("rpcUrls")[Chain.Tron];
   // Note: TRON API key support can be added to SKConfig apiKeys when needed
@@ -120,10 +124,6 @@ export const createTronToolbox = async (options: TronToolboxOptions = {}) => {
   const getAddress = async () => {
     if (!signer) throw new SwapKitError("toolbox_tron_no_signer");
     return await signer.getAddress();
-  };
-
-  const validateAddress = (address: string) => {
-    return tronWeb.isAddress(address);
   };
 
   const calculateFeeLimit = () => {
@@ -267,7 +267,7 @@ export const createTronToolbox = async (options: TronToolboxOptions = {}) => {
         return tronWeb.transactionBuilder.addUpdateData(transaction, memo, "utf8");
       }
 
-      return transaction.raw_data_hex;
+      return transaction;
     }
 
     // For TRC20, we would need to build the transaction manually
@@ -294,7 +294,7 @@ export const createTronToolbox = async (options: TronToolboxOptions = {}) => {
       from,
     );
 
-    return result.transaction.raw_data_hex;
+    return result.transaction;
   };
 
   const signTransaction = async (transaction: TronTransaction) => {
@@ -310,7 +310,7 @@ export const createTronToolbox = async (options: TronToolboxOptions = {}) => {
   return {
     tronWeb,
     getAddress,
-    validateAddress,
+    validateAddress: await getTronAddressValidator(),
     getBalance,
     transfer,
     estimateTransactionFee,

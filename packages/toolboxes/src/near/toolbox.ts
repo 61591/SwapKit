@@ -50,9 +50,6 @@ export async function getNearToolbox(toolboxParams?: NearToolboxParams) {
   const provider = new providers.JsonRpcProvider({ url });
 
   async function getAccount(address?: string) {
-    if (!signer) {
-      throw new SwapKitError("toolbox_near_no_signer");
-    }
     const { Account } = await import("near-api-js");
 
     const _address = address || (await getAddress());
@@ -118,18 +115,9 @@ export async function getNearToolbox(toolboxParams?: NearToolboxParams) {
   }
 
   async function createTransaction(params: NearCreateTransactionParams) {
-    const { recipient, assetValue, memo, feeRate: gas, attachedDeposit, sender } = params;
+    const { recipient, assetValue, memo, feeRate: gas, attachedDeposit, sender: signerId } = params;
 
-    const signerId = sender || (await getAddress());
-    const publicKey = await getFullAccessPublicKey(provider, signerId);
-
-    const accessKey = await provider.query({
-      request_type: "view_access_key",
-      finality: "final",
-      account_id: signerId,
-    });
-
-    const nonce = (accessKey as any).nonce + 1;
+    const { publicKey, nonce } = await getFullAccessPublicKey(provider, signerId);
 
     const baseAmount = assetValue.getBaseValue("bigint");
 
@@ -163,7 +151,7 @@ export async function getNearToolbox(toolboxParams?: NearToolboxParams) {
       serialized: serializedBase64,
       publicKey: publicKey.toString(),
       details: {
-        signerId: await getAddress(),
+        signerId,
         nonce: nonce,
         blockHash: utils.serialize.base_encode(blockHash),
       },
@@ -171,24 +159,16 @@ export async function getNearToolbox(toolboxParams?: NearToolboxParams) {
   }
 
   async function createContractFunctionCall(params: {
-    accountId: string;
+    sender: string;
     contractId: string;
     methodName: string;
     args: any;
     gas: string;
     attachedDeposit: string;
   }) {
-    const { accountId } = params;
+    const { sender: accountId } = params;
 
-    const publicKey = await getFullAccessPublicKey(provider, accountId);
-
-    const accessKey = await provider.query({
-      request_type: "view_access_key",
-      finality: "final",
-      account_id: accountId,
-      public_key: publicKey.toString(),
-    });
-    const nonce = (accessKey as any).nonce + 1;
+    const { publicKey, nonce } = await getFullAccessPublicKey(provider, accountId);
 
     const { SCHEMA } = await import("near-api-js/lib/transaction");
     const { transactions, utils } = await import("near-api-js");

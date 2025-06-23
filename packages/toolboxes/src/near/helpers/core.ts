@@ -82,5 +82,8 @@ export async function getFullAccessPublicKey(provider: Provider, accountId: stri
   }
 
   const { utils } = await import("near-api-js");
-  return utils.PublicKey.fromString(fullAccessKey.public_key);
+  const publicKey = utils.PublicKey.fromString(fullAccessKey.public_key);
+  const nonce = (fullAccessKey.access_key.nonce as number) || 0;
+
+  return { publicKey, nonce };
 }
