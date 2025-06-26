@@ -77,7 +77,7 @@ export const getDenomWithChain = ({ symbol, chain }: AssetValue) => {
 };
 
 export async function createStargateClient(url: string) {
-  const { StargateClient } = await import("@cosmjs/stargate");
+  const { StargateClient } = (await import("@cosmjs/stargate")).default;
 
   return StargateClient.connect(url);
 }
@@ -87,7 +87,7 @@ export async function createSigningStargateClient(
   signer: any,
   optionsOrBaseGas: string | SigningStargateClientOptions = {},
 ) {
-  const { SigningStargateClient, GasPrice } = await import("@cosmjs/stargate");
+  const { SigningStargateClient, GasPrice } = (await import("@cosmjs/stargate")).default;
   const gasPrice = typeof optionsOrBaseGas === "string" ? optionsOrBaseGas : "0.0003uatom";
   const options = typeof optionsOrBaseGas === "string" ? {} : optionsOrBaseGas;
 
@@ -101,7 +101,7 @@ export async function createOfflineStargateClient(
   wallet: OfflineSigner,
   registry?: SigningStargateClientOptions,
 ) {
-  const { SigningStargateClient } = await import("@cosmjs/stargate");
+  const { SigningStargateClient } = (await import("@cosmjs/stargate")).default;
 
   return SigningStargateClient.offline(wallet, registry);
 }
