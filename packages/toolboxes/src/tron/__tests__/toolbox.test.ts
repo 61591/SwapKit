@@ -80,7 +80,7 @@ describe("TRON Address Validation", () => {
 
   test("should create transaction with valid addresses", async () => {
     const toolbox = context.toolbox;
-    const fromAddress = await toolbox.getAddress();
+    const fromAddress = "TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE";
     const toAddress = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"; // Valid TRON address
 
     // Both addresses should be valid
@@ -90,7 +90,7 @@ describe("TRON Address Validation", () => {
     // Create a transaction
     const transaction = await toolbox.createTransaction({
       recipient: toAddress,
-      sender: toAddress,
+      sender: fromAddress,
       assetValue: AssetValue.from({
         chain: Chain.Tron,
         value: "1", // 1 TRX
