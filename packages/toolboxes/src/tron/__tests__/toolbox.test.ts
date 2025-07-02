@@ -78,7 +78,7 @@ describe("TRON Address Validation", () => {
     expect(address.startsWith("T")).toBe(true);
   });
 
-  test("should create transaction with valid addresses", async () => {
+  test("should create TRON transaction with valid addresses", async () => {
     const toolbox = context.toolbox;
     const fromAddress = "TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE";
     const toAddress = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"; // Valid TRON address
@@ -94,6 +94,29 @@ describe("TRON Address Validation", () => {
       assetValue: AssetValue.from({
         chain: Chain.Tron,
         value: "1", // 1 TRX
+      }),
+    });
+
+    expect(transaction).toBeDefined();
+    expect(transaction.raw_data_hex).toBeDefined();
+  });
+
+  test("should create TRON.USDT transaction with valid addresses", async () => {
+    const toolbox = context.toolbox;
+    const fromAddress = "TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE";
+    const toAddress = "TT87ESmqUmH87hMx1MKCEqYrJKaQyNg9ao"; // Valid TRON address
+
+    // Both addresses should be valid
+    expect(toolbox.validateAddress(fromAddress)).toBe(true);
+    expect(toolbox.validateAddress(toAddress)).toBe(true);
+
+    // Create a transaction
+    const transaction = await toolbox.createTransaction({
+      recipient: toAddress,
+      sender: fromAddress,
+      assetValue: AssetValue.from({
+        asset: "TRX.USDT-TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+        value: "100", // 1 TRX
       }),
     });
 

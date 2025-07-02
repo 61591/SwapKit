@@ -20,9 +20,9 @@ import type {
   TronTransferParams,
 } from "./types.js";
 
-export async function getTronAddressValidator() {
-  const { TronWeb } = require("tronweb");
+const { TronWeb } = require("tronweb");
 
+export async function getTronAddressValidator() {
   return (address: string) => {
     return TronWeb.isAddress(address);
   };
@@ -68,7 +68,6 @@ async function createKeysForPath({
 }) {
   const { HDKey } = await import("@scure/bip32");
   const { mnemonicToSeedSync } = await import("@scure/bip39");
-  const { TronWeb } = require("tronweb");
 
   const seed = mnemonicToSeedSync(phrase);
   const hdKey = HDKey.fromMasterSeed(seed);
@@ -99,7 +98,6 @@ async function createKeysForPath({
 }
 
 export const createTronToolbox = async (options: TronToolboxOptions = {}) => {
-  const { TronWeb } = await import("tronweb");
   // Always get configuration from SKConfig
   const rpcUrl = SKConfig.get("rpcUrls")[Chain.Tron];
   // Note: TRON API key support can be added to SKConfig apiKeys when needed
@@ -282,21 +280,36 @@ export const createTronToolbox = async (options: TronToolboxOptions = {}) => {
     }
 
     // Build TRC20 transfer transaction
-    const functionSelector = "transfer(address,uint256)";
-    const parameter = [
-      { type: "address", value: recipient },
-      { type: "uint256", value: assetValue.getBaseValue("string") },
-    ];
+    // First, try using triggerSmartContract (might work despite the known bug)
+    try {
+      const functionSelector = "transfer(address,uint256)";
+      const parameter = [
+        { type: "address", value: recipient },
+        { type: "uint256", value: assetValue.getBaseValue("string") },
+      ];
 
-    const result = await tronWeb.transactionBuilder.triggerSmartContract(
-      contractAddress,
-      functionSelector,
-      {},
-      parameter,
-      sender,
-    );
+      const options = {
+        feeLimit: calculateFeeLimit(),
+        callValue: 0,
+      };
 
-    return result.transaction;
+      const result = await tronWeb.transactionBuilder.triggerSmartContract(
+        contractAddress,
+        functionSelector,
+        options,
+        parameter,
+        sender,
+      );
+
+      return result.transaction;
+    } catch (error) {
+      // If both methods fail, throw a descriptive error
+      throw new SwapKitError("toolbox_tron_transaction_creation_failed", {
+        message:
+          "Failed to create TRC20 transaction. This might be due to TronWeb 6.0.3 bug. Use the transfer method directly instead.",
+        originalError: error instanceof Error ? error.message : String(error),
+      });
+    }
   };
 
   const signTransaction = async (transaction: TronTransaction) => {

@@ -842,13 +842,14 @@ describe("AssetValue", () => {
       const tronUsdt = AssetValue.from({
         asset: "TRX.USDT-TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
       });
+
       expect(tronUsdt).toEqual(
         expect.objectContaining({
-          address: "tr7nhqjekqxgtci8q8zy4pl8otszgjlj6t",
+          address: "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
           chain: Chain.Tron,
           isGasAsset: false,
           isSynthetic: false,
-          symbol: "USDT-tr7nhqjekqxgtci8q8zy4pl8otszgjlj6t",
+          symbol: "USDT-TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
           ticker: "USDT",
         }),
       );

@@ -33,7 +33,7 @@ class WalletconnectSigner extends AbstractSigner {
       throw new SwapKitError("wallet_walletconnect_connection_not_established");
     }
     if (!this.address) {
-      this.address = getAddressByChain(this.chain, this.walletconnect.accounts);
+      this.address = getAddressByChain(this.chain, this.walletconnect.accounts || []);
     }
 
     return this.address;
@@ -43,7 +43,7 @@ class WalletconnectSigner extends AbstractSigner {
     // this is probably broken
     const txHash = (await this.walletconnect?.client.request({
       chainId: chainToChainId(this.chain),
-      topic: this.walletconnect.session.topic,
+      topic: this.walletconnect.session.topic || "",
       request: {
         method: DEFAULT_EIP155_METHODS.ETH_SIGN,
         params: [message],

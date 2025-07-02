@@ -27,6 +27,8 @@ import { BigIntArithmetics, formatBigIntToSafeValue } from "./bigIntArithmetics"
 import { SwapKitError } from "./swapKitError";
 import type { SwapKitValueType } from "./swapKitNumber";
 
+const CASE_SENSITIVE_CHAINS = [Chain.Solana, Chain.Tron];
+
 const staticTokensMap = new Map<
   TokenNames | string,
   { tax?: TokenTax; decimal: number; identifier: string }
@@ -372,7 +374,9 @@ function getAssetBaseInfo({ symbol, chain }: { symbol: string; chain: Chain }) {
   const unformattedAddress =
     splitSymbol.length === 1 ? undefined : splitSymbol[splitSymbol.length - 1];
 
-  const address = chain === Chain.Solana ? unformattedAddress : unformattedAddress?.toLowerCase();
+  const address = CASE_SENSITIVE_CHAINS.includes(chain)
+    ? unformattedAddress
+    : unformattedAddress?.toLowerCase();
   const ticker = (
     splitSymbol.length === 1 ? splitSymbol[0] : splitSymbol.slice(0, -1).join("-")
   ) as string;
