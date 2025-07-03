@@ -29,7 +29,7 @@ import {
 } from "./types";
 
 const SKRequestClient = RequestClient.extend({
-  getDynamicHeader: () => {
+  dynamicHeader: () => {
     const { swapKit } = SKConfig.get("apiKeys");
     return swapKit ? { "x-api-key": swapKit } : {};
   },

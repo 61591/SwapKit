@@ -9,7 +9,7 @@ type Options = RequestInit & {
   onError?: (error: any) => any;
   onSuccess?: (response: any) => any;
   searchParams?: Record<string, string>;
-  getDynamicHeader?: () => Record<string, string> | {};
+  dynamicHeader?: () => Record<string, string> | {};
 };
 
 export const RequestClient = {
@@ -24,14 +24,23 @@ export const RequestClient = {
 
 function fetchWithConfig(method: "GET" | "POST", extendOptions: Options = {}) {
   return async <T>(url: string, options: Options = {}): Promise<T> => {
-    const { searchParams, json, body, headers: headersOptions } = { ...extendOptions, ...options };
+    const {
+      searchParams,
+      json,
+      body,
+      headers: headersOptions,
+      dynamicHeader,
+    } = { ...extendOptions, ...options };
 
     const isJson = !!json || url.endsWith(".json");
     const bodyToSend = isJson ? JSON.stringify(json) : body;
 
     try {
       const requestUrl = buildUrl(url, searchParams);
-      const headers = buildHeaders(isJson, { ...headersOptions, ...options.getDynamicHeader?.() });
+      const headers = buildHeaders(isJson, {
+        ...headersOptions,
+        ...dynamicHeader?.(),
+      });
 
       const response = await fetch(requestUrl, { ...options, method, body: bodyToSend, headers });
 
