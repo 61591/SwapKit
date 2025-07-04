@@ -46,7 +46,10 @@
       "types": "./src/thorchain/index.ts"
     }
   },
-  "files": ["src/", "dist/"],
+  "files": [
+    "src/",
+    "dist/"
+  ],
   "homepage": "https://github.com/thorswap/SwapKit",
   "license": "Apache-2.0",
   "name": "@swapkit/plugins",
@@ -59,8 +62,6 @@
     "build": "bun run ./build.ts",
     "build:clean": "rm -rf dist && bun run ./build.ts",
     "clean": "rm -rf dist node_modules *.tsbuildinfo",
-    "test": "echo 'bun test'",
-    "test:ci": "bun test --coverage",
     "type-check": "bun tsc --noEmit",
     "type-check:go": "tsgo"
   },
