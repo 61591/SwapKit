@@ -70,16 +70,26 @@ export const getDenomWithChain = ({ symbol, chain }: AssetValue) => {
   }
   if (chain === Chain.THORChain) {
     return (
-      symbol.toUpperCase() !== "RUNE" ? symbol : `${Chain.THORChain}.${symbol}`
+      ["RUNE", "TCY", "RUJI"].includes(symbol.toUpperCase())
+        ? `${Chain.THORChain}.${symbol}`
+        : symbol
     ).toUpperCase();
   }
   return getMsgSendDenom(symbol, false);
 };
 
 export async function createStargateClient(url: string) {
-  const { StargateClient } = (await import("@cosmjs/stargate")).default;
+  const { StargateClient } = await import("@cosmjs/stargate");
 
-  return StargateClient.connect(url);
+  const defaultRequestHeaders =
+    typeof window !== "undefined"
+      ? ({} as Record<string, string>)
+      : { referrer: "https://sk.thorswap.net", referer: "https://sk.thorswap.net" };
+
+  return StargateClient.connect({
+    url,
+    headers: defaultRequestHeaders,
+  });
 }
 
 export async function createSigningStargateClient(
