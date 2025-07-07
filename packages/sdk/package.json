@@ -15,13 +15,13 @@
     }
   },
   "files": ["src/", "dist/"],
-  "homepage": "https://github.com/thorswap/SwapKit",
+  "homepage": "https://github.com/swapkit/SwapKit",
   "license": "Apache-2.0",
   "name": "@swapkit/sdk",
   "repository": {
     "directory": "packages/sdk",
     "type": "git",
-    "url": "git+https://github.com/thorswap/SwapKit.git"
+    "url": "git+https://github.com/swapkit/SwapKit.git"
   },
   "scripts": {
     "build": "bun run ./build.ts",

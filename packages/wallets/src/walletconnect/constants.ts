@@ -20,10 +20,12 @@ export const TRON_MAINNET_ID = "tron:0x2b6653dc";
 export const DEFAULT_LOGGER = "debug";
 
 export const DEFAULT_APP_METADATA: ClientMetadata = {
-  name: "THORSwap",
-  description: "THORSwap multi-chain dex aggregator powered by THORChain",
-  url: "https://app.thorswap.finance/",
-  icons: ["https://static.thorswap.net/logo.png"],
+  name: "SwapKit",
+  description: "SwapKit cross-chain SDK",
+  url: "https://swapkit.dev/",
+  icons: [
+    "https://raw.githubusercontent.com/swapkit/SwapKit/refs/heads/develop/docs/src/assets/logo-black.png",
+  ],
 };
 
 /**

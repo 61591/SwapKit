@@ -164,7 +164,7 @@ Get comprehensive token metadata from a specific provider:
 
 ```typescript
 // Get tokens from a specific provider
-const tokens = await SwapKitApi.getTokenList('thorswap');
+const tokens = await SwapKitApi.getTokenList('UNISWAP_V2');
 
 // Response structure
 [
@@ -190,7 +190,6 @@ const providers = await SwapKitApi.getTokenListProviders();
 
 // Returns available providers
 [
-  { name: 'thorswap', url: 'https://...' },
   { name: '1inch', url: 'https://...' },
   { name: 'coingecko', url: 'https://...' },
   { name: 'uniswap', url: 'https://...' }
@@ -230,11 +229,11 @@ const status = await SwapKitApi.getTrackerDetails({
 
 ### getStaticTokenList
 
-Get token list from static Thorswap CDN:
+Get token list from static CDN:
 
 ```typescript
 // Get specific token list
-const tokens = await SwapKitApi.getStaticTokenList('thorswap');
+const tokens = await SwapKitApi.getStaticTokenList('UNISWAP_V2');
 
 // Response contains comprehensive token data
 [

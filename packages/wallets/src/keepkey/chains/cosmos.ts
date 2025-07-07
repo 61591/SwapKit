@@ -18,7 +18,7 @@ export const cosmosWalletMethods = async ({
   const {
     DEFAULT_COSMOS_FEE_MAINNET,
     getCosmosToolbox,
-    getFeeRateFromThorswap,
+    getFeeRateFromSwapKit,
     createStargateClient,
   } = await import("@swapkit/toolboxes/cosmos");
   const derivationPathString = derivationPath
@@ -33,7 +33,7 @@ export const cosmosWalletMethods = async ({
 
   if (DEFAULT_COSMOS_FEE_MAINNET.amount[0]) {
     DEFAULT_COSMOS_FEE_MAINNET.amount[0].amount = String(
-      await getFeeRateFromThorswap(ChainId.Cosmos, 500),
+      await getFeeRateFromSwapKit(ChainId.Cosmos, 500),
     );
   }
 

@@ -40,8 +40,9 @@ export const useSwapKit = () => {
           },
           integrations: {
             keepKey: {
-              name: "THORSwap",
-              imageUrl: "https://www.thorswap.finance/logo.png",
+              name: "SwapKit",
+              imageUrl:
+                "https://raw.githubusercontent.com/swapkit/SwapKit/refs/heads/develop/docs/src/assets/logo-black.png",
               basePath: "http://localhost:1646/spec/swagger.json",
               url: "http://localhost:1646",
             },

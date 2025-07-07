@@ -225,7 +225,7 @@ export async function createCosmosToolbox({ chain, ...toolboxParams }: CosmosToo
   };
 }
 
-export async function getFeeRateFromThorswap(chainId: ChainId, safeDefault: number) {
+export async function getFeeRateFromSwapKit(chainId: ChainId, safeDefault: number) {
   try {
     const response = await SwapKitApi.getGasRate();
     const responseGasRate = response.find((gas) => gas.chainId === chainId)?.value;
@@ -235,6 +235,11 @@ export async function getFeeRateFromThorswap(chainId: ChainId, safeDefault: numb
     return safeDefault;
   }
 }
+
+/**
+ * @deprecated use getFeeRateFromSwapKit instead
+ */
+export const getFeeRateFromThorswap = getFeeRateFromSwapKit;
 
 export function cosmosValidateAddress({
   address,

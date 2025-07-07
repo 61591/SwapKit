@@ -19,7 +19,7 @@ jobs:
       - name: Generate new token list
         id: commit
         run: |
-          bun run build
+          bun build:ci
           bun generate:tokens
           changes=$(git status -s | wc -l | xargs)
           echo "numberOfChangedFiles=$changes" >> $GITHUB_OUTPUT
@@ -27,7 +27,7 @@ jobs:
           if [ $changes != 0 ]; then
             echo "Changed files found, pushing to bot/token-list-update"
 
-            git config --global user.email "swapkit-bot@thorswap.finance"
+            git config --global user.email "swapkit-bot@swapkit.dev"
             git config --global user.name "swapkit-bot"
             git checkout -b bot/token-list-update
             git add .

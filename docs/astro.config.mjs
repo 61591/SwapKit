@@ -55,7 +55,7 @@ export default defineConfig({
         light: "./src/assets/logo-vertical-black.png",
       },
       social: [
-        { icon: "github", label: "GitHub", href: "https://github.com/thorswap/swapkit" },
+        { icon: "github", label: "GitHub", href: "https://github.com/swapkit/SwapKit" },
         { icon: "x.com", label: "X", href: "https://x.com/SwapKitPowered" },
         { icon: "discord", label: "Discord", href: "https://discord.gg/swapkit" },
       ],
