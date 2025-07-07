@@ -31,9 +31,9 @@ export interface TronCreateTransactionParams
 }
 
 // TronGrid API Types
-export interface TronGridTRC20Balance {
+export type TronGridTRC20Balance = {
   [contractAddress: string]: string; // Balance as string
-}
+}[];
 
 export interface TronGridAccountResponse {
   data: Array<{

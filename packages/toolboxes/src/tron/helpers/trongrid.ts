@@ -101,9 +101,11 @@ export async function parseTronGridBalances(accountData: TronGridAccountResponse
   }
 
   // Add TRC20 balances
-  if (accountData.trc20 && Object.keys(accountData.trc20).length > 0) {
-    for (const [contractAddress, balance] of Object.entries(accountData.trc20)) {
-      if (Number(balance) === 0) continue;
+  if (accountData.trc20?.length > 0) {
+    for (const token of accountData.trc20) {
+      const [contractAddress, balance] = Object.entries(token)[0] || [];
+
+      if (!contractAddress || Number(balance) === 0) continue;
 
       // Fetch token info to get decimals and symbol
       const tokenInfo = await fetchTokenInfo(contractAddress);
