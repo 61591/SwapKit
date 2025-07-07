@@ -26,11 +26,11 @@ for (const file of onlyPackageJson) {
 
   for (const [key, value] of Object.entries(versions)) {
     if (pkgContent?.dependencies?.[key]) {
-      pkgContent.dependencies[key] = `^${value}`;
+      pkgContent.dependencies[key] = value;
     }
 
     if (pkgContent?.peerDependencies?.[key]) {
-      pkgContent.peerDependencies[key] = `^${value}`;
+      pkgContent.peerDependencies[key] = value;
     }
 
     if (pkgContent?.devDependencies?.[key]) {
