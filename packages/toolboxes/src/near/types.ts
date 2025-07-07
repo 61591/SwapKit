@@ -9,14 +9,14 @@ import type { KeyPairSigner, Signer, transactions } from "near-api-js";
 interface NearKeyPairSigner
   extends KeyPairSigner,
     Omit<
-      ChainSigner<transactions.Transaction, transactions.SignedTransaction>,
+      ChainSigner<typeof transactions.Transaction, typeof transactions.SignedTransaction>,
       "signTransaction"
     > {}
 
 interface NearGeneralSigner
   extends Signer,
     Omit<
-      ChainSigner<transactions.Transaction, transactions.SignedTransaction>,
+      ChainSigner<typeof transactions.Transaction, typeof transactions.SignedTransaction>,
       "signTransaction"
     > {}
 

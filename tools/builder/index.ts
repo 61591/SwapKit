@@ -17,7 +17,7 @@ export async function buildPackage({
     outdir: "./dist",
     minify: process.env.DEBUG !== "true",
     packages: "external",
-    sourcemap: "external",
+    sourcemap: "linked",
     splitting: true,
     plugins: [...(plugins || [])],
     ...rest,
