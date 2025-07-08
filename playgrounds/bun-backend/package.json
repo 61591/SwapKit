@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "bun-backend",
   "dependencies": {
     "@swapkit/sdk": "workspace:*"
@@ -6,5 +7,6 @@
   "scripts": {
     "dev": "bun run --watch src/index.ts",
     "start": "bun run build && bun run dist/index.js"
-  }
+  },
+  "version": "0.0.0"
 }
