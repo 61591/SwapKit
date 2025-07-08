@@ -52,10 +52,13 @@ export async function getCtrlProvider<T extends Chain>(
   return match(chain as Chain)
     .with(
       Chain.Arbitrum,
+      Chain.Aurora,
       Chain.Avalanche,
       Chain.Base,
+      Chain.Berachain,
       Chain.BinanceSmartChain,
       Chain.Ethereum,
+      Chain.Gnosis,
       Chain.Optimism,
       Chain.Polygon,
       () => window.xfi?.ethereum,
