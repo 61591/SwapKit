@@ -410,7 +410,7 @@ const getRpcBody = (chain: Chain | StagenetChain) => {
   return match(chain)
     .with(
       Chain.Arbitrum,
-      Chain.Aurora:
+      Chain.Aurora,
       Chain.Avalanche,
       Chain.Base,
       Chain.Berachain,
