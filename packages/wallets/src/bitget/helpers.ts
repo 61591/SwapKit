@@ -17,13 +17,16 @@ export async function getWalletMethods(chain: Chain) {
   return match(chain)
     .with(
       P.union(
-        Chain.Ethereum,
-        Chain.Base,
-        Chain.Avalanche,
         Chain.Arbitrum,
+        Chain.Aurora,
+        Chain.Avalanche,
+        Chain.Base,
+        Chain.Berachain,
+        Chain.BinanceSmartChain,
+        Chain.Ethereum,
+        Chain.Gnosis,
         Chain.Optimism,
         Chain.Polygon,
-        Chain.BinanceSmartChain,
       ),
       async () => {
         if (!(bitget && "ethereum" in bitget)) {
