@@ -308,11 +308,15 @@ export function SwapKit<
       .returnType<Promise<AssetValue | undefined>>()
       .with(
         Chain.Arbitrum,
+        Chain.Aurora,
         Chain.Avalanche,
-        Chain.Ethereum,
-        Chain.BinanceSmartChain,
-        Chain.Polygon,
         Chain.Base,
+        Chain.Berachain,
+        Chain.BinanceSmartChain,
+        Chain.Ethereum,
+        Chain.Gnosis,
+        Chain.Optimism,
+        Chain.Polygon,
         // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: TODO: simplify this or use nested match
         async (chain) => {
           const wallet = getWallet(chain);
