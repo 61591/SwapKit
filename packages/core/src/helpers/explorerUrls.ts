@@ -15,10 +15,13 @@ export function getExplorerTxUrl({ chain, txHash }: { txHash: string; chain: Cha
     )
     .with(
       Chain.Arbitrum,
+      Chain.Aurora,
       Chain.Avalanche,
       Chain.BinanceSmartChain,
       Chain.Base,
+      Chain.Berachain,
       Chain.Ethereum,
+      Chain.Gnosis,
       Chain.Optimism,
       Chain.Polkadot,
       Chain.Polygon,
