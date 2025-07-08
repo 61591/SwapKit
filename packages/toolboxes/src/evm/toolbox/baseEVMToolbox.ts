@@ -157,10 +157,13 @@ export function getChecksumAddressFromAsset(asset: Asset, chain: EVMChain) {
 
 const baseAssetAddress: Record<EVMChain, string> = {
   [Chain.Arbitrum]: ContractAddress.ARB,
+  [Chain.Aurora]: ContractAddress.AURORA,
   [Chain.Avalanche]: ContractAddress.AVAX,
   [Chain.Base]: ContractAddress.BASE,
+  [Chain.Berachain]: ContractAddress.BERA,
   [Chain.BinanceSmartChain]: ContractAddress.BSC,
   [Chain.Ethereum]: ContractAddress.ETH,
+  [Chain.Gnosis]: ContractAddress.GNO,
   [Chain.Optimism]: ContractAddress.OP,
   [Chain.Polygon]: ContractAddress.MATIC,
 };
@@ -170,7 +173,7 @@ export function getTokenAddress({ chain, symbol, ticker }: Asset, baseAssetChain
     const isBaseAsset =
       chain === baseAssetChain && symbol === baseAssetChain && ticker === baseAssetChain;
     const isEVMAsset =
-      [Chain.Arbitrum, Chain.Base].includes(chain) && symbol === "ETH" && ticker === "ETH";
+      [Chain.Arbitrum, Chain.Aurora, Chain.Base, Chain.Optismism].includes(chain) && symbol === "ETH" && ticker === "ETH";
 
     if (isBaseAsset || isBSCBNB || isEVMAsset) {
       return baseAssetAddress[baseAssetChain];
