@@ -41,12 +41,15 @@ export async function getAddressValidator() {
     const isValid = match(chain)
       .with(
         Chain.Arbitrum,
+        Chain.Aurora,
         Chain.Avalanche,
-        Chain.Optimism,
-        Chain.BinanceSmartChain,
         Chain.Base,
-        Chain.Polygon,
+        Chain.Berachain,
+        Chain.BinanceSmartChain,
         Chain.Ethereum,
+        Chain.Gnosis,
+        Chain.Optimism,
+        Chain.Polygon,
         () => evmValidateAddress({ address }),
       )
       .with(Chain.Litecoin, Chain.Dash, Chain.Dogecoin, Chain.BitcoinCash, Chain.Bitcoin, () =>
@@ -77,12 +80,15 @@ export function getFeeEstimator<T extends keyof CreateTransactionParams>(chain: 
       .returnType<Promise<AssetValue>>()
       .with(
         Chain.Arbitrum,
+        Chain.Aurora,
         Chain.Avalanche,
-        Chain.Optimism,
-        Chain.BinanceSmartChain,
         Chain.Base,
-        Chain.Polygon,
+        Chain.Berachain,
+        Chain.BinanceSmartChain,
         Chain.Ethereum,
+        Chain.Gnosis,
+        Chain.Optimism,
+        Chain.Polygon,
         async (chain) => {
           const toolbox = await getToolbox(chain);
           const txObject = await toolbox.createTransaction(params);
@@ -172,12 +178,15 @@ export async function getToolbox<T extends keyof Toolboxes>(
     .returnType<Promise<Toolboxes[T]>>()
     .with(
       Chain.Arbitrum,
+      Chain.Aurora,
       Chain.Avalanche,
-      Chain.Optimism,
-      Chain.BinanceSmartChain,
       Chain.Base,
-      Chain.Polygon,
+      Chain.Berachain,
+      Chain.BinanceSmartChain,
       Chain.Ethereum,
+      Chain.Gnosis,
+      Chain.Optimism,
+      Chain.Polygon,
       async () => {
         const { getEvmToolbox } = await import("@swapkit/toolboxes/evm");
         const evmToolbox = await getEvmToolbox(

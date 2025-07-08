@@ -24,6 +24,7 @@ export const CommonAssetStrings = [
 
 const ethGasChains = [
   Chain.Arbitrum,
+  Chain.Aurora,
   Chain.Base,
   Chain.Ethereum,
   Chain.Optimism,
@@ -114,7 +115,9 @@ export function isGasAsset({ chain, symbol }: { chain: Chain; symbol: string }) 
   return match(chain)
     .with(...ethGasChains, () => symbol === "ETH")
     .with(Chain.Avalanche, () => symbol === "AVAX")
+    .with(Chain.Berachain, () => symbol === "BERA")
     .with(Chain.BinanceSmartChain, () => symbol === "BNB")
+    .with(Chain.Gnosis, () => symbol === "XDAU")
     .with(Chain.Maya, () => symbol === "CACAO")
     .with(Chain.Cosmos, () => symbol === "ATOM")
     .with(Chain.THORChain, () => symbol === "RUNE")
@@ -132,6 +135,8 @@ export const getCommonAssetInfo = (assetString: CommonAssetString) => {
     .with(Chain.Maya, (asset) => ({ identifier: `${asset}.CACAO`, decimal: 10 }))
     .with(Chain.BinanceSmartChain, (asset) => ({ identifier: `${asset}.BNB`, decimal }))
     .with(Chain.Avalanche, (asset) => ({ identifier: `${asset}.AVAX`, decimal }))
+    .with(Chain.Gnosis, (asset) => ({ identifier: `${asset}.XDAI`, decimal }))
+    .with(Chain.Berachain, (asset) => ({ identifier: `${asset}.BERA`, decimal }))
     .with(
       ...UTXOChains,
       Chain.Solana,

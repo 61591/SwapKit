@@ -9,10 +9,12 @@ import {
 import { CosmosLedger } from "../clients/cosmos";
 import {
   ArbitrumLedger,
+  AuroraLedger,
   AvalancheLedger,
   BaseLedger,
   BinanceSmartChainLedger,
   EthereumLedger,
+  GnosisLedger,
   OptimismLedger,
   PolygonLedger,
 } from "../clients/evm";
@@ -31,6 +33,7 @@ import { getLedgerTransport } from "./getLedgerTransport";
 
 type LedgerSignerMap = {
   [Chain.Arbitrum]: ReturnType<typeof ArbitrumLedger>;
+  [Chain.Aurora]: ReturnType<typeof AuroraLedger>;
   [Chain.Avalanche]: ReturnType<typeof AvalancheLedger>;
   [Chain.Base]: ReturnType<typeof BaseLedger>;
   [Chain.BinanceSmartChain]: ReturnType<typeof BinanceSmartChainLedger>;
@@ -40,6 +43,7 @@ type LedgerSignerMap = {
   [Chain.Dash]: ReturnType<typeof DashLedger>;
   [Chain.Dogecoin]: ReturnType<typeof DogecoinLedger>;
   [Chain.Ethereum]: ReturnType<typeof EthereumLedger>;
+  [Chain.Gnosis]: ReturnType<typeof GnosisLedger>;
   [Chain.Litecoin]: ReturnType<typeof LitecoinLedger>;
   [Chain.Near]: Awaited<ReturnType<typeof getNearLedgerClient>>;
   [Chain.Optimism]: ReturnType<typeof OptimismLedger>;
@@ -87,9 +91,11 @@ export const getLedgerClient = async <T extends LedgerSupportedChain>({
     })
     .with(
       Chain.Arbitrum,
+      Chain.Aurora,
       Chain.Avalanche,
       Chain.BinanceSmartChain,
       Chain.Ethereum,
+      Chain.Gnosis,
       Chain.Optimism,
       Chain.Polygon,
       Chain.Base,
@@ -107,6 +113,8 @@ export const getLedgerClient = async <T extends LedgerSupportedChain>({
           .with(Chain.Optimism, () => OptimismLedger(params) as LedgerSignerMap[T])
           .with(Chain.Polygon, () => PolygonLedger(params) as LedgerSignerMap[T])
           .with(Chain.Base, () => BaseLedger(params) as LedgerSignerMap[T])
+          .with(Chain.Aurora, () => AuroraLedger(params) as LedgerSignerMap[T])
+          .with(Chain.Gnosis, () => GnosisLedger(params) as LedgerSignerMap[T])
           .otherwise(() => EthereumLedger(params) as LedgerSignerMap[T]);
       },
     )

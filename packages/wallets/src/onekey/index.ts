@@ -115,10 +115,12 @@ async function getWalletMethodsForExtension(chain: Chain) {
     }
 
     case Chain.Arbitrum:
+    case Chain.Aurora:
     case Chain.Avalanche:
     case Chain.Base:
     case Chain.BinanceSmartChain:
     case Chain.Ethereum:
+    case Chain.Gnosis:
     case Chain.Optimism:
     case Chain.Polygon: {
       const { getProvider, getEvmToolbox } = await import("@swapkit/toolboxes/evm");
@@ -172,11 +174,13 @@ export const onekeyWallet = createWallet({
   walletType: WalletOption.ONEKEY,
   supportedChains: [
     Chain.Arbitrum,
+    Chain.Aurora,
     Chain.Avalanche,
     Chain.Base,
     Chain.BinanceSmartChain,
     Chain.Bitcoin,
     Chain.Ethereum,
+    Chain.Gnosis,
     Chain.Optimism,
     Chain.Polygon,
     Chain.Solana,

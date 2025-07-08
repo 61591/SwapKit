@@ -37,8 +37,10 @@ export const walletconnectWallet = createWallet({
   walletType: WalletOption.WALLETCONNECT,
   supportedChains: [
     Chain.Arbitrum,
+    Chain.Aurora,
     Chain.Avalanche,
     Chain.Base,
+    Chain.Berachain,
     Chain.BinanceSmartChain,
     Chain.Cosmos,
     Chain.Ethereum,

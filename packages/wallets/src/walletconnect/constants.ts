@@ -16,6 +16,8 @@ export const BASE_MAINNET_ID = "eip155:8453";
 export const NEAR_MAINNET_ID = "near:mainnet";
 export const NEAR_TESTNET_ID = "near:testnet";
 export const TRON_MAINNET_ID = "tron:0x2b6653dc";
+export const AURORA_MAINNET_ID = "eip155:1313161554";
+export const BERACHAIN_MAINNET_ID = "eip155:80094";
 
 export const DEFAULT_LOGGER = "debug";
 

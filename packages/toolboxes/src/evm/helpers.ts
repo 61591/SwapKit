@@ -148,6 +148,11 @@ function getNetworkInfo<C extends EVMChain>({ chain }: { chain: C }) {
         chainName: "Arbitrum One",
         nativeCurrency: { name: "Ethereum", symbol: Chain.Ethereum, decimals },
       };
+    case Chain.Aurora:
+      return {
+        chainName: "Aurora Mainnet",
+        nativeCurrency: { name: "Ethereum", symbol: Chain.Ethereum, decimals },
+      };
     case Chain.Avalanche:
       return {
         chainName: "Avalanche Network",
@@ -158,10 +163,25 @@ function getNetworkInfo<C extends EVMChain>({ chain }: { chain: C }) {
         chainName: "Base Mainnet",
         nativeCurrency: { name: "Ethereum", symbol: Chain.Ethereum, decimals },
       };
+    case Chain.Berachain:
+      return {
+        chainName: "Berachain",
+        nativeCurrency: { name: "Berachain", symbol: "BERA", decimals },
+      };
     case Chain.BinanceSmartChain:
       return {
-        chainName: "BNB Chain",
+        chainName: "BNB Smart Chain Mainnet",
         nativeCurrency: { name: "Binance Coin", symbol: "BNB", decimals },
+      };
+    case Chain.Gnosis:
+      return {
+        chainName: "Gnosis",
+        nativeCurrency: { name: "xDAI", symbol: "XDAI", decimals },
+      };
+    case Chain.Optimism:
+      return {
+        chainName: "OP Mainnet",
+        nativeCurrency: { name: "Ethereum", symbol: Chain.Ethereum, decimals },
       };
     case Chain.Polygon:
       return {
