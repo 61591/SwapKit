@@ -1,10 +1,12 @@
 import type { CosmosLedger } from "./clients/cosmos";
 import type {
   ArbitrumLedger,
+  AuroraLedger,
   AvalancheLedger,
   BaseLedger,
   BinanceSmartChainLedger,
   EthereumLedger,
+  GnosisLedger,
   OptimismLedger,
   PolygonLedger,
 } from "./clients/evm";
@@ -25,9 +27,11 @@ export type UTXOLedgerClients =
 export type CosmosLedgerClients = CosmosLedger | THORChainLedger;
 export type EVMLedgerClients =
   | ReturnType<typeof ArbitrumLedger>
+  | ReturnType<typeof AuroraLedger>
   | ReturnType<typeof AvalancheLedger>
   | ReturnType<typeof BaseLedger>
   | ReturnType<typeof BinanceSmartChainLedger>
+  | ReturnType<typeof GnosisLedger>
   | ReturnType<typeof EthereumLedger>
   | ReturnType<typeof OptimismLedger>
   | ReturnType<typeof PolygonLedger>;
