@@ -37,7 +37,9 @@ async function broadcastUTXOTx({ chain, txHash }: { chain: Chain; txHash: string
   }>(rpcUrl, { headers: { "Content-Type": "application/json" }, body });
 
   if (response.error) {
-    throw new SwapKitError("toolbox_utxo_broadcast_failed", { error: response.error?.message });
+    throw new SwapKitError("toolbox_utxo_broadcast_failed", {
+      error: response.error?.message,
+    });
   }
 
   if (response.result.includes('"code":-26')) {
@@ -111,14 +113,18 @@ async function blockchairRequest<T>(url: string, apiKey?: string): Promise<T> {
   );
 
   if (!response || response.context.code !== 200)
-    throw new SwapKitError("toolbox_utxo_api_error", { error: `Failed to query ${url}` });
+    throw new SwapKitError("toolbox_utxo_api_error", {
+      error: `Failed to query ${url}`,
+    });
 
   return response.data as T;
 }
 
 async function getAddressData({ address, chain, apiKey }: BlockchairParams<{ address?: string }>) {
   if (!address)
-    throw new SwapKitError("toolbox_utxo_invalid_params", { error: "Address is required" });
+    throw new SwapKitError("toolbox_utxo_invalid_params", {
+      error: "Address is required",
+    });
 
   try {
     const response = await blockchairRequest<BlockchairAddressResponse>(
@@ -144,7 +150,9 @@ async function getUnconfirmedBalance({
 
 async function getRawTx({ chain, apiKey, txHash }: BlockchairParams<{ txHash?: string }>) {
   if (!txHash)
-    throw new SwapKitError("toolbox_utxo_invalid_params", { error: "TxHash is required" });
+    throw new SwapKitError("toolbox_utxo_invalid_params", {
+      error: "TxHash is required",
+    });
 
   try {
     const rawTxResponse = await blockchairRequest<BlockchairRawTransactionResponse>(
@@ -162,7 +170,6 @@ async function fetchUtxosBatch({
   chain,
   address,
   apiKey,
-  targetValue,
   offset = 0,
   limit = 30,
 }: BlockchairFetchUnspentUtxoParams) {
@@ -170,7 +177,7 @@ async function fetchUtxosBatch({
   const fields = "is_spent,transaction_hash,index,value,script_hex,block_id,spending_signature_hex";
 
   const response = await blockchairRequest<BlockchairOutputsResponse[]>(
-    `${baseUrl(chain)}/outputs?q=recipient(${address}),is_spent(false)&s=value(desc)${targetValue ? `&value(..${targetValue * 5})` : ""}&fields=${fields}&limit=${limit}&offset=${offset}`,
+    `${baseUrl(chain)}/outputs?q=recipient(${address}),is_spent(false)&s=value(desc)&fields=${fields}&limit=${limit}&offset=${offset}`,
     apiKey,
   );
 
@@ -233,10 +240,19 @@ async function getUnspentUtxos({
   limit = 30,
 }: BlockchairFetchUnspentUtxoParams): Promise<Awaited<ReturnType<typeof fetchUtxosBatch>>> {
   if (!address)
-    throw new SwapKitError("toolbox_utxo_invalid_params", { error: "Address is required" });
+    throw new SwapKitError("toolbox_utxo_invalid_params", {
+      error: "Address is required",
+    });
 
   try {
-    const utxos = await fetchUtxosBatch({ targetValue, chain, address, apiKey, offset, limit });
+    const utxos = await fetchUtxosBatch({
+      targetValue,
+      chain,
+      address,
+      apiKey,
+      offset,
+      limit,
+    });
     const utxosCount = utxos.length;
     const isComplete = utxosCount < limit;
 
@@ -276,7 +292,11 @@ async function getUtxos({
   apiKey,
   fetchTxHex = true,
   targetValue,
-}: BlockchairParams<{ address: string; fetchTxHex?: boolean; targetValue?: number }>) {
+}: BlockchairParams<{
+  address: string;
+  fetchTxHex?: boolean;
+  targetValue?: number;
+}>) {
   const utxos = await getUnspentUtxos({ chain, address, apiKey, targetValue });
 
   const results = [];
@@ -309,8 +329,11 @@ function utxoApi(chain: UTXOChain) {
     getSuggestedTxFee: () => getSuggestedTxFee(chain),
     getBalance: (address: string) => getUnconfirmedBalance({ address, chain, apiKey }),
     getAddressData: (address: string) => getAddressData({ address, chain, apiKey }),
-    getUtxos: (params: { address: string; fetchTxHex?: boolean; targetValue?: number }) =>
-      getUtxos({ ...params, chain, apiKey }),
+    getUtxos: (params: {
+      address: string;
+      fetchTxHex?: boolean;
+      targetValue?: number;
+    }) => getUtxos({ ...params, chain, apiKey }),
   };
 }
 
