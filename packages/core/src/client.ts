@@ -7,6 +7,7 @@ import {
   Chain,
   type ChainWallet,
   type ConditionalAssetValueReturn,
+  CosmosChains,
   type EVMChain,
   EVMChains,
   type FeeOption,
@@ -17,11 +18,11 @@ import {
   type SKConfigState,
   SwapKitError,
   type SwapParams,
+  UTXOChains,
   type createPlugin,
   type createWallet,
 } from "@swapkit/helpers";
 import type { EVMCreateTransactionParams, EVMTransferParams } from "@swapkit/toolboxes/evm";
-
 import {
   getExplorerAddressUrl as getAddressUrl,
   getExplorerTxUrl as getTxUrl,
@@ -48,6 +49,17 @@ export function SwapKit<
   type PluginName = keyof Plugins;
   const connectedWallets = {} as FullWallet;
   type ConnectedChains = keyof typeof connectedWallets;
+  type ActionType = "transfer" | "approve" | "swap";
+
+  type ActionParams<P extends PluginName> = {
+    transfer: EVMTransferParams | (GenericTransferParams & { sender?: string });
+    approve: {
+      assetValue: AssetValue;
+      contractAddress: string;
+      feeOptionKey?: FeeOption;
+    };
+    swap: SwapParams<P, QuoteResponseRoute> & { assetValue: AssetValue };
+  };
 
   const availablePlugins = Object.entries(plugins || {}).reduce(
     (acc, [pluginName, plugin]) => {
@@ -275,27 +287,13 @@ export function SwapKit<
     return toolbox.verifySignature({ signature, message, address });
   }
 
-  async function estimateTransactionFee<T extends PluginName>({
+  async function estimateTransactionFee<P extends PluginName, T extends ActionType>({
     type,
     feeOptionKey,
     params,
-  }: (
-    | { type: "swap"; params: SwapParams<T, QuoteResponseRoute> & { assetValue: AssetValue } }
-    | {
-        type: "transfer";
-        params: EVMTransferParams | (GenericTransferParams & { sender?: string });
-      }
-    | {
-        type: "approve";
-        params: {
-          assetValue: AssetValue;
-          contractAddress: string | PluginName;
-          feeOptionKey?: FeeOption;
-        };
-      }
-  ) & {
-    feeOptionKey: FeeOption;
-  }): Promise<AssetValue | undefined> {
+  }: { type: T; params: ActionParams<P>[T]; feeOptionKey: FeeOption }): Promise<
+    AssetValue | undefined
+  > {
     const { assetValue } = params;
     const { chain } = assetValue;
 
@@ -306,81 +304,56 @@ export function SwapKit<
 
     return match(chain as Chain)
       .returnType<Promise<AssetValue | undefined>>()
-      .with(
-        Chain.Arbitrum,
-        Chain.Aurora,
-        Chain.Avalanche,
-        Chain.Base,
-        Chain.Berachain,
-        Chain.BinanceSmartChain,
-        Chain.Ethereum,
-        Chain.Gnosis,
-        Chain.Optimism,
-        Chain.Polygon,
-        // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: TODO: simplify this or use nested match
-        async (chain) => {
-          const wallet = getWallet(chain);
+      .with(...EVMChains, async (chain) => {
+        const { address, ...wallet } = getWallet(chain);
 
-          if (type === "transfer") {
-            const txObject = await wallet.createTransferTx(params as EVMCreateTransactionParams);
-            return wallet.estimateTransactionFee({ ...txObject, chain, feeOption: feeOptionKey });
-          }
+        const tx = match(type as ActionType)
+          .with("transfer", () => wallet.createTransferTx(params as EVMCreateTransactionParams))
+          .with("approve", (t) => {
+            const { contractAddress } = params as ActionParams<P>[typeof t];
 
-          if (type === "approve" && !assetValue.isGasAsset) {
-            const approvalTx = await wallet.createApprovalTx({
+            return wallet.createApprovalTx({
               assetAddress: assetValue.address as string,
-              spenderAddress: params.contractAddress as string,
+              spenderAddress: contractAddress,
               amount: assetValue.getBaseValue("bigint"),
-              from: wallet.address,
+              from: address,
             });
+          })
+          .with("swap", (t) => {
+            const {
+              route: {
+                providers: [plugin],
+                tx,
+              },
+            } = params as ActionParams<P>[typeof t];
 
-            return wallet.estimateTransactionFee({ ...approvalTx, chain, feeOption: feeOptionKey });
-          }
-
-          if (type === "swap") {
-            const plugin = params.route.providers[0] as PluginNameEnum;
-            if ([PluginNameEnum.CHAINFLIP, PluginNameEnum.CHAINFLIP_STREAMING].includes(plugin)) {
-              const txObject = await wallet.createTransferTx({
-                sender: wallet.address,
-                recipient: wallet.address,
-                assetValue,
-              });
-
-              return wallet.estimateTransactionFee({ ...txObject, chain, feeOption: feeOptionKey });
+            if (
+              plugin &&
+              [PluginNameEnum.CHAINFLIP, PluginNameEnum.CHAINFLIP_STREAMING].includes(plugin)
+            ) {
+              return wallet.createTransferTx({ sender: address, recipient: address, assetValue });
             }
 
-            const tx = params.route.tx as EVMTransaction;
+            const evmTx = tx as EVMTransaction;
 
-            if (tx) {
-              return wallet.estimateTransactionFee({
-                ...tx,
-                value: BigInt(tx.value),
-                feeOption: feeOptionKey,
-                chain,
-              });
-            }
-          }
+            return { ...evmTx, value: BigInt(evmTx.value) };
+          })
+          .otherwise(() => undefined);
 
-          return AssetValue.from({ chain });
-        },
-      )
-      .with(
-        Chain.Bitcoin,
-        Chain.BitcoinCash,
-        Chain.Dogecoin,
-        Chain.Dash,
-        Chain.Litecoin,
-        (chain) => {
-          const wallet = getWallet(chain);
-          return wallet.estimateTransactionFee({
-            ...params,
-            feeOptionKey,
-            recipient: wallet.address,
-            sender: wallet.address,
-          });
-        },
-      )
-      .with(Chain.THORChain, Chain.Maya, Chain.Kujira, Chain.Cosmos, async () => {
+        if (!tx) return baseValue;
+
+        return wallet.estimateTransactionFee({ ...tx, chain, feeOption: feeOptionKey });
+      })
+      .with(...UTXOChains, (chain) => {
+        const { address, ...wallet } = getWallet(chain);
+        return wallet.estimateTransactionFee({
+          ...params,
+          feeOptionKey,
+          recipient: address,
+          sender: address,
+        });
+      })
+      .with(...CosmosChains, async () => {
         const { estimateTransactionFee } = await import("@swapkit/toolboxes/cosmos");
         return estimateTransactionFee(params);
       })
@@ -388,18 +361,11 @@ export function SwapKit<
         const wallet = getWallet(chain);
         return wallet.estimateTransactionFee({ ...params, recipient: wallet.address });
       })
-      .with(Chain.Ripple, (chain) => {
-        const wallet = getWallet(chain);
-        return wallet.estimateTransactionFee();
-      })
       .with(Chain.Tron, (chain) => {
-        const wallet = getWallet(chain);
-        return wallet.estimateTransactionFee({
-          ...params,
-          recipient: wallet.address,
-          sender: wallet.address,
-        });
+        const { address, ...wallet } = getWallet(chain);
+        return wallet.estimateTransactionFee({ ...params, recipient: address, sender: address });
       })
+      .with(Chain.Ripple, (chain) => getWallet(chain).estimateTransactionFee())
       .otherwise(async () => baseValue);
   }
 

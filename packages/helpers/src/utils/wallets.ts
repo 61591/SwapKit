@@ -84,7 +84,7 @@ export function filterSupportedChains<T extends string[]>({
   supportedChains,
   walletType,
 }: { chains: Chain[]; supportedChains: T; walletType?: WalletOption }) {
-  const supported = chains.filter((chain) => supportedChains.includes(chain));
+  const supported = chains.filter((chain) => !chain || supportedChains.includes(chain));
 
   if (supported.length === 0) {
     throw new SwapKitError("wallet_chain_not_supported", {

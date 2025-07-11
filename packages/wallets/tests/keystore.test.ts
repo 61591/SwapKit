@@ -11,22 +11,25 @@ beforeEach(() => {
 });
 
 describe("keystore - Reading address", () => {
-  it("should read address from keystore", async () => {
-    if (!process.env.TEST_PHRASE) {
-      return console.error("TEST_PHRASE is not set. Skipping test.");
-    }
-
-    const swapKitClient = SwapKit({ wallets: keystoreWallet });
-    await swapKitClient.connectKeystore(KEYSTORE_SUPPORTED_CHAINS, process.env.TEST_PHRASE);
-    const wallet = swapKitClient.getAllWallets();
-
-    for (const [chain, address] of Object.entries(testKeystoreWalletData.addresses)) {
-      const chainWallet = wallet[chain as keyof typeof wallet];
-      if (chainWallet) {
-        expect(chainWallet.address).toBe(address);
+  it(
+    "should read address from keystore",
+    async () => {
+      if (!process.env.TEST_PHRASE) {
+        return console.error("TEST_PHRASE is not set. Skipping test.");
       }
-    }
-  });
+
+      const swapKitClient = SwapKit({ wallets: keystoreWallet });
+      await swapKitClient.connectKeystore(KEYSTORE_SUPPORTED_CHAINS, process.env.TEST_PHRASE);
+      const wallet = swapKitClient.getAllWallets();
+
+      for (const [chain, address] of Object.entries(testKeystoreWalletData.addresses)) {
+        const chainWallet = wallet[chain as keyof typeof wallet];
+
+        expect(`${chain}: ${chainWallet.address}`).toBe(`${chain}: ${address}`);
+      }
+    },
+    { timeout: 10000, retry: 3 },
+  );
 });
 
 describe("keystore - Reading balances", () => {

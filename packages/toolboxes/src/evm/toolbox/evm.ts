@@ -3,12 +3,7 @@ import { HDNodeWallet } from "ethers";
 import { P, match } from "ts-pattern";
 import { getEvmApi } from "../api";
 import { multicallAbi } from "../contracts/eth/multicall";
-import {
-  getEstimateTransactionFee,
-  getIsEIP1559Compatible,
-  getNetworkParams,
-  getProvider,
-} from "../helpers";
+import { getIsEIP1559Compatible, getNetworkParams, getProvider } from "../helpers";
 import type { EVMToolboxParams } from "../types";
 import { BaseEVMToolbox } from "./baseEVMToolbox";
 
@@ -64,7 +59,6 @@ function createEvmToolbox<C extends EVMChain>(chain: C) {
 
     return {
       ...evmToolbox,
-      estimateTransactionFee: getEstimateTransactionFee({ provider, isEIP1559Compatible, chain }),
       getNetworkParams: getNetworkParams(chain),
       getBalance: getEvmApi(chain).getBalance,
     };

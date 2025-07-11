@@ -5,6 +5,9 @@ export const testKeystoreAddresses: Record<(typeof KEYSTORE_SUPPORTED_CHAINS)[nu
   [Chain.Arbitrum]: "0x51176f5F0B7ccC8fA0376F08aaa28F316A38a2a0",
   [Chain.Avalanche]: "0x51176f5F0B7ccC8fA0376F08aaa28F316A38a2a0",
   [Chain.Base]: "0x51176f5F0B7ccC8fA0376F08aaa28F316A38a2a0",
+  [Chain.Aurora]: "0x51176f5F0B7ccC8fA0376F08aaa28F316A38a2a0",
+  [Chain.Berachain]: "0x51176f5F0B7ccC8fA0376F08aaa28F316A38a2a0",
+  [Chain.Gnosis]: "0x51176f5F0B7ccC8fA0376F08aaa28F316A38a2a0",
   [Chain.BinanceSmartChain]: "0x51176f5F0B7ccC8fA0376F08aaa28F316A38a2a0",
   [Chain.BitcoinCash]: "qzhcfqxrnhcw88c433tq0fjlw0uut8c0e5d3cf8566",
   [Chain.Bitcoin]: "bc1qjpmp8xvg9k4ysa7nvev3lw7qcclvxzt2ex75kr",
@@ -24,9 +27,8 @@ export const testKeystoreAddresses: Record<(typeof KEYSTORE_SUPPORTED_CHAINS)[nu
   [Chain.Solana]: "4UHWuPwyV3XCcnwrpEdWAEW3WLUP1RDMaK3ANNsRUjfM",
   [Chain.THORChain]: "thor1hm0sdz9v2h5jwjuu0ssp8x98upvlc6py2uq4vz",
   [Chain.Tron]: "THr473cZqHwBLEmTWUUR1WTotxijWWbRGD",
-  // TBD setup keystore address for Zcash + NEAR
-  [Chain.Near]: "",
-  [Chain.Zcash]: "",
+  [Chain.Near]: "a03fafdf5f97d3c6be6bff9e55f057dda76fefbb7e149f5469248f41e812cb6e",
+  [Chain.Zcash]: "t1Mh7QW9g1gK94CSRxniD49aLAJ67s6UerX",
 };
 
 export const testKeystoreWalletData = {

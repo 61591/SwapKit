@@ -37,7 +37,7 @@ jobs:
         run: bun test:ci
 
   publish:
-    if: ${{ contains(github.ref_name, 'develop') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'nightly') }}
+    if: contains(github.ref_name, 'develop') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'nightly')
     needs: [build-lint-test]
     runs-on: ubuntu-latest
     steps:
@@ -110,7 +110,7 @@ jobs:
 
   build-docs:
     runs-on: ubuntu-latest
-    if: ${{ contains(github.ref_name, 'develop') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'nightly') }}
+    if: contains(github.ref_name, 'develop') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'nightly')
     needs: [build-lint-test]
     permissions:
       contents: read
@@ -139,7 +139,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: steps.deployment.outputs.page_url
     permissions:
       contents: read
       pages: write

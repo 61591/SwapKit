@@ -2,7 +2,17 @@ import { Chain, type EVMChain, SwapKitError } from "@swapkit/helpers";
 
 import { getProvider } from "../helpers";
 import type { EVMToolboxParams } from "../types";
-import { ARBToolbox, AVAXToolbox, BASEToolbox, BSCToolbox, ETHToolbox, MATICToolbox } from "./evm";
+import {
+  ARBToolbox,
+  AURORAToolbox,
+  AVAXToolbox,
+  BASEToolbox,
+  BERAToolbox,
+  BSCToolbox,
+  ETHToolbox,
+  GNOToolbox,
+  MATICToolbox,
+} from "./evm";
 import { OPToolbox } from "./op";
 
 export async function getEvmToolbox<T extends EVMChain>(chain: T, params?: EVMToolboxParams) {

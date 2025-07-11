@@ -314,10 +314,7 @@ export const FALLBACK_URLS: Record<Chain | StagenetChain, string[]> = {
     "https://arb-mainnet.g.alchemy.com/v2/demo",
     "https://arbitrum.blockpi.network/v1/rpc/public",
   ],
-  [Chain.Aurora]: [
-    "https://1rpc.io/aurora",
-    "https://mainnet.aurora.dev",
-  ],
+  [Chain.Aurora]: ["https://1rpc.io/aurora", "https://mainnet.aurora.dev"],
   [Chain.Avalanche]: [
     "https://api.avax.network/ext/bc/C/rpc",
     "https://avalanche-c-chain-rpc.publicnode.com",
@@ -327,10 +324,7 @@ export const FALLBACK_URLS: Record<Chain | StagenetChain, string[]> = {
     "https://bsc-rpc.gateway.pokt.network",
     "https://bsc-dataseed2.binance.org",
   ],
-  [Chain.Berachain]: [
-    "https://rpc.berachain.com",
-    "https://berachain.drpc.org",
-  ],
+  [Chain.Berachain]: ["https://rpc.berachain.com", "https://berachain.drpc.org"],
   [Chain.Bitcoin]: ["https://bitcoin.publicnode.com"],
   [Chain.BitcoinCash]: ["https://bch-dataseed.binance.org", "https://bch.getblock.io/mainnet"],
   [Chain.Chainflip]: [
@@ -342,10 +336,7 @@ export const FALLBACK_URLS: Record<Chain | StagenetChain, string[]> = {
   [Chain.Dogecoin]: ["https://doge.getblock.io/mainnet", "https://dogecoin.publicnode.com"],
   [Chain.Ethereum]: ["https://eth.llamarpc.com", "https://cloudflare-eth.com"],
   [Chain.Fiat]: [],
-  [Chain.Gnosis]: [
-    "https://gnosis.drpc.org",
-    "https://rpc.ankr.com/gnosis",
-  ],
+  [Chain.Gnosis]: ["https://gnosis.drpc.org", "https://rpc.ankr.com/gnosis"],
   [Chain.Kujira]: ["https://kujira-rpc.polkachu.com", "https://rpc-kujira.synergynodes.com/"],
   [Chain.Litecoin]: ["https://ltc.getblock.io/mainnet", "https://litecoin.publicnode.com"],
   [Chain.Maya]: ["https://tendermint.mayachain.info", "https://maya-tendermint.publicnode.com"],

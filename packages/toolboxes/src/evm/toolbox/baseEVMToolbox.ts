@@ -26,7 +26,7 @@ import {
   getAddress,
 } from "ethers";
 
-import { getL1GasPriceFetcher, toHexString } from "../index";
+import { getEstimateTransactionFee, getL1GasPriceFetcher, toHexString } from "../index";
 import type {
   ApproveParams,
   CallParams,
@@ -67,6 +67,7 @@ export function BaseEVMToolbox<
     getAddress: () => {
       return signer ? signer.getAddress() : undefined;
     },
+    estimateTransactionFee: getEstimateTransactionFee({ provider, isEIP1559Compatible, chain }),
     call: getCall({ provider, signer, isEIP1559Compatible, chain }),
     estimateCall: getEstimateCall({ provider, signer }),
     EIP1193SendTransaction: getEIP1193SendTransaction(provider),
@@ -173,7 +174,9 @@ export function getTokenAddress({ chain, symbol, ticker }: Asset, baseAssetChain
     const isBaseAsset =
       chain === baseAssetChain && symbol === baseAssetChain && ticker === baseAssetChain;
     const isEVMAsset =
-      [Chain.Arbitrum, Chain.Aurora, Chain.Base, Chain.Optismism].includes(chain) && symbol === "ETH" && ticker === "ETH";
+      [Chain.Arbitrum, Chain.Aurora, Chain.Base, Chain.Optimism].includes(chain) &&
+      symbol === "ETH" &&
+      ticker === "ETH";
 
     if (isBaseAsset || isBSCBNB || isEVMAsset) {
       return baseAssetAddress[baseAssetChain];
