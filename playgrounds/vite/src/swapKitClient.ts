@@ -17,8 +17,9 @@ export const getSwapKitClient = ({
     config: {
       apiKeys: {
         swapKit: process.env.TEST_API_KEY,
-        walletConnectProjectId: walletConnectProjectId,
+        walletConnectProjectId: walletConnectProjectId || "",
         keepKey: localStorage.getItem("keepkeyApiKey") || "1234",
+        xaman: process.env.XAMAN_API_KEY || "",
       },
       integrations: {
         keepKey: {

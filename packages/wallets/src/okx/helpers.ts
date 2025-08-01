@@ -124,12 +124,20 @@ export async function getWalletMethods(chain: Chain) {
       const { keplr: wallet } = window.okxwallet;
 
       await wallet.enable(ChainId.Cosmos);
-      const accounts = await wallet.getOfflineSignerOnlyAmino(ChainId.Cosmos).getAccounts();
-      if (!accounts?.[0]) throw new SwapKitError("wallet_okx_no_accounts", { chain: Chain.Cosmos });
+      const offlineSigner = wallet.getOfflineSignerOnlyAmino(ChainId.Cosmos);
+      const accounts = await offlineSigner.getAccounts();
+
+      // Add defensive check for accounts array
+      if (!(accounts && Array.isArray(accounts)) || accounts.length === 0) {
+        throw new SwapKitError("wallet_okx_no_accounts", {
+          chain: Chain.Cosmos,
+          message: "No Cosmos accounts returned from OKX Wallet",
+        });
+      }
 
       const { getCosmosToolbox } = await import("@swapkit/toolboxes/cosmos");
       const [{ address }] = accounts;
-      const toolbox = getCosmosToolbox(Chain.Cosmos);
+      const toolbox = await getCosmosToolbox(Chain.Cosmos);
 
       return { ...toolbox, address, transfer: cosmosTransfer(address) };
     })

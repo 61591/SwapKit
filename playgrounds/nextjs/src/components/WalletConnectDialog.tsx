@@ -189,7 +189,11 @@ export const availableChainsByWallet = {
   ],
   [WalletOption.EXODUS]: [Chain.Ethereum, Chain.BinanceSmartChain, Chain.Polygon, Chain.Bitcoin],
   [WalletOption.LEDGER_LIVE]: [],
+  [WalletOption.COSMOSTATION]: [],
+  [WalletOption.VULTISIG]: [],
   [WalletOption.RADIX_WALLET]: [Chain.Radix],
+  [WalletOption.TRONLINK]: [Chain.Tron],
+  [WalletOption.XAMAN]: [Chain.Ripple],
 };
 
 interface WalletConnectDialogProps {

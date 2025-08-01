@@ -69,6 +69,7 @@ const errorCodes = {
   wallet_missing_params: 20004,
   wallet_provider_not_found: 20005,
   wallet_failed_to_add_or_switch_network: 20006,
+  wallet_locked: 20007,
   /**
    * Wallets - Ledger
    */

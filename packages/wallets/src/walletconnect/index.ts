@@ -382,7 +382,7 @@ async function getWalletconnect(
     const { SignClient } = await import("@walletconnect/sign-client");
     const { WalletConnectModal } = await import("@walletconnect/modal");
 
-    const client = new SignClient({
+    const client = await SignClient.init({
       logger: DEFAULT_LOGGER,
       relayUrl: DEFAULT_RELAY_URL,
       projectId: walletConnectProjectId,
@@ -397,7 +397,7 @@ async function getWalletconnect(
       ...walletconnectOptions?.core,
     });
 
-    const oldSession = await client.session.getAll()[0];
+    const oldSession = (await client.session.getAll())[0];
 
     // disconnect old Session cause we can't handle using it with current ui
     if (oldSession) {

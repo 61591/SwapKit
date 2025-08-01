@@ -169,6 +169,8 @@ export const availableChainsByWallet = {
   [WalletOption.EXODUS]: [Chain.Ethereum, Chain.BinanceSmartChain, Chain.Polygon, Chain.Bitcoin],
   [WalletOption.RADIX_WALLET]: [Chain.Radix],
   [WalletOption.COSMOSTATION]: [],
+  [WalletOption.TRONLINK]: [Chain.Tron],
+  [WalletOption.XAMAN]: [Chain.Ripple],
 };
 
 export const WalletPicker = ({ skClient, setWallet, setPhrase }: Props) => {
@@ -246,6 +248,10 @@ export const WalletPicker = ({ skClient, setWallet, setPhrase }: Props) => {
           return skClient.connectRadixWallet?.([Chain.Radix]);
         case WalletOption.WALLETCONNECT:
           return skClient.connectWalletconnect?.(chains);
+        case WalletOption.TRONLINK:
+          return skClient.connectTronLink?.(chains);
+        case WalletOption.XAMAN:
+          return skClient.connectXaman?.(chains);
 
         default:
           throw new Error(`Unsupported wallet option: ${option}`);

@@ -11,7 +11,7 @@ export async function waitForTronLink(timeout = 3000): Promise<TronLinkWindow> {
       if (handled) return;
       handled = true;
       window.removeEventListener("tronlink#initialized", handleProvider);
-      clearTimeout(timeoutId);
+      if (timeoutId) clearTimeout(timeoutId);
 
       if (window.tronLink) {
         resolve(window.tronLink);
@@ -26,7 +26,7 @@ export async function waitForTronLink(timeout = 3000): Promise<TronLinkWindow> {
 
     // Check if already available
     if (window.tronLink) {
-      handleProvider();
+      resolve(window.tronLink);
       return;
     }
 
@@ -47,6 +47,13 @@ export async function getWalletForChain(chain: Chain, expectedNetwork?: string) 
   }
 
   const tronLink = await waitForTronLink();
+
+  if (!tronLink.ready) {
+    throw new SwapKitError("wallet_locked", {
+      wallet: WalletOption.TRONLINK,
+      message: "TronLink is locked. Please unlock it to continue.",
+    });
+  }
 
   try {
     // Request account access

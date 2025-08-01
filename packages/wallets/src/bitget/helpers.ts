@@ -89,7 +89,7 @@ export async function getWalletMethods(chain: Chain) {
         signTransaction: async () => Promise.resolve({} as any),
       };
 
-      const toolbox = getCosmosToolbox(Chain.Cosmos, {
+      const toolbox = await getCosmosToolbox(Chain.Cosmos, {
         signer,
       });
 
@@ -103,9 +103,18 @@ export async function getWalletMethods(chain: Chain) {
       const { getSolanaToolbox } = await import("@swapkit/toolboxes/solana");
       const provider = bitget?.solana;
 
-      const toolbox = getSolanaToolbox({ signer: provider });
+      // Connect to get the public key
       const providerConnection = await provider.connect();
       const address: string = providerConnection.publicKey.toString();
+
+      // Create a proper signer object that wraps the provider
+      const signer = {
+        ...provider,
+        publicKey: providerConnection.publicKey,
+        getAddress: async () => address,
+      };
+
+      const toolbox = await getSolanaToolbox({ signer });
 
       return { ...toolbox, address };
     })
@@ -118,12 +127,21 @@ export async function getWalletMethods(chain: Chain) {
       const { tronLink, tronWeb } = bitget;
 
       // Request account access
-      const account = await tronLink.request({ method: "tron_requestAccounts" });
-      if (!account?.base58) {
-        throw new SwapKitError("wallet_bitkeep_no_accounts", { chain: Chain.Tron });
+      const response = await tronLink.request({ method: "tron_requestAccounts" });
+
+      // Check if the request was successful
+      if (response.code !== 200) {
+        throw new SwapKitError("wallet_connection_rejected_by_user", {
+          message: response.message || "User rejected connection",
+        });
       }
 
-      const address = account.base58;
+      // After successful approval, the address should be available in tronWeb.defaultAddress
+      const address = tronWeb.defaultAddress?.base58;
+
+      if (!address) {
+        throw new SwapKitError("wallet_bitkeep_no_accounts", { chain: Chain.Tron });
+      }
 
       // Create signer compatible with TronSigner interface
       const signer = {

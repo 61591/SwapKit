@@ -30,7 +30,7 @@ export interface TronLinkWindow {
 
 export enum TronLinkResponseCode {
   SUCCESS = 200,
-  CANCELED = 4000,
+  LOCKED = 4000,
   REJECTED = 4001,
   UNAUTHORIZED = 4100,
   UNSUPPORTED_METHOD = 4200,
