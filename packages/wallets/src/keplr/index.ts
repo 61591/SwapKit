@@ -9,11 +9,11 @@ import {
 import { createWallet, getWalletSupportedChains } from "@swapkit/wallet-core";
 import { chainRegistry } from "./chainRegistry";
 
-const keplrSupportedChainIds = [ChainId.Cosmos, ChainId.Kujira, ChainId.THORChain] as const;
+const keplrSupportedChainIds = [ChainId.Cosmos, ChainId.Kujira, ChainId.Noble, ChainId.THORChain] as const;
 
 export const keplrWallet = createWallet({
   name: "connectKeplr",
-  supportedChains: [Chain.Cosmos, Chain.Kujira, Chain.THORChain],
+  supportedChains: [Chain.Cosmos, Chain.Kujira, Chain.Noble, Chain.THORChain],
   connect: ({ addChain, supportedChains }) =>
     async function connectKeplr(
       chains: Chain[],
