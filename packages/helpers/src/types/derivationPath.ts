@@ -35,6 +35,7 @@ export const NetworkDerivationPath: Record<Chain, DerivationPathArray> = {
   POL: [44, 60, 0, 0, 0],
   MAYA: [44, 931, 0, 0, 0],
   NEAR: [44, 397, 0, 0, 0],
+  NOBLE: [44, 118, 0, 0, 0],
   OP: [44, 60, 0, 0, 0],
   SOL: [44, 501, 0, 0, 0],
   THOR: [44, 931, 0, 0, 0],
