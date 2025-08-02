@@ -20,6 +20,7 @@ export enum Chain {
   Litecoin = "LTC",
   Maya = "MAYA",
   Near = "NEAR",
+  Noble = "NOBLE",
   Optimism = "OP",
   Polkadot = "DOT",
   Chainflip = "FLIP",
@@ -66,6 +67,7 @@ export enum ChainId {
   Maya = "mayachain-mainnet-v1",
   MayaStagenet = "mayachain-stagenet-v1",
   Near = "near",
+  Noble = "noble-1",
   Optimism = "10",
   OptimismHex = "0xa",
   Polkadot = "polkadot",
@@ -110,6 +112,7 @@ export const ChainIdToChain: Record<ChainId, Chain> = {
   [ChainId.MayaStagenet]: Chain.Maya,
   [ChainId.Maya]: Chain.Maya,
   [ChainId.Near]: Chain.Near,
+  [ChainId.Noble]: Chain.Noble,
   [ChainId.OptimismHex]: Chain.Optimism,
   [ChainId.Optimism]: Chain.Optimism,
   [ChainId.Polkadot]: Chain.Polkadot,
@@ -151,6 +154,7 @@ export const BaseDecimal: Record<Chain, number> = {
   POL: 18,
   MAYA: 8,
   NEAR: 24,
+  NOBLE: 6,
   OP: 18,
   SOL: 9,
   THOR: 8,
@@ -180,6 +184,7 @@ export const BlockTimes: Record<Partial<Chain>, number> = {
   [Chain.Litecoin]: 150,
   [Chain.Maya]: 6,
   [Chain.Near]: 1,
+  [Chain.Noble]: 1.3,
   [Chain.Optimism]: 2,
   [Chain.Polkadot]: 6,
   [Chain.Polygon]: 2.1,
@@ -235,13 +240,14 @@ export const UTXOChains = [
   Chain.Zcash,
 ] as const;
 
-export type CosmosChain = Chain.Cosmos | Chain.THORChain | Chain.Maya | Chain.Kujira;
-export const CosmosChains = [Chain.Cosmos, Chain.THORChain, Chain.Maya, Chain.Kujira] as const;
+export type CosmosChain = Chain.Cosmos | Chain.THORChain | Chain.Maya | Chain.Kujira | Chain.Noble;
+export const CosmosChains = [Chain.Cosmos, Chain.THORChain, Chain.Maya, Chain.Kujira, Chain.Noble] as const;
 export const CosmosChainPrefixes = {
   [Chain.Cosmos]: "cosmos",
   [Chain.THORChain]: "thor",
   [Chain.Maya]: "maya",
   [Chain.Kujira]: "kujira",
+  [Chain.Noble]: "noble",
 } as Record<CosmosChain, string>;
 
 export const TCSupportedChains = [
@@ -285,6 +291,7 @@ export const RPC_URLS: Record<Chain | StagenetChain, string> = {
   [Chain.Litecoin]: "https://node-router.thorswap.net/litecoin",
   [Chain.Maya]: "https://tendermint.mayachain.info",
   [Chain.Near]: "https://rpc.mainnet.near.org",
+  [Chain.Noble]: "https://noble-rpc.polkachu.com",
   [Chain.Optimism]: "https://mainnet.optimism.io",
   [Chain.Polkadot]: "wss://rpc.polkadot.io",
   [Chain.Polygon]: "https://polygon-rpc.com",
@@ -346,6 +353,7 @@ export const FALLBACK_URLS: Record<Chain | StagenetChain, string[]> = {
     "https://near.lava.build",
     "https://near-mainnet.infura.io/v3/3cbfcafa5e1e48b7bb0ea41f2fbc4abf",
   ],
+  [Chain.Noble]: ["https://rpc.noble.xyz", "https://rpc.cosmos.directory/noble"],
   [Chain.Optimism]: ["https://optimism.llamarpc.com", "https://1rpc.io/op"],
   [Chain.Polkadot]: [
     "wss://polkadot-rpc.dwellir.com",
@@ -384,6 +392,7 @@ export const EXPLORER_URLS: Record<Chain, string> = {
   [Chain.Litecoin]: "https://blockchair.com/litecoin",
   [Chain.Maya]: "https://www.mayascan.org",
   [Chain.Near]: "https://nearblocks.io",
+  [Chain.Noble]: "https://www.mintscan.io/noble",
   [Chain.Optimism]: "https://optimistic.etherscan.io",
   [Chain.Polkadot]: "https://polkadot.subscan.io",
   [Chain.Polygon]: "https://polygonscan.com",
@@ -429,6 +438,7 @@ const getRpcBody = (chain: Chain | StagenetChain) => {
     .with(
       Chain.Cosmos,
       Chain.Kujira,
+      Chain.Noble,
       Chain.Maya,
       Chain.THORChain,
       StagenetChain.Maya,
