@@ -31,6 +31,7 @@ export const ctrlWallet = createWallet({
     Chain.Litecoin,
     Chain.Maya,
     Chain.Near,
+    Chain.Noble,
     Chain.Optimism,
     Chain.Polygon,
     Chain.Solana,
@@ -87,7 +88,8 @@ async function getWalletMethods(chain: (typeof CTRL_SUPPORTED_CHAINS)[number]) {
     }
 
     case Chain.Cosmos:
-    case Chain.Kujira: {
+    case Chain.Kujira:
+    case Chain.Noble: {
       const { getCosmosToolbox } = await import("@swapkit/toolboxes/cosmos");
       const chainId = ChainToChainId[chain];
       const provider = await getCtrlProvider(chain);

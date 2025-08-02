@@ -56,7 +56,7 @@ export async function getAddressValidator() {
       .with(Chain.Litecoin, Chain.Dash, Chain.Dogecoin, Chain.BitcoinCash, Chain.Bitcoin, () =>
         utxoValidateAddress({ address, chain: chain as UTXOChain }),
       )
-      .with(Chain.Cosmos, Chain.Kujira, Chain.Maya, Chain.THORChain, () =>
+      .with(Chain.Cosmos, Chain.Kujira, Chain.Noble, Chain.Maya, Chain.THORChain, () =>
         cosmosValidateAddress({ address, chain: chain as CosmosChain }),
       )
       .with(Chain.Chainflip, Chain.Polkadot, () =>
@@ -117,7 +117,7 @@ export function getFeeEstimator<T extends keyof CreateTransactionParams>(chain: 
           return toolbox.estimateTransactionFee(params) as Promise<AssetValue>;
         },
       )
-      .with(Chain.THORChain, Chain.Maya, Chain.Kujira, Chain.Cosmos, async () => {
+      .with(Chain.THORChain, Chain.Maya, Chain.Kujira, Chain.Noble, Chain.Cosmos, async () => {
         const { estimateTransactionFee } = await import("./cosmos");
         return estimateTransactionFee(params);
       })
@@ -213,7 +213,7 @@ export async function getToolbox<T extends keyof Toolboxes>(
         return utxoToolbox as Toolboxes[T];
       },
     )
-    .with(Chain.Cosmos, Chain.Kujira, Chain.Maya, Chain.THORChain, async () => {
+    .with(Chain.Cosmos, Chain.Kujira, Chain.Noble, Chain.Maya, Chain.THORChain, async () => {
       const { getCosmosToolbox } = await import("./cosmos");
       const cosmosToolbox = await getCosmosToolbox(
         chain as CosmosChain,

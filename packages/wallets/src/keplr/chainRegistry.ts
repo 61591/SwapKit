@@ -161,6 +161,63 @@ export const chainRegistry = new Map<ChainId, ChainInfo>([
     },
   ],
   [
+    ChainId.Noble,
+    {
+      chainId: "noble-1",
+      chainName: "Noble",
+      chainSymbolImageUrl:
+        "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/noble/chain.png",
+      rpc: "https://rpc-noble.keplr.app",
+      rest: "https://lcd-noble.keplr.app",
+      },
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: {
+        bech32PrefixAccAddr: "noble",
+        bech32PrefixAccPub: "noblepub",
+        bech32PrefixValAddr: "noblevaloper",
+        bech32PrefixValPub: "noblevaloperpub",
+        bech32PrefixConsAddr: "noblevalcons",
+        bech32PrefixConsPub: "noblevalconspub",
+      },
+      currencies: [
+        {
+          coinDenom: "USDC",
+          coinMinimalDenom: "uusdc",
+          coinDecimals: 6,
+          coinGeckoId: "usd-coin",
+          coinImageUrl:
+            "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/noble/uusdc.png",
+        },
+        {
+          coinDenom: "USDN",
+          coinMinimalDenom: "uusdn",
+          coinDecimals: 6,
+          coinGeckoId: "usd-coin",
+        },
+      ],
+      feeCurrencies: [
+        {
+          coinDenom: "USDC",
+          coinMinimalDenom: "uusdc",
+          coinDecimals: 6,
+          coinGeckoId: "usd-coin",
+          coinImageUrl:
+            "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/noble/uusdc.png"",
+        },
+        {
+          coinDenom: "USDN",
+          coinMinimalDenom:
+            "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/noble/uusdn.png",
+          coinDecimals: 6,
+          coinGeckoId: "usd-coin",
+        },
+      ],
+      features: ["cosmwasm"],
+    },
+  ],
+  [
     ChainId.THORChain,
     {
       chainId: "thorchain-1",
