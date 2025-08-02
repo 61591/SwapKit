@@ -28,6 +28,11 @@ export const DEFAULT_KUJI_FEE_MAINNET = {
   gas: "200000",
 };
 
+export const DEFAULT_NOBLE_FEE_MAINNET = {
+  amount: [{ denom: "uusdc", amount: "1000" }], 
+  gas: "200000",
+};
+
 export function getDefaultChainFee(chain: CosmosChain) {
   switch (chain) {
     case Chain.Maya:
@@ -36,6 +41,8 @@ export function getDefaultChainFee(chain: CosmosChain) {
       return { amount: [], gas: "500000000" };
     case Chain.Kujira:
       return DEFAULT_KUJI_FEE_MAINNET;
+    case Chain.Noble:
+      return DEFAULT_NOBLE_FEE_MAINNET;
     default:
       return DEFAULT_COSMOS_FEE_MAINNET;
   }
@@ -59,6 +66,9 @@ export const getMsgSendDenom = (symbol: string, isThorchain = false) => {
     case "ATOM":
     case "uATOM":
       return "uatom";
+    case "uUSDC":
+    case "USDC":
+      return "uusdc";
     default:
       return symbol;
   }
@@ -130,6 +140,9 @@ export const getRPC = (chainId: ChainId) => {
     case ChainId.Kujira:
       return rpcUrls.KUJI;
 
+    case ChainId.Noble:
+      return rpcUrls.NOBLE;
+
     case ChainId.THORChain:
     case "thorchain-mainnet-v1" as ChainId:
       return isStagenet ? rpcUrls.THOR_STAGENET : rpcUrls.THOR;
@@ -148,6 +161,7 @@ const getTransferMsgTypeByChain = (chain: CosmosChain) => {
       return "/types.MsgSend";
     case Chain.Cosmos:
     case Chain.Kujira:
+    case Chain.Noble:
       return "/cosmos.bank.v1beta1.MsgSend";
     default:
       throw new SwapKitError("toolbox_cosmos_not_supported", { chain });
@@ -221,6 +235,10 @@ const DENOM_MAP = {
   // Kujira denoms
   ukuji: { chain: Chain.Kujira, decimals: BaseDecimal[Chain.Kujira] },
   kuji: { chain: Chain.Kujira, decimals: BaseDecimal[Chain.Kujira] },
+
+  // Noble denoms
+  uusdc: { chain: Chain.Noble, decimals: BaseDecimal[Chain.Noble] },
+  usdc: { chain: Chain.Noble, decimals: BaseDecimal[Chain.Noble] },
 
   // USK on Kujira (lowercase version of the factory denom)
   [USK_KUJIRA_FACTORY_DENOM.toLowerCase()]: {
