@@ -39,7 +39,7 @@ export type CosmosToolboxParams<T = CosmosChain> = {
 export type BaseCosmosToolboxType = ReturnType<typeof createCosmosToolbox>;
 export type BaseCosmosWallet = Awaited<ReturnType<typeof createCosmosToolbox>>;
 export type CosmosWallets = {
-  [chain in Chain.Cosmos | Chain.Kujira]: BaseCosmosWallet;
+  [chain in Chain.Cosmos | Chain.Kujira | Chain.Noble]: BaseCosmosWallet;
 };
 
 export type ThorchainWallet = Awaited<
