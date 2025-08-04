@@ -33,7 +33,7 @@ const dtsPlugin = {
   },
 };
 
-const orderedPackages = [
+export const orderedPackages = [
   ["contracts", "tokens"],
   "helpers",
   "toolboxes",

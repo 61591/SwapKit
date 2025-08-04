@@ -100,15 +100,10 @@ export default defineConfig({
 });
 
 function createDocs() {
-  if (!process.env.REFERENCES) {
+  // TODO: skip this for now
+  if (process.env.REFERENCES !== "enable") {
     return { plugins: [], items: [] };
   }
-
-  const base = createTypeDoc([
-    { label: "/core", entrypoint: "core/src/index.ts" },
-    { label: "/helpers", entrypoint: "helpers/src/index.ts" },
-    { label: "/helpers/api", entrypoint: "helpers/src/api/index.ts" },
-  ]);
 
   const pluginNames = ["chainflip", "evm", "radix", "thorchain"];
   const toolboxNames = ["cosmos", "evm", "radix", "ripple", "solana", "substrate", "utxo"];
@@ -132,6 +127,11 @@ function createDocs() {
     "trezor",
     "walletconnect",
   ];
+  const base = createTypeDoc([
+    { label: "/core", entrypoint: "core/src/index.ts" },
+    { label: "/helpers", entrypoint: "helpers/src/index.ts" },
+    { label: "/helpers/api", entrypoint: "helpers/src/api/index.ts" },
+  ]);
   const pluginDocs = createTypeDoc(namesToPaths("plugins", pluginNames), "/plugins");
   const toolboxDocs = createTypeDoc(namesToPaths("toolboxes", toolboxNames), "/toolboxes");
   const walletDocs = createTypeDoc(namesToPaths("wallets", walletNames), "/wallets");
