@@ -8,6 +8,7 @@ export type CosmosToolboxes = {
   GAIA: ReturnType<typeof createCosmosToolbox>;
   KUJI: ReturnType<typeof createCosmosToolbox>;
   MAYA: ReturnType<typeof createThorchainToolbox>;
+  NOBLE: ReturnType<typeof createCosmosToolbox>;
   THOR: ReturnType<typeof createThorchainToolbox>;
 };
 
@@ -18,6 +19,7 @@ export const getCosmosToolbox = <T extends CosmosChain>(
   switch (chain) {
     case Chain.Cosmos:
     case Chain.Kujira:
+    case Chain.Noble:
       return createCosmosToolbox({ chain, ...params }) as CosmosToolboxes[T];
 
     case Chain.Maya:

@@ -39,7 +39,7 @@ export async function getCtrlProvider<T extends Chain>(
 ): Promise<
   T extends Chain.Solana
     ? SolanaProvider
-    : T extends Chain.Cosmos | Chain.Kujira
+    : T extends Chain.Cosmos | Chain.Kujira | Chain.Noble
       ? Keplr
       : T extends EVMChain
         ? Eip1193Provider
@@ -63,7 +63,7 @@ export async function getCtrlProvider<T extends Chain>(
       Chain.Polygon,
       () => window.xfi?.ethereum,
     )
-    .with(Chain.Cosmos, Chain.Kujira, () => window.xfi?.keplr)
+    .with(Chain.Cosmos, Chain.Kujira, Chain.Noble, () => window.xfi?.keplr)
     .with(Chain.Bitcoin, () => window.xfi?.bitcoin)
     .with(Chain.BitcoinCash, () => window.xfi?.bitcoincash)
     .with(Chain.Dogecoin, () => window.xfi?.dogecoin)
@@ -106,7 +106,7 @@ export async function getCtrlAddress(chain: Chain) {
       });
     }
 
-    if ([Chain.Cosmos, Chain.Kujira].includes(chain)) {
+    if ([Chain.Cosmos, Chain.Kujira, Chain.Noble].includes(chain)) {
       const provider = await getCtrlProvider(Chain.Cosmos);
       if (!provider || "request" in provider) {
         throw new SwapKitError({

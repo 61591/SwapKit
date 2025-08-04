@@ -8,6 +8,7 @@ export function getExplorerTxUrl({ chain, txHash }: { txHash: string; chain: Cha
     .with(
       Chain.Maya,
       Chain.Kujira,
+      Chain.Noble,
       Chain.Cosmos,
       Chain.THORChain,
       Chain.Solana,

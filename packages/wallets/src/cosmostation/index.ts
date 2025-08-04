@@ -9,7 +9,7 @@ import {
 } from "@swapkit/helpers";
 import { createWallet, getWalletSupportedChains } from "@swapkit/wallet-core";
 
-const cosmostationSupportedChainIds = [ChainId.Cosmos, ChainId.Kujira, ChainId.THORChain] as const;
+const cosmostationSupportedChainIds = [ChainId.Cosmos, ChainId.Kujira, ChainId.Noble, ChainId.THORChain] as const;
 const cosmostationSupportedEVMChains = [
   Chain.Ethereum,
   Chain.BinanceSmartChain,
@@ -96,6 +96,7 @@ export const cosmostationWallet = createWallet({
   supportedChains: [
     Chain.Cosmos,
     Chain.Kujira,
+    Chain.Noble,
     Chain.THORChain,
     Chain.Ethereum,
     Chain.BinanceSmartChain,
