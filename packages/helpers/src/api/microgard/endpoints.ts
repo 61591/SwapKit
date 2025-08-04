@@ -5,7 +5,12 @@ import {
   RequestClient,
   SwapKitNumber,
 } from "@swapkit/helpers";
-import type { LiquidityPositionRaw, PoolDetail, PoolPeriod, THORNameDetails } from "./types";
+import type {
+  LiquidityPositionRaw,
+  MicroguardTHORNameDetails,
+  PoolDetail,
+  PoolPeriod,
+} from "./types";
 
 /**
  * TODO: Move to SKConfig under midgardUrls.microgard
@@ -13,7 +18,7 @@ import type { LiquidityPositionRaw, PoolDetail, PoolPeriod, THORNameDetails } fr
 const baseUrl = "https://mu.thorswap.net";
 
 export function getTHORNameDetails(thorname: string) {
-  return RequestClient.get<THORNameDetails>(`${baseUrl}/thorname/lookup/${thorname}`);
+  return RequestClient.get<MicroguardTHORNameDetails>(`${baseUrl}/thorname/lookup/${thorname}`);
 }
 
 export function getTHORNamesByOwner(owner: string) {

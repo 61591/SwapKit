@@ -1,6 +1,6 @@
 import type { AssetValue, SwapKitNumber } from "@swapkit/helpers";
 
-export type THORNameDetails = {
+export type MicroguardTHORNameDetails = {
   entries: Array<{ address: string; chain: string }>;
   owner: string;
   expire: string;

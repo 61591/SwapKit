@@ -5,6 +5,7 @@ import * as thornode from "./thornode/endpoints";
 import * as tsStatic from "./thorswapStatic/endpoints";
 
 export * from "./microgard/types";
+export * from "./midgard/types";
 export * from "./thorswapStatic/types";
 export * from "./thornode/types";
 export * from "./swapkitApi/types";
