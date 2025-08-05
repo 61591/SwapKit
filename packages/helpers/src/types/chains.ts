@@ -10,12 +10,14 @@ export enum Chain {
   BinanceSmartChain = "BSC",
   Bitcoin = "BTC",
   BitcoinCash = "BCH",
+  Corn = "CORN",
   Cosmos = "GAIA",
   Dash = "DASH",
   Dogecoin = "DOGE",
   Ethereum = "ETH",
   Fiat = "FIAT",
   Gnosis = "GNO",
+  HyperEVM = "HYPE",
   Kujira = "KUJI",
   Litecoin = "LTC",
   Maya = "MAYA",
@@ -27,9 +29,10 @@ export enum Chain {
   Polygon = "POL",
   Radix = "XRD",
   Ripple = "XRP",
-  THORChain = "THOR",
   Solana = "SOL",
+  THORChain = "THOR",
   Tron = "TRON",
+  Unichain = "UNI",
   Zcash = "ZEC",
 }
 
@@ -54,6 +57,8 @@ export enum ChainId {
   Bitcoin = "bitcoin",
   BitcoinCash = "bitcoincash",
   Chainflip = "chainflip",
+  Corn = "21000000",
+  CornHex = "0x1406f40",
   Cosmos = "cosmoshub-4",
   Dash = "dash",
   Dogecoin = "dogecoin",
@@ -62,6 +67,8 @@ export enum ChainId {
   Fiat = "fiat",
   Gnosis = "100",
   GnosisHex = "0x64",
+  HyperEVM = "999",
+  HyperEVMHex = "0x3e7",
   Kujira = "kaiyo-1",
   Litecoin = "litecoin",
   Maya = "mayachain-mainnet-v1",
@@ -80,6 +87,8 @@ export enum ChainId {
   Solana = "solana",
   Tron = "728126428",
   TronHex = "0x2b6653dc",
+  Unichain = "130",
+  UnichainHex = "0x82",
   Zcash = "zcash",
 }
 
@@ -99,6 +108,8 @@ export const ChainIdToChain: Record<ChainId, Chain> = {
   [ChainId.BitcoinCash]: Chain.BitcoinCash,
   [ChainId.Bitcoin]: Chain.Bitcoin,
   [ChainId.Chainflip]: Chain.Chainflip,
+  [ChainId.CornHex]: Chain.Corn,
+  [ChainId.Corn]: Chain.Corn,
   [ChainId.Cosmos]: Chain.Cosmos,
   [ChainId.Dash]: Chain.Dash,
   [ChainId.Dogecoin]: Chain.Dogecoin,
@@ -107,6 +118,8 @@ export const ChainIdToChain: Record<ChainId, Chain> = {
   [ChainId.Fiat]: Chain.Fiat,
   [ChainId.GnosisHex]: Chain.Gnosis,
   [ChainId.Gnosis]: Chain.Gnosis,
+  [ChainId.HyperEVMHex]: Chain.HyperEVM,
+  [ChainId.HyperEVM]: Chain.HyperEVM,
   [ChainId.Kujira]: Chain.Kujira,
   [ChainId.Litecoin]: Chain.Litecoin,
   [ChainId.MayaStagenet]: Chain.Maya,
@@ -125,6 +138,8 @@ export const ChainIdToChain: Record<ChainId, Chain> = {
   [ChainId.THORChain]: Chain.THORChain,
   [ChainId.Tron]: Chain.Tron,
   [ChainId.TronHex]: Chain.Tron,
+  [ChainId.UnichainHex]: Chain.Unichain,
+  [ChainId.Unichain]: Chain.Unichain,
   [ChainId.Zcash]: Chain.Zcash,
 };
 
@@ -141,6 +156,7 @@ export const BaseDecimal: Record<Chain, number> = {
   BERA: 18,
   BSC: 18,
   BTC: 8,
+  CORN: 18,
   DASH: 8,
   DOGE: 8,
   DOT: 10,
@@ -149,6 +165,7 @@ export const BaseDecimal: Record<Chain, number> = {
   FLIP: 18,
   GAIA: 6,
   GNO: 18,
+  HYPE: 18,
   KUJI: 6,
   LTC: 8,
   POL: 18,
@@ -159,6 +176,7 @@ export const BaseDecimal: Record<Chain, number> = {
   SOL: 9,
   THOR: 8,
   TRON: 6,
+  UNI: 18,
   XRD: 18,
   XRP: 6,
   ZEC: 8,
@@ -174,12 +192,14 @@ export const BlockTimes: Record<Partial<Chain>, number> = {
   [Chain.Bitcoin]: 600,
   [Chain.BitcoinCash]: 600,
   [Chain.Chainflip]: 5,
+  [Chain.Corn]: 35.9,
   [Chain.Cosmos]: 2,
   [Chain.Dash]: 150,
   [Chain.Dogecoin]: 600,
   [Chain.Ethereum]: 12.5,
   [Chain.Fiat]: 60,
   [Chain.Gnosis]: 5.2,
+  [Chain.HyperEVM]: 1,
   [Chain.Kujira]: 2.2,
   [Chain.Litecoin]: 150,
   [Chain.Maya]: 6,
@@ -193,6 +213,7 @@ export const BlockTimes: Record<Partial<Chain>, number> = {
   [Chain.Solana]: 0.4,
   [Chain.THORChain]: 6,
   [Chain.Tron]: 3,
+  [Chain.Unichain]: 1,
   [Chain.Zcash]: 150,
 };
 
@@ -206,10 +227,13 @@ export type EVMChain =
   | Chain.Base
   | Chain.Berachain
   | Chain.BinanceSmartChain
+  | Chain.Corn
   | Chain.Ethereum
   | Chain.Gnosis
+  | Chain.HyperEVM
   | Chain.Optimism
-  | Chain.Polygon;
+  | Chain.Polygon
+  | Chain.Unichain;
 
 export const EVMChains = [
   Chain.Arbitrum,
@@ -218,10 +242,13 @@ export const EVMChains = [
   Chain.Base,
   Chain.Berachain,
   Chain.BinanceSmartChain,
+  Chain.Corn,
   Chain.Ethereum,
   Chain.Gnosis,
+  Chain.HyperEVM,
   Chain.Optimism,
   Chain.Polygon,
+  Chain.Unichain,
 ] as const;
 
 export type UTXOChain =
@@ -287,12 +314,14 @@ export const RPC_URLS: Record<Chain | StagenetChain, string> = {
   [Chain.BitcoinCash]: "https://node-router.thorswap.net/bitcoin-cash",
   [Chain.Bitcoin]: "https://bitcoin-rpc.publicnode.com",
   [Chain.Chainflip]: "wss://mainnet-archive.chainflip.io",
+  [Chain.Corn]: "https://rpc.ankr.com/corn_maizenet",
   [Chain.Cosmos]: "https://node-router.thorswap.net/cosmos/rpc",
   [Chain.Dash]: "https://dash-rpc.publicnode.com",
   [Chain.Dogecoin]: "https://node-router.thorswap.net/dogecoin",
   [Chain.Ethereum]: "https://ethereum-rpc.publicnode.com",
   [Chain.Fiat]: "",
   [Chain.Gnosis]: "https://gnosis-rpc.publicnode.com",
+  [Chain.HyperEVM]: "https://rpc.hyperliquid.xyz/evm",
   [Chain.Kujira]: "https://kujira-rpc.ibs.team",
   [Chain.Litecoin]: "https://node-router.thorswap.net/litecoin",
   [Chain.Maya]: "https://tendermint.mayachain.info",
@@ -307,6 +336,7 @@ export const RPC_URLS: Record<Chain | StagenetChain, string> = {
   [Chain.Solana]: "https://solana-rpc.publicnode.com",
   [Chain.THORChain]: "https://rpc.thorswap.net",
   [Chain.Tron]: "https://tron-rpc.publicnode.com",
+  [Chain.Unichain]: "https://unichain-rpc.publicnode.com",
   [Chain.Zcash]: "https://mainnet.lightwalletd.com:9067",
   [StagenetChain.Maya]: "",
   [StagenetChain.THORChain]: "https://stagenet-rpc.ninerealms.com",
@@ -344,12 +374,20 @@ export const FALLBACK_URLS: Record<Chain | StagenetChain, string[]> = {
     "wss://archive-1.mainnet.chainflip.io",
     "wss://archive-2.mainnet.chainflip.io",
   ],
+  [Chain.Corn]: [
+    "https://mainnet.corn-rpc.com",
+    "https://maizenet-rpc.usecorn.com",
+  ],
   [Chain.Cosmos]: ["https://cosmos-rpc.publicnode.com"],
   [Chain.Dash]: ["https://dash-rpc.publicnode.com"],
   [Chain.Dogecoin]: ["https://doge.getblock.io/mainnet", "https://dogecoin.publicnode.com"],
   [Chain.Ethereum]: ["https://eth.llamarpc.com", "https://cloudflare-eth.com"],
   [Chain.Fiat]: [],
   [Chain.Gnosis]: ["https://gnosis.drpc.org", "https://rpc.ankr.com/gnosis"],
+  [Chain.HyperEVM]: [
+    "https://rpc.hyperlend.finance",
+    "https://rpc.hypurrscan.io",
+  ],
   [Chain.Kujira]: ["https://kujira-rpc.polkachu.com", "https://rpc-kujira.synergynodes.com/"],
   [Chain.Litecoin]: ["https://ltc.getblock.io/mainnet", "https://litecoin.publicnode.com"],
   [Chain.Maya]: ["https://tendermint.mayachain.info", "https://maya-tendermint.publicnode.com"],
@@ -375,6 +413,10 @@ export const FALLBACK_URLS: Record<Chain | StagenetChain, string[]> = {
     "https://solana-mainnet.rpc.extrnode.com",
   ],
   [Chain.Tron]: ["https://api.tronstack.io", "https://api.tron.network"],
+  [Chain.Unichain]: [
+    "https://0xrpc.io/uni",
+    "https://unichain.drpc.org",
+  ],
   [Chain.Zcash]: [],
 };
 
@@ -388,12 +430,14 @@ export const EXPLORER_URLS: Record<Chain, string> = {
   [Chain.Bitcoin]: "https://blockchair.com/bitcoin",
   [Chain.BitcoinCash]: "https://www.blockchair.com/bitcoin-cash",
   [Chain.Chainflip]: "https://explorer.polkascan.io/polkadot",
+  [Chain.Corn]: "https://cornscan.io",
   [Chain.Cosmos]: "https://www.mintscan.io/cosmos",
   [Chain.Dash]: "https://blockchair.com/dash",
   [Chain.Dogecoin]: "https://blockchair.com/dogecoin",
   [Chain.Ethereum]: "https://etherscan.io",
   [Chain.Fiat]: "",
   [Chain.Gnosis]: "https://gnosisscan.io",
+  [Chain.HyperEVM]: "https://hyperevmscan.io",
   [Chain.Kujira]: "https://finder.kujira.network/kaiyo-1",
   [Chain.Litecoin]: "https://blockchair.com/litecoin",
   [Chain.Maya]: "https://www.mayascan.org",
@@ -407,6 +451,7 @@ export const EXPLORER_URLS: Record<Chain, string> = {
   [Chain.THORChain]: "https://runescan.io",
   [Chain.Solana]: "https://solscan.io",
   [Chain.Tron]: "https://tronscan.org",
+  [Chain.Unichain]: "https://uniscan.xyz",
   [Chain.Zcash]: "https://blockchair.com/zcash",
 };
 
@@ -421,10 +466,13 @@ const getRpcBody = (chain: Chain | StagenetChain) => {
       Chain.Base,
       Chain.Berachain,
       Chain.BinanceSmartChain,
+      Chain.Corn
       Chain.Ethereum,
       Chain.Gnosis,
+      Chain.HyperEVM,
       Chain.Optimism,
       Chain.Polygon,
+      Chain.Unichain,
       () => ({ id: 1, jsonrpc: "2.0", method: "eth_blockNumber", params: [] }),
     )
     .with(
