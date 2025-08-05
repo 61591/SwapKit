@@ -23,10 +23,13 @@ import type {
   BASEToolbox,
   BERAToolbox,
   BSCToolbox,
+  CORNToolbox,
   ETHToolbox,
   GNOToolbox,
+  HYPEToolbox,
   MATICToolbox,
   OPToolbox,
+  UNIToolbox,
 } from "./toolbox";
 
 import type { getProvider } from "./index";
@@ -139,8 +142,11 @@ export type EVMToolboxes = {
   [Chain.Base]: Awaited<ReturnType<typeof BASEToolbox>>;
   [Chain.Berachain]: Awaited<ReturnType<typeof BERAToolbox>>;
   [Chain.BinanceSmartChain]: Awaited<ReturnType<typeof BSCToolbox>>;
+  [Chain.Corn]: Awaited<ReturnType<typeof CORNToolbox>>;
   [Chain.Ethereum]: Awaited<ReturnType<typeof ETHToolbox>>;
   [Chain.Gnosis]: Awaited<ReturnType<typeof GNOToolbox>>;
+  [Chain.HyperEVM]: Awaited<ReturnType<typeof HYPEToolbox>>;
   [Chain.Optimism]: Awaited<ReturnType<typeof OPToolbox>>;
   [Chain.Polygon]: Awaited<ReturnType<typeof MATICToolbox>>;
+  [Chain.Unichain]: Awaited<ReturnType<typeof UNIToolbox>>;
 };

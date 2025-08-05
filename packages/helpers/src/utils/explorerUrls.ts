@@ -21,11 +21,14 @@ export function getExplorerTxUrl({ chain, txHash }: { txHash: string; chain: Cha
       Chain.BinanceSmartChain,
       Chain.Base,
       Chain.Berachain,
+      Chain.Corn,
       Chain.Ethereum,
       Chain.Gnosis,
+      Chain.HyperEVM,
       Chain.Optimism,
       Chain.Polkadot,
       Chain.Polygon,
+      Chain.Unichain,
       () => `${baseUrl}/tx/${txHash.startsWith("0x") ? txHash : `0x${txHash}`}`,
     )
     .with(

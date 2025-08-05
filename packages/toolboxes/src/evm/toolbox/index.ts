@@ -9,9 +9,12 @@ import {
   BASEToolbox,
   BERAToolbox,
   BSCToolbox,
+  CORNToolbox,
   ETHToolbox,
   GNOToolbox,
+  HYPEToolbox,
   MATICToolbox,
+  UNIToolbox,
 } from "./evm";
 import { OPToolbox } from "./op";
 
@@ -34,12 +37,18 @@ export async function getEvmToolbox<T extends EVMChain>(chain: T, params?: EVMTo
       return BERAToolbox(toolboxParams);
     case Chain.BinanceSmartChain:
       return BSCToolbox(toolboxParams);
+    case Chain.Corn:
+      return CORNToolbox(toolboxParams);
     case Chain.Gnosis:
       return GNOToolbox(toolboxParams);
+    case Chain.HyperEVM:
+      return HYPEToolbox(toolboxParams);
     case Chain.Optimism:
       return OPToolbox(toolboxParams);
     case Chain.Polygon:
       return MATICToolbox(toolboxParams);
+    case Chain.Unichain:
+      return UNIToolbox(toolboxParams);
     case Chain.Ethereum:
       return ETHToolbox(toolboxParams);
     default:

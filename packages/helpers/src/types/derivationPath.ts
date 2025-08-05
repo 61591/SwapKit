@@ -7,11 +7,14 @@ export enum ContractAddress {
   AVAX = "0x0000000000000000000000000000000000000000",
   BASE = "0x0000000000000000000000000000000000000000",
   BERA = "0x0000000000000000000000000000000000000000",
+  CORN = "0x0000000000000000000000000000000000000000",
   ETH = "0x0000000000000000000000000000000000000000",
   BSC = "0x0000000000000000000000000000000000000000",
   GNO = "0x0000000000000000000000000000000000000000",
+  HYPE = "0x2222222222222222222222222222222222222222",
   MATIC = "0x0000000000000000000000000000000000001010",
   OP = "0x4200000000000000000000000000000000000042",
+  UNI = "0x0000000000000000000000000000000000000000",
 }
 
 export type DerivationPathArray = [number, number, number, number, number?];
@@ -25,11 +28,13 @@ export const NetworkDerivationPath: Record<Chain, DerivationPathArray> = {
   BERA: [44, 60, 0, 0, 0],
   BSC: [44, 60, 0, 0, 0],
   BTC: [84, 0, 0, 0, 0],
+  CORN: [44, 60, 0, 0, 0],
   DASH: [44, 5, 0, 0, 0],
   DOGE: [44, 3, 0, 0, 0],
   ETH: [44, 60, 0, 0, 0],
   GAIA: [44, 118, 0, 0, 0],
   GNO: [44, 60, 0, 0, 0],
+  HYPE: [44, 60, 0, 0, 0],
   KUJI: [44, 118, 0, 0, 0],
   LTC: [84, 2, 0, 0, 0],
   POL: [44, 60, 0, 0, 0],
@@ -40,6 +45,7 @@ export const NetworkDerivationPath: Record<Chain, DerivationPathArray> = {
   SOL: [44, 501, 0, 0, 0],
   THOR: [44, 931, 0, 0, 0],
   TRON: [44, 195, 0, 0, 0],
+  UNI: [44, 60, 0, 0, 0],
   ZEC: [44, 133, 0, 0, 0],
 
   // Polkadot and related network derivation path is not number based

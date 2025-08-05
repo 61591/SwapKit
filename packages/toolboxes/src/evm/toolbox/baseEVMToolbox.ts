@@ -163,10 +163,13 @@ const baseAssetAddress: Record<EVMChain, string> = {
   [Chain.Base]: ContractAddress.BASE,
   [Chain.Berachain]: ContractAddress.BERA,
   [Chain.BinanceSmartChain]: ContractAddress.BSC,
+  [Chain.Corn]: ContractAddress.CORN,
   [Chain.Ethereum]: ContractAddress.ETH,
   [Chain.Gnosis]: ContractAddress.GNO,
+  [Chain.HyperEVM]: ContractAddress.HYPE,
   [Chain.Optimism]: ContractAddress.OP,
   [Chain.Polygon]: ContractAddress.MATIC,
+  [Chain.Unichain]: ContractAddress.UNI,
 };
 export function getTokenAddress({ chain, symbol, ticker }: Asset, baseAssetChain: EVMChain) {
   try {

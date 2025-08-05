@@ -173,10 +173,20 @@ function getNetworkInfo<C extends EVMChain>({ chain }: { chain: C }) {
         chainName: "BNB Smart Chain Mainnet",
         nativeCurrency: { name: "Binance Coin", symbol: "BNB", decimals },
       };
+    case Chain.Corn:
+      return {
+        chainName: "Corn",
+        nativeCurrency: { name: "Bitcorn", symbol: Chain.Corn, decimals },
+      };
     case Chain.Gnosis:
       return {
         chainName: "Gnosis",
         nativeCurrency: { name: "xDAI", symbol: "XDAI", decimals },
+      };
+    case Chain.HyperEVM:
+      return {
+        chainName: "HyperEVM",
+        nativeCurrency: { name: "Hyperliquid", symbol: Chain.HyperEVM, decimals },
       };
     case Chain.Optimism:
       return {
@@ -187,6 +197,11 @@ function getNetworkInfo<C extends EVMChain>({ chain }: { chain: C }) {
       return {
         chainName: "Polygon Mainnet",
         nativeCurrency: { name: "Polygon", symbol: Chain.Polygon, decimals },
+      };
+    case Chain.Unichain:
+      return {
+        chainName: "Unichain",
+        nativeCurrency: { name: "Ethereum", symbol: Chain.Ethereum, decimals },
       };
     default:
       throw new SwapKitError("toolbox_evm_not_supported", { chain });
