@@ -29,7 +29,7 @@ export enum Chain {
   Ripple = "XRP",
   THORChain = "THOR",
   Solana = "SOL",
-  Tron = "TRX",
+  Tron = "TRON",
   Zcash = "ZEC",
 }
 
@@ -158,7 +158,7 @@ export const BaseDecimal: Record<Chain, number> = {
   OP: 18,
   SOL: 9,
   THOR: 8,
-  TRX: 6,
+  TRON: 6,
   XRD: 18,
   XRP: 6,
   ZEC: 8,

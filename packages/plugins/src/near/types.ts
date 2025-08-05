@@ -1,8 +1,9 @@
-export type NearNameInfo = {
-  owner: string;
-  price?: string;
-  expiresAt?: string;
-  registeredAt?: string;
+export type NearAccountInfo = {
+  accountId: string;
+  balance: string;
+  storageUsed: number;
+  codeHash: string;
+  publicKeys: string[];
 };
 
 export type NearNameRegistrationParams = {

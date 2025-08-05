@@ -10,7 +10,7 @@ import { type QuoteResponseRoute, SwapKitApi } from "@swapkit/helpers/api";
 import type { NearWallet } from "@swapkit/toolboxes/near";
 import { createPlugin } from "../utils";
 import { calculateNearNameCost, validateNearName } from "./nearNames";
-import type { NearNameRegistrationParams } from "./types";
+import type { NearAccountInfo, NearNameRegistrationParams } from "./types";
 
 export const NearPlugin = createPlugin({
   name: "near",
@@ -58,31 +58,35 @@ export const NearPlugin = createPlugin({
     // NEAR Names functionality
     nearNames: {
       async resolve(name: string) {
+        const normalizedName = name.toLowerCase().replace(/\.near$/, "");
+
+        if (!validateNearName(normalizedName)) {
+          throw new SwapKitError("plugin_near_invalid_name");
+        }
+
+        const accountId = `${normalizedName}.near`;
+        const wallet = getWallet(Chain.Near);
+
+        if (!wallet) {
+          throw new SwapKitError("plugin_near_no_connection");
+        }
+
         try {
-          const normalizedName = name.toLowerCase().replace(/\.near$/, "");
-
-          if (!validateNearName(normalizedName)) {
-            throw new SwapKitError("plugin_near_invalid_name");
-          }
-
-          const wallet = getWallet(Chain.Near);
-
-          if (!wallet) {
-            throw new SwapKitError("plugin_near_no_connection");
-          }
-
-          const result = await wallet.provider.query({
-            request_type: "call_function",
+          // Ask RPC whether the account exists
+          await wallet.provider.query({
+            request_type: "view_account",
             finality: "final",
-            account_id: "near",
-            method_name: "resolve",
-            args_base64: Buffer.from(JSON.stringify({ name: normalizedName })).toString("base64"),
+            account_id: accountId,
           });
-
-          const response = JSON.parse(Buffer.from((result as any).result).toString());
-          return response?.owner || null;
-        } catch {
-          return null;
+          // If no error is thrown, the account exists
+          return accountId; // Account is taken, return the account ID as "owner"
+        } catch (err: any) {
+          // UNKNOWN_ACCOUNT means it hasn't been created yet → available
+          if (/UNKNOWN_ACCOUNT|does not exist while viewing/.test(err.message)) {
+            return null;
+          }
+          // Re-throw any unexpected errors
+          throw err;
         }
       },
 
@@ -91,53 +95,75 @@ export const NearPlugin = createPlugin({
         return owner === null;
       },
 
-      async getInfo(name: string) {
+      async getInfo(name: string): Promise<NearAccountInfo | null> {
+        const normalizedName = name.toLowerCase().replace(/\.near$/, "");
+
+        if (!validateNearName(normalizedName)) {
+          throw new SwapKitError("plugin_near_invalid_name");
+        }
+
+        const accountId = `${normalizedName}.near`;
+        const wallet = getWallet(Chain.Near);
+
+        if (!wallet) {
+          throw new SwapKitError("plugin_near_no_connection");
+        }
+
         try {
-          const normalizedName = name.toLowerCase().replace(/\.near$/, "");
-
-          if (!validateNearName(normalizedName)) {
-            throw new SwapKitError("plugin_near_invalid_name");
-          }
-
-          const wallet = getWallet(Chain.Near);
-
-          if (!wallet) {
-            throw new SwapKitError("plugin_near_no_connection");
-          }
-
-          const result = await wallet.provider.query({
-            request_type: "call_function",
+          // Get account info
+          const accountInfo = await wallet.provider.query({
+            request_type: "view_account",
             finality: "final",
-            account_id: "near",
-            method_name: "get_info",
-            args_base64: Buffer.from(JSON.stringify({ name: normalizedName })).toString("base64"),
+            account_id: accountId,
           });
 
-          const response = JSON.parse(Buffer.from((result as any).result).toString());
-          return response || null;
-        } catch {
-          return null;
+          // Optionally get the account's public keys
+          const keysInfo = await wallet.provider.query({
+            request_type: "view_access_key_list",
+            finality: "final",
+            account_id: accountId,
+          });
+
+          return {
+            accountId,
+            balance: (accountInfo as any).amount,
+            storageUsed: (accountInfo as any).storage_usage,
+            codeHash: (accountInfo as any).code_hash,
+            publicKeys: (keysInfo as any).keys?.map((k: any) => k.public_key) || [],
+          };
+        } catch (err: any) {
+          if (/UNKNOWN_ACCOUNT|does not exist while viewing/.test(err.message)) {
+            return null;
+          }
+          throw err;
         }
       },
 
       async lookupNames(accountId: string) {
+        // NEAR doesn't have a central registry to look up all names owned by an account
+        // This would require indexing or an external service
+        // For now, we can only check if a specific account exists
+        const wallet = getWallet(Chain.Near);
+
+        if (!wallet) {
+          throw new SwapKitError("plugin_near_no_connection");
+        }
+
         try {
-          const wallet = getWallet(Chain.Near);
-
-          if (!wallet) {
-            throw new SwapKitError("plugin_near_no_connection");
-          }
-
-          const result = await wallet.provider.query({
-            request_type: "call_function",
+          // Check if the account exists
+          await wallet.provider.query({
+            request_type: "view_account",
             finality: "final",
-            account_id: "near",
-            method_name: "get_names_by_owner",
-            args_base64: Buffer.from(JSON.stringify({ account_id: accountId })).toString("base64"),
+            account_id: accountId,
           });
 
-          const response = JSON.parse(Buffer.from((result as any).result).toString());
-          return Array.isArray(response) ? response.map((n) => `${n}.near`) : [];
+          // If the account ID ends with .near, it's a NEAR name
+          if (accountId.endsWith(".near")) {
+            return [accountId];
+          }
+
+          // Otherwise, we can't determine what names they own without an indexer
+          return [];
         } catch {
           return [];
         }

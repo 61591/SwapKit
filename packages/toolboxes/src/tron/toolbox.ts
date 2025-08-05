@@ -318,7 +318,7 @@ export const createTronToolbox = async (
 
           balances.push(
             AssetValue.from({
-              asset: `TRX.${tokenMetaData.symbol}-${contractAddress}`,
+              asset: `TRON.${tokenMetaData.symbol}-${contractAddress}`,
               value: BigInt(balance || 0),
               fromBaseDecimal: tokenMetaData.decimals,
             }),
@@ -352,7 +352,7 @@ export const createTronToolbox = async (
       if (usdtBalance) {
         balances.push(
           AssetValue.from({
-            asset: `TRX.USDT-${TRON_USDT_CONTRACT}`,
+            asset: `TRON.USDT-${TRON_USDT_CONTRACT}`,
             value: usdtBalance,
             fromBaseDecimal: 6,
           }),

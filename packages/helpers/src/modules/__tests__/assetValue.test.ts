@@ -799,7 +799,7 @@ describe("AssetValue", () => {
       expect(trxAsset).toEqual(
         expect.objectContaining({
           chain: Chain.Tron,
-          decimal: BaseDecimal.TRX,
+          decimal: BaseDecimal.TRON,
           isGasAsset: true,
           isSynthetic: false,
           symbol: "TRX",
@@ -808,11 +808,11 @@ describe("AssetValue", () => {
         }),
       );
 
-      const trxAssetFromString = AssetValue.from({ asset: "TRX.TRX" });
+      const trxAssetFromString = AssetValue.from({ asset: "TRON.TRX" });
       expect(trxAssetFromString).toEqual(
         expect.objectContaining({
           chain: Chain.Tron,
-          decimal: BaseDecimal.TRX,
+          decimal: BaseDecimal.TRON,
           isGasAsset: true,
           isSynthetic: false,
           symbol: "TRX",
@@ -840,7 +840,7 @@ describe("AssetValue", () => {
 
     test("TRC20 tokens are not marked as gas assets", () => {
       const tronUsdt = AssetValue.from({
-        asset: "TRX.USDT-TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+        asset: "TRON.USDT-TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
       });
 
       expect(tronUsdt).toEqual(

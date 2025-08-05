@@ -18,7 +18,7 @@ export class TronLedgerInterface implements TronSigner {
     this.derivationPath =
       typeof derivationPath === "string"
         ? derivationPath
-        : derivationPathToString(derivationPath || NetworkDerivationPath.TRX);
+        : derivationPathToString(derivationPath || NetworkDerivationPath.TRON);
   }
 
   checkOrCreateTransportAndLedger = async () => {
