@@ -29,6 +29,7 @@ const ethGasChains = [
   Chain.Base,
   Chain.Ethereum,
   Chain.Optimism,
+  Chain.Unichain,
 ] as const;
 
 async function getContractDecimals({ chain, to }: { chain: EVMChain; to: string }) {
@@ -117,7 +118,9 @@ export function isGasAsset({ chain, symbol }: { chain: Chain; symbol: string }) 
     .with(Chain.Avalanche, () => symbol === "AVAX")
     .with(Chain.Berachain, () => symbol === "BERA")
     .with(Chain.BinanceSmartChain, () => symbol === "BNB")
+    .with(Chain.Corn, () => symbol === "BTCN")
     .with(Chain.Gnosis, () => symbol === "XDAI")
+    .with(Chain.HyperEVM, () => symbol === "HYPE")
     .with(Chain.Maya, () => symbol === "CACAO")
     .with(Chain.Cosmos, () => symbol === "ATOM")
     .with(Chain.THORChain, () => symbol === "RUNE")
@@ -151,6 +154,8 @@ export const getCommonAssetInfo = (assetString: CommonAssetString) => {
     )
     .with(Chain.Radix, "XRD.XRD", () => ({ identifier: "XRD.XRD", decimal }))
     .with(Chain.Polygon, "POL.POL", () => ({ identifier: "POL.POL", decimal }))
+    .with(Chain.CORN, "CORN.BTCN", () => ({ identifier: "CORN.BTCN", decimal }))
+    .with(Chain.HyperEVM, "HYPE.HYPE", () => ({ identifier: "HYPE.HYPE", decimal }))
     .with("KUJI.USK", (asset) => ({ identifier: asset, decimal: 6 }))
     .with("ETH.FLIP", () => ({
       identifier: "ETH.FLIP-0x826180541412D574cf1336d22c0C0a287822678A",
@@ -181,7 +186,7 @@ export function getAssetType({ chain, symbol }: { chain: Chain; symbol: string }
       Chain.Radix,
       () => symbol === Chain.Radix || `${chain}.${symbol}` === getCommonAssetInfo(chain).identifier,
     )
-    .with(Chain.Arbitrum, Chain.Optimism, Chain.Base, Chain.Aurora, () => symbol === Chain.Ethereum)
+    .with(Chain.Arbitrum, Chain.Optimism, Chain.Base, Chain.Aurora, Chain.Unichain, () => symbol === Chain.Ethereum)
     .with(Chain.Cosmos, () => symbol === "ATOM")
     .with(Chain.BinanceSmartChain, () => symbol === "BNB")
     .with(Chain.Maya, () => symbol === "CACAO")
