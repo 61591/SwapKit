@@ -47,10 +47,13 @@ export async function getAddressValidator() {
         Chain.Base,
         Chain.Berachain,
         Chain.BinanceSmartChain,
+        Chain.Corn,
         Chain.Ethereum,
         Chain.Gnosis,
+        Chain.HyperEVM,
         Chain.Optimism,
         Chain.Polygon,
+        Chain.Unichain,
         () => evmValidateAddress({ address }),
       )
       .with(Chain.Litecoin, Chain.Dash, Chain.Dogecoin, Chain.BitcoinCash, Chain.Bitcoin, () =>
@@ -86,10 +89,13 @@ export function getFeeEstimator<T extends keyof CreateTransactionParams>(chain: 
         Chain.Base,
         Chain.Berachain,
         Chain.BinanceSmartChain,
+        Chain.Corn,
         Chain.Ethereum,
         Chain.Gnosis,
+        Chain.HyperEVM,
         Chain.Optimism,
         Chain.Polygon,
+        Chain.Unichain,
         async (chain) => {
           const toolbox = await getToolbox(chain);
           const txObject = await toolbox.createTransaction(params);
@@ -184,10 +190,13 @@ export async function getToolbox<T extends keyof Toolboxes>(
       Chain.Base,
       Chain.Berachain,
       Chain.BinanceSmartChain,
+      Chain.Corn,
       Chain.Ethereum,
       Chain.Gnosis,
+      Chain.HyperEVM,
       Chain.Optimism,
       Chain.Polygon,
+      Chain.Unichain,
       async () => {
         const { getEvmToolbox } = await import("./evm/toolbox");
         const evmToolbox = await getEvmToolbox(
