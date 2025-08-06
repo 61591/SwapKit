@@ -22,7 +22,9 @@ import type {
   AVAXToolbox,
   BASEToolbox,
   BERAToolbox,
+  BOTToolbox,
   BSCToolbox,
+  COREToolbox,
   CORNToolbox,
   ETHToolbox,
   GNOToolbox,
@@ -142,6 +144,8 @@ export type EVMToolboxes = {
   [Chain.Base]: Awaited<ReturnType<typeof BASEToolbox>>;
   [Chain.Berachain]: Awaited<ReturnType<typeof BERAToolbox>>;
   [Chain.BinanceSmartChain]: Awaited<ReturnType<typeof BSCToolbox>>;
+  [Chain.Botanix]: Awaited<ReturnType<typeof BOTToolbox>>;
+  [Chain.Core]: Awaited<ReturnType<typeof COREToolbox>>;
   [Chain.Corn]: Awaited<ReturnType<typeof CORNToolbox>>;
   [Chain.Ethereum]: Awaited<ReturnType<typeof ETHToolbox>>;
   [Chain.Gnosis]: Awaited<ReturnType<typeof GNOToolbox>>;
