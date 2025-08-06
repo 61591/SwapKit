@@ -163,6 +163,8 @@ const baseAssetAddress: Record<EVMChain, string> = {
   [Chain.Base]: ContractAddress.BASE,
   [Chain.Berachain]: ContractAddress.BERA,
   [Chain.BinanceSmartChain]: ContractAddress.BSC,
+  [Chain.Botanix]: ContractAddress.BOT,
+  [Chain.Core]: ContractAddress.CORE,
   [Chain.Corn]: ContractAddress.CORN,
   [Chain.Ethereum]: ContractAddress.ETH,
   [Chain.Gnosis]: ContractAddress.GNO,
