@@ -14,13 +14,18 @@ export const okxWallet = createWallet({
     Chain.Berachain,
     Chain.BinanceSmartChain,
     Chain.Bitcoin,
+    Chain.Botanix,
+    Chain.Core,
+    Chain.Corn,
     Chain.Cosmos,
     Chain.Ethereum,
     Chain.Gnosis,
+    Chain.HyperEVM,
     Chain.Near,
     Chain.Optimism,
     Chain.Polygon,
     Chain.Tron,
+    Chain.Unichain,
   ],
   connect: ({ addChain, supportedChains, walletType }) =>
     async function connectOkx(chains: Chain[]) {
