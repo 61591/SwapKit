@@ -23,10 +23,15 @@ export async function getWalletMethods(chain: Chain) {
         Chain.Base,
         Chain.Berachain,
         Chain.BinanceSmartChain,
+        Chain.Botanix,
+        Chain.Core,
+        Chain.Corn,
         Chain.Ethereum,
         Chain.Gnosis,
+        Chain.HyperEVM,
         Chain.Optimism,
         Chain.Polygon,
+        Chain.Unichain,
       ),
       async () => {
         if (!(bitget && "ethereum" in bitget)) {
