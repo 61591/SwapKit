@@ -7,6 +7,7 @@ import {
   BASE_MAINNET_ID,
   BERACHAIN_MAINNET_ID,
   BSC_MAINNET_ID,
+  CORE_MAINNET_ID,
   COSMOS_HUB_MAINNET_ID,
   ETHEREUM_MAINNET_ID,
   KUJIRA_MAINNET_ID,
@@ -48,6 +49,8 @@ export const chainToChainId = (chain: Chain) => {
       return BSC_MAINNET_ID;
     case Chain.Berachain:
       return BERACHAIN_MAINNET_ID;
+    case Chain.Core:
+      return CORE_MAINNET_ID;
     case Chain.Ethereum:
       return ETHEREUM_MAINNET_ID;
     case Chain.THORChain:

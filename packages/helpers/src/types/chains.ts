@@ -10,6 +10,8 @@ export enum Chain {
   BinanceSmartChain = "BSC",
   Bitcoin = "BTC",
   BitcoinCash = "BCH",
+  Botanix = "BOT",
+  Core = "CORE",
   Corn = "CORN",
   Cosmos = "GAIA",
   Dash = "DASH",
@@ -56,7 +58,11 @@ export enum ChainId {
   BinanceSmartChainHex = "0x38",
   Bitcoin = "bitcoin",
   BitcoinCash = "bitcoincash",
+  Botanix = "3637",
+  BotanixHex = "0xe35",
   Chainflip = "chainflip",
+  Core = "1116",
+  CoreHex = "0x45c",
   Corn = "21000000",
   CornHex = "0x1406f40",
   Cosmos = "cosmoshub-4",
@@ -107,7 +113,11 @@ export const ChainIdToChain: Record<ChainId, Chain> = {
   [ChainId.BinanceSmartChain]: Chain.BinanceSmartChain,
   [ChainId.BitcoinCash]: Chain.BitcoinCash,
   [ChainId.Bitcoin]: Chain.Bitcoin,
+  [ChainId.BotanixHex]: Chain.Botanix,
+  [ChainId.Botanix]: Chain.Botanix,
   [ChainId.Chainflip]: Chain.Chainflip,
+  [ChainId.CoreHex]: Chain.Core,
+  [ChainId.Core]: Chain.Core,
   [ChainId.CornHex]: Chain.Corn,
   [ChainId.Corn]: Chain.Corn,
   [ChainId.Cosmos]: Chain.Cosmos,
@@ -154,8 +164,10 @@ export const BaseDecimal: Record<Chain, number> = {
   BASE: 18,
   BCH: 8,
   BERA: 18,
+  BOT: 18,
   BSC: 18,
   BTC: 8,
+  CORE: 18,
   CORN: 18,
   DASH: 8,
   DOGE: 8,
@@ -191,7 +203,9 @@ export const BlockTimes: Record<Partial<Chain>, number> = {
   [Chain.BinanceSmartChain]: 3,
   [Chain.Bitcoin]: 600,
   [Chain.BitcoinCash]: 600,
+  [Chain.Botanix]: 5,
   [Chain.Chainflip]: 5,
+  [Chain.Corn]: 3,
   [Chain.Corn]: 35.9,
   [Chain.Cosmos]: 2,
   [Chain.Dash]: 150,
@@ -227,6 +241,8 @@ export type EVMChain =
   | Chain.Base
   | Chain.Berachain
   | Chain.BinanceSmartChain
+  | Chain.Botanix
+  | Chain.Core
   | Chain.Corn
   | Chain.Ethereum
   | Chain.Gnosis
@@ -242,6 +258,8 @@ export const EVMChains = [
   Chain.Base,
   Chain.Berachain,
   Chain.BinanceSmartChain,
+  Chain.Botanix,
+  Chain.Core,
   Chain.Corn,
   Chain.Ethereum,
   Chain.Gnosis,
@@ -313,7 +331,9 @@ export const RPC_URLS: Record<Chain | StagenetChain, string> = {
   [Chain.BinanceSmartChain]: "https://bsc-dataseed.binance.org",
   [Chain.BitcoinCash]: "https://node-router.thorswap.net/bitcoin-cash",
   [Chain.Bitcoin]: "https://bitcoin-rpc.publicnode.com",
+  [Chain.Botanix]: "https://rpc.botanixlabs.com",
   [Chain.Chainflip]: "wss://mainnet-archive.chainflip.io",
+  [Chain.Core]: "https://rpc.ankr.com/core",
   [Chain.Corn]: "https://rpc.ankr.com/corn_maizenet",
   [Chain.Cosmos]: "https://node-router.thorswap.net/cosmos/rpc",
   [Chain.Dash]: "https://dash-rpc.publicnode.com",
@@ -370,9 +390,16 @@ export const FALLBACK_URLS: Record<Chain | StagenetChain, string[]> = {
   [Chain.Berachain]: ["https://rpc.berachain.com", "https://berachain.drpc.org"],
   [Chain.Bitcoin]: ["https://bitcoin.publicnode.com"],
   [Chain.BitcoinCash]: ["https://bch-dataseed.binance.org", "https://bch.getblock.io/mainnet"],
+  [Chain.Botanix]: [
+    "https://rpc.ankr.com/botanix_mainnet",
+  ],
   [Chain.Chainflip]: [
     "wss://archive-1.mainnet.chainflip.io",
     "wss://archive-2.mainnet.chainflip.io",
+  ],
+  [Chain.Core]: [
+    "https://rpc.coredao.org",
+    "https://core.drpc.org",
   ],
   [Chain.Corn]: [
     "https://mainnet.corn-rpc.com",
@@ -429,7 +456,9 @@ export const EXPLORER_URLS: Record<Chain, string> = {
   [Chain.BinanceSmartChain]: "https://bscscan.com",
   [Chain.Bitcoin]: "https://blockchair.com/bitcoin",
   [Chain.BitcoinCash]: "https://www.blockchair.com/bitcoin-cash",
+  [Chain.Botanix]: "https://botanixscan.io",
   [Chain.Chainflip]: "https://explorer.polkascan.io/polkadot",
+  [Chain.Core]: "https://scan.coredao.org/blocks",
   [Chain.Corn]: "https://cornscan.io",
   [Chain.Cosmos]: "https://www.mintscan.io/cosmos",
   [Chain.Dash]: "https://blockchair.com/dash",
@@ -466,7 +495,9 @@ const getRpcBody = (chain: Chain | StagenetChain) => {
       Chain.Base,
       Chain.Berachain,
       Chain.BinanceSmartChain,
-      Chain.Corn
+      Chain.Botanix,
+      Chain.Core,
+      Chain.Corn,
       Chain.Ethereum,
       Chain.Gnosis,
       Chain.HyperEVM,

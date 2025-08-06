@@ -57,10 +57,15 @@ export async function getCtrlProvider<T extends Chain>(
       Chain.Base,
       Chain.Berachain,
       Chain.BinanceSmartChain,
+      Chain.Botanix,
+      Chain.Core,
+      Chain.Corn,
       Chain.Ethereum,
       Chain.Gnosis,
+      Chain.HyperEVM,
       Chain.Optimism,
       Chain.Polygon,
+      Chain.Unichain,
       () => window.xfi?.ethereum,
     )
     .with(Chain.Cosmos, Chain.Kujira, Chain.Noble, () => window.xfi?.keplr)

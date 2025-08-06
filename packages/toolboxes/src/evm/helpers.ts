@@ -173,6 +173,16 @@ function getNetworkInfo<C extends EVMChain>({ chain }: { chain: C }) {
         chainName: "BNB Smart Chain Mainnet",
         nativeCurrency: { name: "Binance Coin", symbol: "BNB", decimals },
       };
+     case Chain.Botanix:
+      return {
+        chainName: "Botanix Mainnet",
+        nativeCurrency: { name: "Bitcoin", symbol: "BTC", decimals },
+      };
+     case Chain.Core:
+      return {
+        chainName: "Core Blockchain Mainnet",
+        nativeCurrency: { name: "Core", symbol: "CORE", decimals },
+      };
     case Chain.Corn:
       return {
         chainName: "Corn",

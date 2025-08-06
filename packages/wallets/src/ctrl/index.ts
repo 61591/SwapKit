@@ -23,10 +23,14 @@ export const ctrlWallet = createWallet({
     Chain.BinanceSmartChain,
     Chain.Bitcoin,
     Chain.BitcoinCash,
+    Chain.Botanix,
+    Chain.Core,
+    Chain.Corn,
     Chain.Cosmos,
     Chain.Dogecoin,
     Chain.Ethereum,
     Chain.Gnosis,
+    Chain.HyperEVM,
     Chain.Kujira,
     Chain.Litecoin,
     Chain.Maya,
@@ -36,6 +40,7 @@ export const ctrlWallet = createWallet({
     Chain.Polygon,
     Chain.Solana,
     Chain.THORChain,
+    Chain.Unichain,
   ],
   connect: ({ addChain, walletType, supportedChains }) =>
     async function connectCtrl(chains: Chain[]) {
@@ -122,10 +127,15 @@ async function getWalletMethods(chain: (typeof CTRL_SUPPORTED_CHAINS)[number]) {
     case Chain.Base:
     case Chain.Berachain:
     case Chain.BinanceSmartChain:
+    case Chain.Botanix:
+    case Chain.Core:
+    case Chain.Corn:
     case Chain.Ethereum:
     case Chain.Gnosis:
+    case Chain.HyperEVM:
     case Chain.Optimism:
-    case Chain.Polygon: {
+    case Chain.Polygon:
+    case Chain.Unichain: {
       const { prepareNetworkSwitch, switchEVMWalletNetwork } = await import("@swapkit/helpers");
       const { getEvmToolbox } = await import("@swapkit/toolboxes/evm");
       const { BrowserProvider } = await import("ethers");

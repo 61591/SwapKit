@@ -8,7 +8,9 @@ import {
   AVAXToolbox,
   BASEToolbox,
   BERAToolbox,
+  BOTToolbox,
   BSCToolbox,
+  COREToolbox,
   CORNToolbox,
   ETHToolbox,
   GNOToolbox,
@@ -37,6 +39,10 @@ export async function getEvmToolbox<T extends EVMChain>(chain: T, params?: EVMTo
       return BERAToolbox(toolboxParams);
     case Chain.BinanceSmartChain:
       return BSCToolbox(toolboxParams);
+    case Chain.Botanix:
+      return BOTToolbox(toolboxParams);
+    case Chain.Core:
+      return COREToolbox(toolboxParams);
     case Chain.Corn:
       return CORNToolbox(toolboxParams);
     case Chain.Gnosis:
