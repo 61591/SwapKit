@@ -458,7 +458,7 @@ export const EXPLORER_URLS: Record<Chain, string> = {
   [Chain.BitcoinCash]: "https://www.blockchair.com/bitcoin-cash",
   [Chain.Botanix]: "https://botanixscan.io",
   [Chain.Chainflip]: "https://explorer.polkascan.io/polkadot",
-  [Chain.Core]: "https://scan.coredao.org/blocks",
+  [Chain.Core]: "https://scan.coredao.org",
   [Chain.Corn]: "https://cornscan.io",
   [Chain.Cosmos]: "https://www.mintscan.io/cosmos",
   [Chain.Dash]: "https://blockchair.com/dash",
