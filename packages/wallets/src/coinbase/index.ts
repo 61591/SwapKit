@@ -14,12 +14,20 @@ export const coinbaseWallet = createWallet({
   walletType: WalletOption.COINBASE_MOBILE,
   supportedChains: [
     Chain.Arbitrum,
+    Chain.Aurora,,
     Chain.Avalanche,
     Chain.Base,
+    Chain.Berachain,,
     Chain.BinanceSmartChain,
+    Chain.Botanix,
+    Chain.Core,
+    Chain.Corn,
     Chain.Ethereum,
+    Chain.Gnosis,
+    Chain.HyperEVM,
     Chain.Optimism,
     Chain.Polygon,
+    Chain.Unichain,
   ],
   connect: ({ addChain, walletType, supportedChains }) =>
     async function connectCoinbaseWallet(chains: Chain[]) {
