@@ -60,13 +60,21 @@ export const getWalletMethods = async ({
   coinbaseSdk: ReturnType<typeof createCoinbaseWalletSDK>;
 }) => {
   switch (chain) {
-    case Chain.Ethereum:
-    case Chain.Avalanche:
     case Chain.Arbitrum:
+    case Chain.Aurora:
+    case Chain.Avalanche:
+    case Chain.Base:
+    case Chain.Berachain:
+    case Chain.BinanceSmartChain:
+    case Chain.Botanix:
+    case Chain.Core:
+    case Chain.Corn:
+    case Chain.Ethereum:
+    case Chain.Gnosis:
+    case Chain.HyperEVM:
     case Chain.Optimism:
     case Chain.Polygon:
-    case Chain.Base:
-    case Chain.BinanceSmartChain: {
+    case Chain.Unichain: {
       const walletProvider = coinbaseSdk.getProvider() as CoinbaseWalletProvider;
       const { getEvmToolbox, getProvider } = await import("@swapkit/toolboxes/evm");
 
