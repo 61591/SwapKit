@@ -21,6 +21,8 @@ export function getExplorerTxUrl({ chain, txHash }: { txHash: string; chain: Cha
       Chain.BinanceSmartChain,
       Chain.Base,
       Chain.Berachain,
+      Chain.Botanix,
+      Chain.Core,
       Chain.Corn,
       Chain.Ethereum,
       Chain.Gnosis,
