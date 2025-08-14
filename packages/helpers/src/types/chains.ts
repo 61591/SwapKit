@@ -231,6 +231,7 @@ export type UTXOChain =
   | Chain.Dogecoin
   | Chain.Litecoin
   | Chain.Zcash;
+
 export const UTXOChains = [
   Chain.Bitcoin,
   Chain.BitcoinCash,
@@ -255,27 +256,6 @@ export const CosmosChainPrefixes = {
   [Chain.Kujira]: "kujira",
   [Chain.Noble]: "noble",
 } as Record<CosmosChain, string>;
-
-export const TCSupportedChains = [
-  Chain.Avalanche,
-  Chain.BinanceSmartChain,
-  Chain.Bitcoin,
-  Chain.BitcoinCash,
-  Chain.Cosmos,
-  Chain.Dogecoin,
-  Chain.Ethereum,
-  Chain.Litecoin,
-  Chain.THORChain,
-] as const;
-
-export const MAYASupportedChains = [
-  Chain.Arbitrum,
-  Chain.Dash,
-  Chain.Ethereum,
-  Chain.Kujira,
-  Chain.Maya,
-  Chain.THORChain,
-] as const;
 
 export const RPC_URLS: Record<Chain | StagenetChain, string> = {
   [Chain.Arbitrum]: "https://arb1.arbitrum.io/rpc",
@@ -307,7 +287,8 @@ export const RPC_URLS: Record<Chain | StagenetChain, string> = {
   [Chain.Solana]: "https://solana-rpc.publicnode.com",
   [Chain.THORChain]: "https://rpc.thorswap.net",
   [Chain.Tron]: "https://tron-rpc.publicnode.com",
-  [Chain.Zcash]: "https://mainnet.lightwalletd.com:9067",
+  [Chain.Zcash]:
+    "https://api.tatum.io/v3/blockchain/node/zcash-mainnet/t-6894a2ae7fc90cccfd3ce71b-2fce88aa7f4a41a5b1e93874",
   [StagenetChain.Maya]: "",
   [StagenetChain.THORChain]: "https://stagenet-rpc.ninerealms.com",
 };

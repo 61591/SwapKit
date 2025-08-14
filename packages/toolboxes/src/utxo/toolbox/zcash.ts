@@ -1,4 +1,4 @@
-import secp256k1 from "@bitcoinerlab/secp256k1";
+import { crypto, ECPair, bitgo, networks, address as zcashAddress } from "@bitgo/utxo-lib";
 import { HDKey } from "@scure/bip32";
 import { mnemonicToSeedSync } from "@scure/bip39";
 import {
@@ -12,46 +12,30 @@ import {
   derivationPathToString,
   updateDerivationPath,
 } from "@swapkit/helpers";
-import type { Psbt } from "bitcoinjs-lib";
-import { hash160 } from "bitcoinjs-lib/src/crypto";
+
+import type { ZcashPsbt } from "@bitgo/utxo-lib/dist/src/bitgo";
 import bs58check from "bs58check";
-import { ECPairFactory } from "ecpair";
 import { P, match } from "ts-pattern";
-import { getUtxoNetwork } from "../helpers";
-import type { UTXOBuildTxParams, UTXOTransferParams } from "../types";
+import { accumulative, compileMemo, getUtxoApi } from "../helpers";
+import type { TargetOutput, UTXOBuildTxParams, UTXOTransferParams, UTXOType } from "../types";
 import { createUTXOToolbox } from "./utxo";
 
-const chain = Chain.Zcash;
-const network = getUtxoNetwork()(chain);
-
-/**
- * Custom Zcash address generation that handles 2-byte prefixes
- *
- * Zcash transparent addresses use 2-byte version prefixes, unlike Bitcoin's single byte.
- * This is incompatible with bitcoinjs-lib's payment methods which expect UInt8 values.
- *
- * @param publicKey - The public key buffer to generate address from
- * @param isTestnet - Whether to generate testnet or mainnet address
- * @returns A valid Zcash transparent address (t1... for mainnet, tm... for testnet)
- */
-function generateZcashAddress(publicKey: Buffer, isTestnet = false): string {
-  // Hash the public key using RIPEMD160(SHA256(pubkey))
-  const publicKeyHash = hash160(publicKey);
-
-  // Zcash uses 2-byte prefixes for transparent addresses
-  // These prefixes ensure addresses start with expected characters when base58 encoded
-  const prefix = isTestnet
-    ? Buffer.from([0x1c, 0xba]) // testnet prefix (results in tm... addresses)
-    : Buffer.from([0x1c, 0xb8]); // mainnet prefix (results in t1... addresses)
-
-  // Combine prefix + hash (22 bytes total: 2 byte prefix + 20 byte hash)
-  const payload = Buffer.concat([prefix, publicKeyHash]);
-
-  // Encode with base58check for final address
-  return bs58check.encode(payload);
+function getZcashNetwork() {
+  return networks.zcash;
 }
 
-export function validateZcashAddress(address: string) {
+function getECPairNetwork() {
+  return {
+    messagePrefix: "\x18ZCash Signed Message:\n",
+    bech32: undefined,
+    bip32: { public: 0x0488b21e, private: 0x0488ade4 },
+    pubKeyHash: 0x1c,
+    scriptHash: 0x1c,
+    wif: 0x80,
+  };
+}
+
+export function validateZcashAddress(address: string): boolean {
   try {
     // Shielded addresses are not supported
     if (address.startsWith("z")) {
@@ -61,114 +45,224 @@ export function validateZcashAddress(address: string) {
       return false;
     }
 
-    const isMainnet = address.startsWith("t1");
-    const isTestnet = address.startsWith("t3");
+    const network = getZcashNetwork();
 
-    if (!(isMainnet || isTestnet)) {
-      return false;
+    try {
+      zcashAddress.toOutputScript(address, network);
+      return true;
+    } catch {
+      // Also try with bs58check for legacy validation
+      const decoded = bs58check.decode(address);
+      if (decoded.length < 21) return false;
+
+      const version = decoded[0];
+      return version === network.pubKeyHash || version === network.scriptHash;
     }
-
-    // Verify network matches address type
-    const { isStagenet } = SKConfig.get("envs");
-    if ((isMainnet && isStagenet) || (isTestnet && !isStagenet)) {
-      return false;
-    }
-
-    return validateBase58Check(address, network);
   } catch {
     return false;
   }
 }
 
-function validateBase58Check(
-  address: string,
-  network: ReturnType<ReturnType<typeof getUtxoNetwork>>,
-) {
-  try {
-    const decoded = bs58check.decode(address);
+type ZcashSigner = ChainSigner<
+  {
+    inputs: UTXOType[];
+    psbt: ZcashPsbt;
+  },
+  string
+>;
 
-    if (decoded.length < 21) {
-      return false;
-    }
-
-    const version = decoded[0];
-    return version === network.pubKeyHash || version === network.scriptHash;
-  } catch {
-    return false;
-  }
-}
-
-const ECPair = ECPairFactory(secp256k1);
-
-type ZcashSigner = ChainSigner<Psbt, Psbt>;
-
-async function createZcashSignerFromPhrase({
+function createZcashSignerFromPhrase({
   phrase,
-  derivationPathString,
+  derivationPath,
 }: {
   phrase: string;
-  derivationPathString: string;
-}) {
+  derivationPath: string;
+}): ZcashSigner {
   const seed = mnemonicToSeedSync(phrase);
   const root = HDKey.fromMasterSeed(seed);
-
-  const node = root.derive(derivationPathString);
+  const node = root.derive(derivationPath);
 
   if (!node.privateKey) {
-    throw new Error("Unable to derive private key");
+    throw new SwapKitError("toolbox_utxo_invalid_params");
   }
 
-  const keyPair = ECPair.fromPrivateKey(Buffer.from(node.privateKey), { network });
+  // Create key pair using BitGo's ECPair with ECPair-compatible network
+  const ecpairNetwork = getECPairNetwork();
+  const keyPair = ECPair.fromPrivateKey(Buffer.from(node.privateKey), {
+    network: ecpairNetwork,
+  });
 
+  const pubKeyHash = crypto.hash160(keyPair.publicKey);
   const { isStagenet } = SKConfig.get("envs");
-  const address = generateZcashAddress(keyPair.publicKey, isStagenet);
+
+  const prefix = isStagenet
+    ? Buffer.from([0x1d, 0x25]) // testnet prefix (results in tm... addresses)
+    : Buffer.from([0x1c, 0xb8]); // mainnet prefix (results in t1... addresses)
+
+  const payload = Buffer.concat([prefix, pubKeyHash]);
+
+  const address = bs58check.encode(payload);
 
   return {
-    getAddress() {
-      return Promise.resolve(address);
-    },
+    getAddress: () => Promise.resolve(address),
 
-    signTransaction(psbt: Psbt) {
-      for (let i = 0; i < psbt.inputCount; i++) {
-        psbt.signInput(i, keyPair);
+    signTransaction: ({ inputs, psbt }) => {
+      const txBuilder = bitgo.createTransactionBuilderForNetwork(getZcashNetwork());
+      txBuilder.setVersion(4);
+
+      for (const input of psbt.txInputs) {
+        const txHash =
+          typeof input.hash === "string" ? Buffer.from(input.hash, "hex").reverse() : input.hash;
+
+        txBuilder.addInput(txHash, input.index);
       }
-      return Promise.resolve(psbt);
+
+      const outs = psbt.txOutputs || [];
+      for (const out of outs) {
+        if (!out.script) {
+          throw new SwapKitError("toolbox_utxo_invalid_params", {
+            message: "PSBT output script is missing",
+          });
+        }
+
+        txBuilder.addOutput(out.script, Number(out.value));
+      }
+
+      for (let i = 0; i < inputs.length; i++) {
+        const input = inputs[i];
+        txBuilder.sign(i, keyPair, undefined, undefined, input?.value);
+      }
+
+      const tx = txBuilder.build();
+      return Promise.resolve(tx.toHex());
     },
+  };
+}
+
+function addInputsAndOutputs({
+  inputs,
+  outputs,
+  psbt,
+  sender,
+  compiledMemo,
+}: {
+  inputs: UTXOType[];
+  outputs: TargetOutput[];
+  psbt: ZcashPsbt;
+  sender: string;
+  compiledMemo: Buffer<ArrayBufferLike> | null;
+}) {
+  psbt.setVersion(4, true);
+  for (const utxo of inputs) {
+    const witnessInfo = !!utxo.witnessUtxo && {
+      witnessUtxo: { ...utxo.witnessUtxo, value: BigInt(utxo.value) },
+    };
+
+    const nonWitnessInfo = !utxo.witnessUtxo && {
+      nonWitnessUtxo: utxo.txHex ? Buffer.from(utxo.txHex, "hex") : undefined,
+    };
+
+    psbt.addInput({ hash: utxo.hash, index: utxo.index, ...witnessInfo, ...nonWitnessInfo });
+  }
+
+  for (const output of outputs) {
+    const address = "address" in output && output.address ? output.address : sender;
+    const hasOutputScript = output.script;
+
+    if (hasOutputScript && !compiledMemo) {
+      continue;
+    }
+
+    const mappedOutput = hasOutputScript
+      ? {
+          script: compiledMemo as Buffer<ArrayBufferLike>,
+          value: 0n,
+        }
+      : {
+          script: zcashAddress.toOutputScript(address, getZcashNetwork()),
+          value: BigInt(output.value),
+        };
+
+    psbt.addOutput(mappedOutput);
+  }
+
+  return { psbt, inputs };
+}
+
+async function createTransaction(buildTxParams: UTXOBuildTxParams) {
+  const { assetValue, recipient, memo, feeRate, sender, fetchTxHex } = buildTxParams;
+
+  const compiledMemo = memo ? compileMemo(memo) : null;
+
+  const utxos = await getUtxoApi(Chain.Zcash).getUtxos({
+    address: sender,
+    fetchTxHex: fetchTxHex !== false,
+  });
+
+  const targetOutputs = [
+    {
+      address: recipient,
+      value: Number(assetValue.getBaseValue("string")),
+    },
+    ...(compiledMemo ? [{ script: compiledMemo, value: 0 }] : []),
+  ];
+
+  const { inputs, outputs } = accumulative({
+    inputs: utxos,
+    outputs: targetOutputs,
+    feeRate,
+    chain: Chain.Zcash,
+    changeAddress: sender, // Overwrite change address to sender
+  });
+
+  if (!(inputs && outputs)) {
+    throw new SwapKitError("toolbox_utxo_insufficient_balance", { sender, assetValue });
+  }
+
+  const psbt = bitgo.createPsbtForNetwork(
+    { network: getZcashNetwork() },
+    { version: 455 },
+  ) as ZcashPsbt;
+
+  const { psbt: mappedPsbt, inputs: mappedInputs } = await addInputsAndOutputs({
+    inputs,
+    outputs,
+    psbt,
+    sender,
+    compiledMemo,
+  });
+
+  return {
+    inputs: mappedInputs,
+    outputs,
+    psbt: mappedPsbt,
   };
 }
 
 export async function createZcashToolbox(
   toolboxParams:
-    | {
-        signer?: ZcashSigner;
-      }
-    | {
-        phrase?: string;
-        derivationPath?: DerivationPathArray;
-        index?: number;
-      },
+    | { signer?: ZcashSigner }
+    | { phrase?: string; derivationPath?: DerivationPathArray; index?: number },
 ) {
   const signer = await match(toolboxParams)
     .with({ signer: P.not(P.nullish) }, ({ signer }) => Promise.resolve(signer))
     .with({ phrase: P.string }, ({ phrase, derivationPath, index = 0 }) => {
-      // Handle derivation path processing at toolbox level
       const baseDerivationPath = derivationPath ||
         NetworkDerivationPath[Chain.Zcash] || [44, 133, 0, 0, 0];
-      const updatedDerivationPath = updateDerivationPath(baseDerivationPath, { index });
-      const derivationPathString = derivationPathToString(updatedDerivationPath);
+      const updatedPath = updateDerivationPath(baseDerivationPath, { index });
+      const pathString = derivationPathToString(updatedPath);
 
-      return createZcashSignerFromPhrase({ phrase, derivationPathString });
+      return createZcashSignerFromPhrase({
+        phrase,
+        derivationPath: pathString,
+      });
     })
     .otherwise(() => Promise.resolve(undefined));
 
-  const { getFeeRates, broadcastTx, ...toolbox } = await createUTXOToolbox({
+  const baseToolbox = await createUTXOToolbox({
     chain: Chain.Zcash,
     signer,
   });
-
-  function getAddressFromKeys(keys: { getAddress: () => string }) {
-    return keys.getAddress();
-  }
 
   async function transfer({
     recipient,
@@ -177,32 +271,65 @@ export async function createZcashToolbox(
     ...rest
   }: UTXOTransferParams) {
     const from = await signer?.getAddress();
-    if (!(signer && from)) throw new SwapKitError("toolbox_utxo_no_signer");
+    if (!(signer && from)) {
+      throw new SwapKitError("toolbox_utxo_no_signer");
+    }
 
-    const feeRate = rest.feeRate || (await getFeeRates())[feeOptionKey];
+    const feeRate = rest.feeRate || (await baseToolbox.getFeeRates())[feeOptionKey];
 
-    const buildTxParams: UTXOBuildTxParams = {
+    const { inputs, psbt } = await createTransaction({
       ...rest,
       assetValue,
       feeRate,
       recipient,
       sender: from,
-    };
+    });
 
-    const { psbt } = await toolbox.createTransaction(buildTxParams);
-    const signedPsbt = await signer.signTransaction(psbt);
-    signedPsbt.finalizeAllInputs();
-    const txHex = signedPsbt.extractTransaction().toHex();
+    const signedTxHex = await signer.signTransaction({ inputs, psbt });
 
-    return broadcastTx(txHex);
+    return baseToolbox.broadcastTx(signedTxHex);
+  }
+
+  function createKeysForPath({
+    phrase,
+    derivationPath = "m/44'/133'/0'/0/0",
+  }: {
+    phrase: string;
+    derivationPath?: string;
+  }) {
+    const seed = mnemonicToSeedSync(phrase);
+    const root = HDKey.fromMasterSeed(seed);
+    const node = root.derive(derivationPath);
+
+    if (!node.privateKey) {
+      throw new SwapKitError("toolbox_utxo_invalid_params");
+    }
+
+    const ecpairNetwork = getECPairNetwork();
+    const keyPair = ECPair.fromPrivateKey(Buffer.from(node.privateKey), {
+      network: ecpairNetwork,
+    });
+
+    return keyPair;
+  }
+
+  function getPrivateKeyFromMnemonic({
+    phrase,
+    derivationPath = "m/44'/133'/0'/0/0",
+  }: {
+    phrase: string;
+    derivationPath: string;
+  }) {
+    const keys = createKeysForPath({ phrase, derivationPath });
+    return keys.toWIF();
   }
 
   return {
-    ...toolbox,
-    broadcastTx,
-    getFeeRates,
+    ...baseToolbox,
     transfer,
-    getAddressFromKeys,
+    createTransaction,
+    createKeysForPath,
+    getPrivateKeyFromMnemonic,
     validateAddress: validateZcashAddress,
   };
 }

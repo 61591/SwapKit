@@ -33,6 +33,8 @@ import { walletconnectWallet } from "@swapkit/wallets/walletconnect";
 import { xamanWallet } from "@swapkit/wallets/xaman";
 
 export * from "@swapkit/core";
+export * from "@swapkit/helpers";
+export * from "@swapkit/helpers/api";
 
 export * from "@swapkit/toolboxes";
 export * from "@swapkit/toolboxes/cosmos";

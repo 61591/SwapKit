@@ -32,7 +32,12 @@ export const accumulative = ({
   outputs,
   feeRate: initialFeeRate = 1,
   chain = Chain.Bitcoin,
-}: UTXOCalculateTxSizeParams & { outputs: TargetOutput[]; chain: UTXOChain }) => {
+  changeAddress = "",
+}: UTXOCalculateTxSizeParams & {
+  outputs: TargetOutput[];
+  chain: UTXOChain;
+  changeAddress?: string;
+}) => {
   const feeRate = Math.ceil(initialFeeRate);
 
   const newTxType =
@@ -81,7 +86,7 @@ export const accumulative = ({
       ) {
         return {
           inputs: inputsToUse,
-          outputs: outputs.concat({ value: remainderAfterExtraOutput, address: "" }),
+          outputs: outputs.concat({ value: remainderAfterExtraOutput, address: changeAddress }),
           fee: feeAfterExtraOutput,
         };
       }

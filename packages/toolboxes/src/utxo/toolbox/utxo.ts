@@ -46,7 +46,7 @@ import { validateZcashAddress } from "./zcash";
 
 export const nonSegwitChains = [Chain.Dash, Chain.Dogecoin];
 
-function addInputsAndOutputs({
+export function addInputsAndOutputs({
   inputs,
   outputs,
   chain,

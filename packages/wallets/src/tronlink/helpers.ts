@@ -38,6 +38,95 @@ export async function waitForTronLink(timeout = 3000): Promise<TronLinkWindow> {
   });
 }
 
+/**
+ * Helper function to check if TronLink wallet is locked
+ * Returns true if wallet is locked, false if unlocked
+ */
+export async function isTronLinkLocked(): Promise<boolean> {
+  try {
+    const tronLink = await waitForTronLink(1000); // Shorter timeout for lock check
+
+    // Check multiple indicators for locked state:
+    // 1. No default address is the most reliable indicator
+    const hasDefaultAddress = Boolean(tronLink.tronWeb?.defaultAddress?.base58);
+
+    // 2. ready property explicitly false (not undefined)
+    // Note: In some versions, ready might be undefined when unlocked, so only check for explicit false
+    const isReadyFalse = tronLink.ready === false;
+
+    // 3. tronWeb object completeness check
+    const hasTronWeb = Boolean(
+      tronLink.tronWeb &&
+        typeof tronLink.tronWeb.trx === "object" &&
+        typeof tronLink.tronWeb.trx.sign === "function",
+    );
+
+    // Wallet is locked if:
+    // - No default address AND (ready is false OR tronWeb is incomplete)
+    // - This avoids false positives when the wallet is just initializing
+    return !hasDefaultAddress && (isReadyFalse || !hasTronWeb);
+  } catch {
+    // If we can't even get TronLink, it's not available (not necessarily locked)
+    return false;
+  }
+}
+
+/**
+ * Helper function to handle TronLink error responses
+ */
+function handleTronLinkError(error: TronLinkError | Error): never {
+  const tronError = error as TronLinkError;
+
+  // Check if the error code indicates locked wallet
+  if (tronError.code === TronLinkResponseCode.LOCKED || tronError.code === 4000) {
+    throw new SwapKitError("wallet_locked", {
+      wallet: WalletOption.TRONLINK,
+      message: "TronLink is locked. Please unlock it to continue.",
+    });
+  }
+
+  // Handle rejection
+  if (tronError.code === TronLinkResponseCode.REJECTED || tronError.code === 4001) {
+    throw new SwapKitError("wallet_connection_rejected_by_user");
+  }
+
+  // Handle unauthorized
+  if (tronError.code === TronLinkResponseCode.UNAUTHORIZED || tronError.code === 4100) {
+    throw new SwapKitError("wallet_connection_rejected_by_user", {
+      message: "Unauthorized: Please authorize the connection in TronLink",
+    });
+  }
+
+  // Generic connection error
+  throw new SwapKitError("wallet_provider_not_found", {
+    wallet: WalletOption.TRONLINK,
+    message: tronError.message || "Failed to connect to TronLink",
+  });
+}
+
+/**
+ * Helper function to request TronLink accounts
+ */
+async function requestTronLinkAccounts(tronLink: TronLinkWindow): Promise<void> {
+  try {
+    const response = await tronLink.request({ method: "tron_requestAccounts" });
+
+    // Check response code for locked state
+    if (response.code === TronLinkResponseCode.LOCKED) {
+      throw new SwapKitError("wallet_locked", {
+        wallet: WalletOption.TRONLINK,
+        message: "TronLink is locked. Please unlock it to continue.",
+      });
+    }
+
+    if (response.code !== TronLinkResponseCode.SUCCESS) {
+      throw new Error(`TronLink error: ${response.message}`);
+    }
+  } catch (error: unknown) {
+    handleTronLinkError(error as TronLinkError);
+  }
+}
+
 export async function getWalletForChain(chain: Chain, expectedNetwork?: string) {
   if (chain !== Chain.Tron) {
     throw new SwapKitError("wallet_chain_not_supported", {
@@ -48,44 +137,24 @@ export async function getWalletForChain(chain: Chain, expectedNetwork?: string) 
 
   const tronLink = await waitForTronLink();
 
-  if (!tronLink.ready) {
-    throw new SwapKitError("wallet_locked", {
-      wallet: WalletOption.TRONLINK,
-      message: "TronLink is locked. Please unlock it to continue.",
-    });
-  }
+  // Check if wallet is potentially locked
+  const isLocked = await isTronLinkLocked();
 
-  try {
-    // Request account access
-    const response = await tronLink.request({ method: "tron_requestAccounts" });
+  // Always request accounts - this will trigger unlock prompt if needed
+  !isLocked && (await requestTronLinkAccounts(tronLink));
 
-    if (response.code !== TronLinkResponseCode.SUCCESS) {
-      throw new Error(`TronLink error: ${response.message}`);
-    }
-  } catch (error: unknown) {
-    const tronError = error as TronLinkError;
+  // After successful account request, verify connection
+  const address = tronLink.tronWeb?.defaultAddress?.base58;
 
-    // Handle specific error codes
-    if (tronError.code === TronLinkResponseCode.REJECTED) {
-      throw new SwapKitError("wallet_connection_rejected_by_user");
-    }
-
-    if (tronError.code === TronLinkResponseCode.UNAUTHORIZED) {
-      throw new SwapKitError("wallet_connection_rejected_by_user", {
-        message: "Unauthorized: Please authorize the connection in TronLink",
+  if (!address) {
+    // If still no address after successful request, wallet might be locked
+    if (isLocked) {
+      throw new SwapKitError("wallet_locked", {
+        wallet: WalletOption.TRONLINK,
+        message: "TronLink is locked. Please unlock it to continue.",
       });
     }
 
-    // Generic connection error
-    throw new SwapKitError("wallet_provider_not_found", {
-      wallet: WalletOption.TRONLINK,
-      message: tronError.message || "Failed to connect to TronLink",
-    });
-  }
-
-  // Verify connection
-  const address = tronLink.tronWeb.defaultAddress?.base58;
-  if (!address) {
     throw new SwapKitError("wallet_provider_not_found", {
       wallet: WalletOption.TRONLINK,
       message: "No account found in TronLink",
