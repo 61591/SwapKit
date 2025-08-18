@@ -1,3 +1,4 @@
+import { networks as zcashNetworks } from "@bitgo/utxo-lib";
 import {
   Chain,
   RequestClient,
@@ -356,31 +357,6 @@ export function getUtxoApi(chain: UTXOChain) {
   return utxoApi(chain);
 }
 
-// Define Zcash network objects that match ECPair's expected interface
-const ZCASH_MAINNET = {
-  messagePrefix: "\x19Zcash Signed Message:\n",
-  bech32: "zc",
-  bip32: {
-    public: 0x0488b21e,
-    private: 0x0488ade4,
-  },
-  pubKeyHash: 0x1c, // 28 in decimal - correct for Zcash mainnet
-  scriptHash: 0x1c, // 28 in decimal
-  wif: 0x80, // 128 in decimal
-};
-
-const ZCASH_TESTNET = {
-  messagePrefix: "\x19Zcash Signed Message:\n",
-  bech32: "ztestsapling",
-  bip32: {
-    public: 0x043587cf,
-    private: 0x04358394,
-  },
-  pubKeyHash: 0x1d, // 29 in decimal - correct for Zcash testnet
-  scriptHash: 0x1c, // 28 in decimal
-  wif: 0xef, // 239 in decimal
-};
-
 export function getUtxoNetwork() {
   return function getNetwork(chain: Chain) {
     switch (chain) {
@@ -401,9 +377,7 @@ export function getUtxoNetwork() {
       }
 
       case Chain.Zcash: {
-        // Get Zcash network configuration using our custom objects
-        const { isStagenet } = SKConfig.get("envs");
-        return isStagenet ? ZCASH_TESTNET : ZCASH_MAINNET;
+        return zcashNetworks.zcash;
       }
 
       default:

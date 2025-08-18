@@ -7,6 +7,7 @@ import {
 } from "@swapkit/helpers";
 import type { Psbt } from "bitcoinjs-lib";
 
+import type { ZcashPsbt } from "@bitgo/utxo-lib/dist/src/bitgo";
 import type { TransactionBuilderType, TransactionType, UTXOType } from "../types";
 import { createBCHToolbox } from "./bitcoinCash";
 import { createUTXOToolbox } from "./utxo";
@@ -40,7 +41,7 @@ export type UtxoToolboxParams = {
   [Chain.Litecoin]: { signer: ChainSigner<Psbt, Psbt> };
   [Chain.Dash]: { signer: ChainSigner<Psbt, Psbt> };
   [Chain.Zcash]: {
-    signer?: ChainSigner<Psbt, Psbt>;
+    signer?: ChainSigner<{ psbt: ZcashPsbt; inputs: UTXOType[] }, string>;
   };
 };
 
@@ -88,3 +89,4 @@ export {
   stripPrefix,
   bchValidateAddress,
 } from "./bitcoinCash";
+export { validateZcashAddress } from "./zcash";
