@@ -315,7 +315,7 @@ export const RPC_URLS: Record<Chain | StagenetChain, string> = {
   [Chain.Chainflip]: "wss://mainnet-archive.chainflip.io",
   [Chain.Core]: "https://rpc.ankr.com/core",
   [Chain.Corn]: "https://rpc.ankr.com/corn_maizenet",
-  [Chain.Cosmos]: "https://node-router.thorswap.net/cosmos/rpc",
+  [Chain.Cosmos]: "https://cosmos-rpc.publicnode.com:443",
   [Chain.Dash]: "https://dash-rpc.publicnode.com",
   [Chain.Dogecoin]: "https://node-router.thorswap.net/dogecoin",
   [Chain.Ethereum]: "https://ethereum-rpc.publicnode.com",
