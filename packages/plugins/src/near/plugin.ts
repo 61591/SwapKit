@@ -6,7 +6,7 @@ import {
   SwapKitError,
   type SwapParams,
 } from "@swapkit/helpers";
-import { type QuoteResponseRoute, SwapKitApi } from "@swapkit/helpers/api";
+import type { QuoteResponseRoute } from "@swapkit/helpers/api";
 import type { NearWallet } from "@swapkit/toolboxes/near";
 import { createPlugin } from "../utils";
 import { calculateNearNameCost, validateNearName } from "./nearNames";
@@ -23,6 +23,7 @@ export const NearPlugin = createPlugin({
         route: {
           buyAsset: buyAssetString,
           sellAsset: sellAssetString,
+          inboundAddress,
           sellAmount,
           meta: { near },
         },
@@ -30,6 +31,10 @@ export const NearPlugin = createPlugin({
 
       if (!(sellAssetString && buyAssetString && near?.sellAsset)) {
         throw new SwapKitError("core_swap_asset_not_recognized");
+      }
+
+      if (!inboundAddress) {
+        throw new SwapKitError("core_swap_invalid_params", { missing: ["inboundAddress"] });
       }
 
       const sellAsset = await AssetValue.from({
@@ -44,11 +49,10 @@ export const NearPlugin = createPlugin({
         throw new SwapKitError("core_wallet_connection_not_found");
       }
 
-      const { depositAddress } = await SwapKitApi.getNearDepositChannel(near);
-
       const tx = await wallet.transfer({
         assetValue: sellAsset,
-        recipient: depositAddress,
+        sender: wallet.address,
+        recipient: inboundAddress,
         isProgramDerivedAddress: true,
       });
 
