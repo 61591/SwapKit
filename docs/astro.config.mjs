@@ -9,7 +9,6 @@ const { plugins: docsPlugins, sidebarItems: docsSidebarItems } = createDocs();
 
 const openApiPlugin = starlightOpenAPI([{ base: "api", schema: "https://api.swapkit.dev/docs/json" }]);
 
-// https://astro.build/config
 export default defineConfig({
   base: process.env.REFERENCES ? "/SwapKit" : undefined,
   integrations: [
@@ -91,7 +90,6 @@ export default defineConfig({
 });
 
 function createDocs() {
-  // TODO: skip this for now
   if (process.env.REFERENCES !== "enable") {
     return { plugins: [], sidebarItems: [] };
   }
