@@ -1,11 +1,23 @@
-import { Chain, WalletOption, filterSupportedChains } from "@swapkit/helpers";
+import { Chain, filterSupportedChains, WalletOption } from "@swapkit/helpers";
 
 import { createWallet, getWalletSupportedChains } from "@swapkit/wallet-core";
 import { getWalletMethods } from "./helpers";
 
 export const okxWallet = createWallet({
+  connect: ({ addChain, supportedChains, walletType }) =>
+    async function connectOkx(chains: Chain[]) {
+      const filteredChains = filterSupportedChains({ chains, supportedChains, walletType });
+
+      await Promise.all(
+        filteredChains.map(async (chain) => {
+          const walletMethods = await getWalletMethods(chain);
+          addChain({ ...walletMethods, chain, walletType });
+        }),
+      );
+
+      return true;
+    },
   name: "connectOkx",
-  walletType: WalletOption.OKX,
   supportedChains: [
     Chain.Arbitrum,
     Chain.Aurora,
@@ -27,19 +39,7 @@ export const okxWallet = createWallet({
     Chain.Tron,
     Chain.Unichain,
   ],
-  connect: ({ addChain, supportedChains, walletType }) =>
-    async function connectOkx(chains: Chain[]) {
-      const filteredChains = filterSupportedChains({ chains, supportedChains, walletType });
-
-      await Promise.all(
-        filteredChains.map(async (chain) => {
-          const walletMethods = await getWalletMethods(chain);
-          addChain({ ...walletMethods, chain, walletType });
-        }),
-      );
-
-      return true;
-    },
+  walletType: WalletOption.OKX,
 });
 
 export const OKX_SUPPORTED_CHAINS = getWalletSupportedChains(okxWallet);

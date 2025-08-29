@@ -1,10 +1,10 @@
 import {
   Chain,
   ChainToChainId,
+  filterSupportedChains,
   type GenericTransferParams,
   SwapKitError,
   WalletOption,
-  filterSupportedChains,
 } from "@swapkit/helpers";
 import type { NearCreateTransactionParams } from "@swapkit/toolboxes/near";
 import { createWallet, getWalletSupportedChains } from "@swapkit/wallet-core";
@@ -12,8 +12,22 @@ import { createWallet, getWalletSupportedChains } from "@swapkit/wallet-core";
 import { getCtrlAddress, getCtrlMethods, getCtrlProvider, walletTransfer } from "./walletHelpers";
 
 export const ctrlWallet = createWallet({
+  connect: ({ addChain, walletType, supportedChains }) =>
+    async function connectCtrl(chains: Chain[]) {
+      const filteredChains = filterSupportedChains({ chains, supportedChains, walletType });
+
+      const promises = filteredChains.map(async (chain) => {
+        const address = await getCtrlAddress(chain);
+        const walletMethods = await getWalletMethods(chain);
+
+        addChain({ ...walletMethods, address, chain, walletType });
+      });
+
+      await Promise.all(promises);
+
+      return true;
+    },
   name: "connectCtrl",
-  walletType: WalletOption.CTRL,
   supportedChains: [
     Chain.Arbitrum,
     Chain.Aurora,
@@ -42,21 +56,7 @@ export const ctrlWallet = createWallet({
     Chain.THORChain,
     Chain.Unichain,
   ],
-  connect: ({ addChain, walletType, supportedChains }) =>
-    async function connectCtrl(chains: Chain[]) {
-      const filteredChains = filterSupportedChains({ chains, supportedChains, walletType });
-
-      const promises = filteredChains.map(async (chain) => {
-        const address = await getCtrlAddress(chain);
-        const walletMethods = await getWalletMethods(chain);
-
-        addChain({ ...walletMethods, address, chain, walletType });
-      });
-
-      await Promise.all(promises);
-
-      return true;
-    },
+  walletType: WalletOption.CTRL,
 });
 
 export const CTRL_SUPPORTED_CHAINS = getWalletSupportedChains(ctrlWallet);
@@ -78,9 +78,7 @@ async function getWalletMethods(chain: (typeof CTRL_SUPPORTED_CHAINS)[number]) {
 
     case Chain.Maya:
     case Chain.THORChain: {
-      const { getCosmosToolbox, THORCHAIN_GAS_VALUE, MAYA_GAS_VALUE } = await import(
-        "@swapkit/toolboxes/cosmos"
-      );
+      const { getCosmosToolbox, THORCHAIN_GAS_VALUE, MAYA_GAS_VALUE } = await import("@swapkit/toolboxes/cosmos");
 
       const gasLimit = chain === Chain.Maya ? MAYA_GAS_VALUE : THORCHAIN_GAS_VALUE;
       const toolbox = await getCosmosToolbox(chain);
@@ -158,18 +156,11 @@ async function getWalletMethods(chain: (typeof CTRL_SUPPORTED_CHAINS)[number]) {
       } catch (_error) {
         throw new SwapKitError({
           errorKey: "wallet_failed_to_add_or_switch_network",
-          info: { wallet: WalletOption.CTRL, chain },
+          info: { chain, wallet: WalletOption.CTRL },
         });
       }
 
-      return prepareNetworkSwitch({
-        provider: window.xfi?.ethereum,
-        chain,
-        toolbox: {
-          ...toolbox,
-          ...ctrlMethods,
-        },
-      });
+      return prepareNetworkSwitch({ chain, provider, toolbox: { ...toolbox, ...ctrlMethods } });
     }
 
     case Chain.Near: {
@@ -196,27 +187,16 @@ async function getWalletMethods(chain: (typeof CTRL_SUPPORTED_CHAINS)[number]) {
         const action = transferAction(BigInt(amountInYocto));
 
         // Create transaction object for CTRL
-        const transaction = {
-          signerId: accountId,
-          receiverId: params.recipient,
-          actions: [action],
-        };
+        const transaction = { actions: [action], receiverId: params.recipient, signerId: accountId };
 
-        const txHash: string = await provider.request({
-          method: "signAndSendTransaction",
-          params: {
-            transaction,
-          },
-        });
+        const txHash: string = await provider.request({ method: "signAndSendTransaction", params: { transaction } });
 
         return txHash;
       };
 
       // Override createTransaction to build NEAR transactions for CTRL
       const createTransaction = async (params: NearCreateTransactionParams) => {
-        const { functionCall, transfer: transferAction } = await import(
-          "near-api-js/lib/transaction"
-        );
+        const { functionCall, transfer: transferAction } = await import("near-api-js/lib/transaction");
 
         if (params.functionCall) {
           // Function call transaction
@@ -228,29 +208,17 @@ async function getWalletMethods(chain: (typeof CTRL_SUPPORTED_CHAINS)[number]) {
             BigInt(attachedDeposit || "0"),
           );
 
-          return {
-            signerId: accountId,
-            receiverId: params.recipient,
-            actions: [action],
-          };
+          return { actions: [action], receiverId: params.recipient, signerId: accountId };
         }
 
         // Simple transfer transaction
         const amountInYocto = params.assetValue.getBaseValue("string");
         const action = transferAction(BigInt(amountInYocto));
 
-        return {
-          signerId: accountId,
-          receiverId: params.recipient,
-          actions: [action],
-        };
+        return { actions: [action], receiverId: params.recipient, signerId: accountId };
       };
 
-      return {
-        ...toolbox,
-        transfer,
-        createTransaction,
-      };
+      return { ...toolbox, createTransaction, transfer };
     }
 
     default:

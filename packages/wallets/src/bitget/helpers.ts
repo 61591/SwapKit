@@ -2,8 +2,8 @@ import {
   Chain,
   ChainId,
   type EVMChain,
-  SwapKitError,
   prepareNetworkSwitch,
+  SwapKitError,
   switchEVMWalletNetwork,
 } from "@swapkit/helpers";
 import type { TronTransaction } from "@swapkit/toolboxes/tron";
@@ -41,10 +41,7 @@ export async function getWalletMethods(chain: Chain) {
         const wallet = bitget.ethereum;
 
         const [address]: [string] = await wallet.send("eth_requestAccounts", []);
-        const evmWallet = await getWeb3WalletMethods({
-          chain: chain as EVMChain,
-          walletProvider: wallet,
-        });
+        const evmWallet = await getWeb3WalletMethods({ chain: chain as EVMChain, walletProvider: wallet });
 
         return { ...evmWallet, address };
       },
@@ -64,10 +61,7 @@ export async function getWalletMethods(chain: Chain) {
         return Psbt.fromHex(signedPsbt);
       }
 
-      const signer = {
-        getAddress: () => Promise.resolve(address),
-        signTransaction,
-      };
+      const signer = { getAddress: () => Promise.resolve(address), signTransaction };
 
       const toolbox = await getUtxoToolbox(Chain.Bitcoin, { signer });
 
@@ -82,8 +76,7 @@ export async function getWalletMethods(chain: Chain) {
       await wallet.enable(ChainId.Cosmos);
       const offlineSigner = wallet.getOfflineSignerOnlyAmino(ChainId.Cosmos);
       const accounts = await offlineSigner.getAccounts();
-      if (!accounts?.[0])
-        throw new SwapKitError("wallet_bitkeep_no_accounts", { chain: Chain.Cosmos });
+      if (!accounts?.[0]) throw new SwapKitError("wallet_bitkeep_no_accounts", { chain: Chain.Cosmos });
 
       const { getCosmosToolbox } = await import("@swapkit/toolboxes/cosmos");
       const [{ address }] = accounts;
@@ -94,9 +87,7 @@ export async function getWalletMethods(chain: Chain) {
         signTransaction: async () => Promise.resolve({} as any),
       };
 
-      const toolbox = await getCosmosToolbox(Chain.Cosmos, {
-        signer,
-      });
+      const toolbox = await getCosmosToolbox(Chain.Cosmos, { signer });
 
       return { ...toolbox, address };
     })
@@ -113,11 +104,7 @@ export async function getWalletMethods(chain: Chain) {
       const address: string = providerConnection.publicKey.toString();
 
       // Create a proper signer object that wraps the provider
-      const signer = {
-        ...provider,
-        publicKey: providerConnection.publicKey,
-        getAddress: async () => address,
-      };
+      const signer = { ...provider, getAddress: async () => address, publicKey: providerConnection.publicKey };
 
       const toolbox = await getSolanaToolbox({ signer });
 
@@ -169,7 +156,10 @@ export async function getWalletMethods(chain: Chain) {
 export const getWeb3WalletMethods = async ({
   chain,
   walletProvider,
-}: { walletProvider?: Eip1193Provider; chain: EVMChain }) => {
+}: {
+  walletProvider?: Eip1193Provider;
+  chain: EVMChain;
+}) => {
   const { getEvmToolbox } = await import("@swapkit/toolboxes/evm");
   const { BrowserProvider } = await import("ethers");
   if (!walletProvider) throw new SwapKitError("wallet_provider_not_found");
@@ -186,5 +176,5 @@ export const getWeb3WalletMethods = async ({
     throw new SwapKitError("wallet_bitkeep_failed_to_switch_network", { chain });
   }
 
-  return prepareNetworkSwitch({ chain, toolbox, provider });
+  return prepareNetworkSwitch({ chain, provider, toolbox });
 };
