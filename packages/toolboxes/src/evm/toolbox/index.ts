@@ -16,6 +16,7 @@ import {
   GNOToolbox,
   HYPEToolbox,
   MATICToolbox,
+  SONToolbox,
   UNIToolbox,
 } from "./evm";
 import { OPToolbox } from "./op";
@@ -50,6 +51,8 @@ export async function getEvmToolbox<T extends EVMChain>(chain: T, params?: EVMTo
       return OPToolbox(toolboxParams);
     case Chain.Polygon:
       return MATICToolbox(toolboxParams);
+    case Chain.Sonic:
+      return SONToolbox(toolboxParams);
     case Chain.Unichain:
       return UNIToolbox(toolboxParams);
     case Chain.Ethereum:
