@@ -63,6 +63,7 @@ export async function getCtrlProvider<T extends Chain>(
       Chain.HyperEVM,
       Chain.Optimism,
       Chain.Polygon,
+      Chain.Sonic,
       Chain.Unichain,
       () => window.xfi?.ethereum,
     )
