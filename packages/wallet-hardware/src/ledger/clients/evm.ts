@@ -149,3 +149,6 @@ export const AuroraLedger = ({ provider, derivationPath }: LedgerParams) =>
 
 export const GnosisLedger = ({ provider, derivationPath }: LedgerParams) =>
   new EVMLedgerInterface({ chainId: ChainId.Gnosis, derivationPath, provider });
+
+export const SonicLedger = ({ provider, derivationPath }: LedgerParams) =>
+  new EVMLedgerInterface({ chainId: ChainId.Sonic, derivationPath, provider });
