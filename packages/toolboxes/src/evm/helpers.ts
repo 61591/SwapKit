@@ -69,7 +69,7 @@ function getNetworkInfo<C extends EVMChain>({ chain }: { chain: C }) {
     case Chain.Polygon:
       return { chainName: "Polygon Mainnet", nativeCurrency: { decimals, name: "Polygon", symbol: Chain.Polygon } };
     case Chain.Sonic:
-      return { chainName: "Sonic Mainnet", nativeCurrency: { decimals, name: "Sonic", symbol: Chain.Sonic } };
+      return { chainName: "Sonic Mainnet", nativeCurrency: { decimals, name: "Sonic", symbol: "S" } };
     case Chain.Unichain:
       return { chainName: "Unichain", nativeCurrency: { decimals, name: "Ethereum", symbol: Chain.Ethereum } };
     default:
