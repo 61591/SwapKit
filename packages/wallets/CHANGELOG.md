@@ -1,5 +1,86 @@
 # @swapkit/wallets
 
+## 4.1.10
+
+### Patch Changes
+
+- Updated dependencies [[`229c06d`](https://github.com/swapkit/SwapKit/commit/229c06dde2fe6a65542aecffddbd38e64fd139d0)]:
+  - @swapkit/helpers@4.0.11
+  - @swapkit/toolboxes@4.0.11
+  - @swapkit/wallet-core@4.0.11
+  - @swapkit/wallet-hardware@4.1.10
+  - @swapkit/wallet-keystore@4.0.11
+
+## 4.1.9
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @swapkit/helpers@4.0.10
+  - @swapkit/toolboxes@4.0.10
+  - @swapkit/wallet-core@4.0.10
+  - @swapkit/wallet-hardware@4.1.9
+  - @swapkit/wallet-keystore@4.0.10
+
+## 4.1.8
+
+### Patch Changes
+
+- [#1471](https://github.com/swapkit/SwapKit/pull/1471) [`27a3f83`](https://github.com/swapkit/SwapKit/commit/27a3f8387d518d2eeb10262495ae7c3663318d77) Thanks [@towanTG](https://github.com/towanTG)! - Minor internal type updates, thorchain rpc url update and code maintenance
+
+- Updated dependencies [[`27a3f83`](https://github.com/swapkit/SwapKit/commit/27a3f8387d518d2eeb10262495ae7c3663318d77)]:
+  - @swapkit/toolboxes@4.0.9
+  - @swapkit/helpers@4.0.9
+  - @swapkit/wallet-hardware@4.1.8
+  - @swapkit/wallet-keystore@4.0.9
+  - @swapkit/wallet-core@4.0.9
+
+## 4.1.7
+
+### Patch Changes
+
+- Updated dependencies [[`b6b826a`](https://github.com/swapkit/SwapKit/commit/b6b826aa586f0e7cc88533f25fa91627dc954b06)]:
+  - @swapkit/wallet-hardware@4.1.7
+  - @swapkit/toolboxes@4.0.8
+  - @swapkit/helpers@4.0.8
+  - @swapkit/wallet-keystore@4.0.8
+  - @swapkit/wallet-core@4.0.8
+
+## 4.1.6
+
+### Patch Changes
+
+- Updated dependencies [[`0133105`](https://github.com/swapkit/SwapKit/commit/0133105763a55671d17a688b526b78a151fb1f18)]:
+  - @swapkit/wallet-hardware@4.1.6
+  - @swapkit/helpers@4.0.7
+  - @swapkit/toolboxes@4.0.7
+  - @swapkit/wallet-core@4.0.7
+  - @swapkit/wallet-keystore@4.0.7
+
+## 4.1.5
+
+### Patch Changes
+
+- Updated dependencies [[`c4605c6`](https://github.com/swapkit/SwapKit/commit/c4605c667d3737691d348dde8c8d9d677b79f2ec)]:
+  - @swapkit/helpers@4.0.6
+  - @swapkit/toolboxes@4.0.6
+  - @swapkit/wallet-core@4.0.6
+  - @swapkit/wallet-hardware@4.1.5
+  - @swapkit/wallet-keystore@4.0.6
+
+## 4.1.4
+
+### Patch Changes
+
+- [#1463](https://github.com/swapkit/SwapKit/pull/1463) [`5d334e6`](https://github.com/swapkit/SwapKit/commit/5d334e69299e3aca21329ff71287498fed4d41a7) Thanks [@towanTG](https://github.com/towanTG)! - Improves handling of EIP1193 tx data formatting
+
+- Updated dependencies [[`5d334e6`](https://github.com/swapkit/SwapKit/commit/5d334e69299e3aca21329ff71287498fed4d41a7), [`5d334e6`](https://github.com/swapkit/SwapKit/commit/5d334e69299e3aca21329ff71287498fed4d41a7)]:
+  - @swapkit/toolboxes@4.0.5
+  - @swapkit/helpers@4.0.5
+  - @swapkit/wallet-hardware@4.1.4
+  - @swapkit/wallet-keystore@4.0.5
+  - @swapkit/wallet-core@4.0.5
+
 ## 4.1.3
 
 ### Patch Changes
