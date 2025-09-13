@@ -32,6 +32,7 @@ import type {
   HYPEToolbox,
   MATICToolbox,
   OPToolbox,
+  SONToolbox,
   UNIToolbox,
 } from "./toolbox";
 
@@ -133,5 +134,6 @@ export type EVMToolboxes = {
   [Chain.HyperEVM]: Awaited<ReturnType<typeof HYPEToolbox>>;
   [Chain.Optimism]: Awaited<ReturnType<typeof OPToolbox>>;
   [Chain.Polygon]: Awaited<ReturnType<typeof MATICToolbox>>;
+  [Chain.Sonic]: Awaited<ReturnType<typeof SONToolbox>>;
   [Chain.Unichain]: Awaited<ReturnType<typeof UNIToolbox>>;
 };
