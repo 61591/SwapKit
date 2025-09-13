@@ -98,6 +98,7 @@ export function isGasAsset({ chain, symbol }: { chain: Chain; symbol: string }) 
     .with(Chain.HyperEVM, () => symbol === "HYPE")
     .with(Chain.Maya, () => symbol === "CACAO")
     .with(Chain.Cosmos, () => symbol === "ATOM")
+    .with(Chain.Sonic, () => symbol === "S")
     .with(Chain.THORChain, () => symbol === "RUNE")
     .with(Chain.Tron, () => symbol === "TRX")
     .with(Chain.Radix, () => `${chain}.${symbol}` === getCommonAssetInfo(chain).identifier)
@@ -133,6 +134,7 @@ export const getCommonAssetInfo = (assetString: CommonAssetString) => {
     .with(Chain.HyperEVM, "HYPE.HYPE", () => ({ decimal, identifier: "HYPE.HYPE" }))
     .with(Chain.Core, "CORE.CORE", () => ({ decimal, identifier: "CORE.CORE" }))
     .with(Chain.Botanix, "BOT.BTC", () => ({ decimal, identifier: "BOT.BTC" }))
+    .with(Chain.Sonic, "SON.S", () => ({ decimal, identifier: "SON.S" }))
     .with("KUJI.USK", (asset) => ({ decimal: 6, identifier: asset }))
     .with("ETH.FLIP", () => ({
       decimal: BaseDecimal.ETH,
