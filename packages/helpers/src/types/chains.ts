@@ -29,6 +29,7 @@ export enum Chain {
   Radix = "XRD",
   Ripple = "XRP",
   Solana = "SOL",
+  Sonic = "SON",
   THORChain = "THOR",
   Tron = "TRON",
   Unichain = "UNI",
@@ -88,6 +89,8 @@ export enum ChainId {
   THORChain = "thorchain-1",
   THORChainStagenet = "thorchain-stagenet-v2",
   Solana = "solana",
+  Sonic = "146",
+  SonicHex = "0x92",
   Tron = "728126428",
   TronHex = "0x2b6653dc",
   Unichain = "130",
@@ -141,6 +144,8 @@ export const ChainIdToChain: Record<ChainId, Chain> = {
   [ChainId.Radix]: Chain.Radix,
   [ChainId.Ripple]: Chain.Ripple,
   [ChainId.Solana]: Chain.Solana,
+  [ChainId.SonicHex]: Chain.Sonic,
+  [ChainId.Sonic]: Chain.Sonic,
   [ChainId.THORChainStagenet]: Chain.THORChain,
   [ChainId.THORChain]: Chain.THORChain,
   [ChainId.Tron]: Chain.Tron,
@@ -183,6 +188,7 @@ export const BaseDecimal: Record<Chain, number> = {
   OP: 18,
   POL: 18,
   SOL: 9,
+  SON: 18,
   THOR: 8,
   TRON: 6,
   UNI: 18,
@@ -222,6 +228,7 @@ export const BlockTimes: Record<Partial<Chain>, number> = {
   [Chain.Radix]: 5,
   [Chain.Ripple]: 5,
   [Chain.Solana]: 0.4,
+  [Chain.Sonic]: 0.8,
   [Chain.THORChain]: 6,
   [Chain.Tron]: 3,
   [Chain.Unichain]: 1,
@@ -246,6 +253,7 @@ export type EVMChain =
   | Chain.HyperEVM
   | Chain.Optimism
   | Chain.Polygon
+  | Chain.Sonic
   | Chain.Unichain;
 
 export const EVMChains = [
@@ -263,6 +271,7 @@ export const EVMChains = [
   Chain.HyperEVM,
   Chain.Optimism,
   Chain.Polygon,
+  Chain.Sonic,
   Chain.Unichain,
 ] as const;
 
@@ -319,6 +328,7 @@ export const RPC_URLS: Record<Chain | StagenetChain, string> = {
   [Chain.Radix]: "https://radix-mainnet.rpc.grove.city/v1/326002fc/core",
   [Chain.Ripple]: "wss://xrpl.ws/",
   [Chain.Solana]: "https://solana-rpc.publicnode.com",
+  [Chain.Sonic]: "https://sonic-rpc.publicnode.com",
   [Chain.THORChain]: "https://rpc.ninerealms.com",
   [Chain.Tron]: "https://tron-rpc.publicnode.com",
   [Chain.Unichain]: "https://unichain-rpc.publicnode.com",
@@ -384,6 +394,7 @@ export const FALLBACK_URLS: Record<Chain | StagenetChain, string[]> = {
   [Chain.THORChain]: ["https://thornode.ninerealms.com", NODE_URLS[Chain.THORChain]],
   [StagenetChain.THORChain]: [],
   [Chain.Solana]: ["https://api.mainnet-beta.solana.com", "https://solana-mainnet.rpc.extrnode.com"],
+  [Chain.Sonic]: ["https://sonic.drpc.org", "https://rpc.soniclabs.com"],
   [Chain.Tron]: ["https://api.tronstack.io", "https://api.tron.network"],
   [Chain.Unichain]: [
     "https://0xrpc.io/uni",
@@ -424,6 +435,7 @@ export const EXPLORER_URLS: Record<Chain, string> = {
   [Chain.Ripple]: "https://livenet.xrpl.org/",
   [Chain.THORChain]: "https://runescan.io",
   [Chain.Solana]: "https://solscan.io",
+  [Chain.Sonic]: "https://sonicscan.org",
   [Chain.Tron]: "https://tronscan.org",
   [Chain.Unichain]: "https://uniscan.xyz",
   [Chain.Zcash]: "https://blockchair.com/zcash",
