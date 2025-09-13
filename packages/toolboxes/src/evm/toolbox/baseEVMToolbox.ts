@@ -169,6 +169,7 @@ const baseAssetAddress: Record<EVMChain, string> = {
   [Chain.HyperEVM]: ContractAddress.HYPE,
   [Chain.Optimism]: ContractAddress.OP,
   [Chain.Polygon]: ContractAddress.MATIC,
+  [Chain.Sonic]: ContractAddress.SON,
   [Chain.Unichain]: ContractAddress.UNI,
 };
 

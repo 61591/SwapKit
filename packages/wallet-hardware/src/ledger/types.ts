@@ -9,6 +9,7 @@ import type {
   GnosisLedger,
   OptimismLedger,
   PolygonLedger,
+  SonicLedger,
 } from "./clients/evm";
 import type { THORChainLedger } from "./clients/thorchain";
 import type { TronLedger } from "./clients/tron";
@@ -29,7 +30,8 @@ export type EVMLedgerClients =
   | ReturnType<typeof GnosisLedger>
   | ReturnType<typeof EthereumLedger>
   | ReturnType<typeof OptimismLedger>
-  | ReturnType<typeof PolygonLedger>;
+  | ReturnType<typeof PolygonLedger>
+  | ReturnType<typeof SonicLedger>;
 export type TronLedgerClient = ReturnType<typeof TronLedger>;
 
 export type GetAddressAndPubKeyResponse = {

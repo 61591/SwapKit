@@ -53,6 +53,7 @@ export const ctrlWallet = createWallet({
     Chain.Optimism,
     Chain.Polygon,
     Chain.Solana,
+    Chain.Sonic,
     Chain.THORChain,
     Chain.Unichain,
   ],
@@ -133,6 +134,7 @@ async function getWalletMethods(chain: (typeof CTRL_SUPPORTED_CHAINS)[number]) {
     case Chain.HyperEVM:
     case Chain.Optimism:
     case Chain.Polygon:
+    case Chain.Sonic:
     case Chain.Unichain: {
       const { prepareNetworkSwitch, switchEVMWalletNetwork } = await import("@swapkit/helpers");
       const { getEvmToolbox } = await import("@swapkit/toolboxes/evm");

@@ -41,6 +41,7 @@ export const CORNToolbox = createEvmToolbox(Chain.Corn);
 export const GNOToolbox = createEvmToolbox(Chain.Gnosis);
 export const HYPEToolbox = createEvmToolbox(Chain.HyperEVM);
 export const MATICToolbox = createEvmToolbox(Chain.Polygon);
+export const SONToolbox = createEvmToolbox(Chain.Sonic);
 export const UNIToolbox = createEvmToolbox(Chain.Unichain);
 
 function createEvmToolbox<C extends EVMChain>(chain: C) {

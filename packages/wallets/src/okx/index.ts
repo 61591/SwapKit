@@ -36,6 +36,7 @@ export const okxWallet = createWallet({
     Chain.Near,
     Chain.Optimism,
     Chain.Polygon,
+    Chain.Sonic,
     Chain.Tron,
     Chain.Unichain,
   ],

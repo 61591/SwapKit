@@ -82,6 +82,7 @@ export function getFeeEstimator<T extends keyof CreateTransactionParams>(chain: 
         Chain.HyperEVM,
         Chain.Optimism,
         Chain.Polygon,
+        Chain.Sonic,
         Chain.Unichain,
         async (chain) => {
           const toolbox = await getToolbox(chain);
@@ -185,6 +186,7 @@ export async function getToolbox<T extends keyof Toolboxes>(
       Chain.HyperEVM,
       Chain.Optimism,
       Chain.Polygon,
+      Chain.Sonic,
       Chain.Unichain,
       async () => {
         const { getEvmToolbox } = await import("./evm/toolbox");

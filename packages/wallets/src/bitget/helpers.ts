@@ -31,6 +31,7 @@ export async function getWalletMethods(chain: Chain) {
         Chain.HyperEVM,
         Chain.Optimism,
         Chain.Polygon,
+        Chain.Sonic,
         Chain.Unichain,
       ),
       async () => {

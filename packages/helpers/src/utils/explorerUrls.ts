@@ -30,6 +30,7 @@ export function getExplorerTxUrl({ chain, txHash }: { txHash: string; chain: Cha
       Chain.Optimism,
       Chain.Polkadot,
       Chain.Polygon,
+      Chain.Sonic,
       Chain.Unichain,
       () => `${baseUrl}/tx/${txHash.startsWith("0x") ? txHash : `0x${txHash}`}`,
     )
