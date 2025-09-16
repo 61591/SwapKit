@@ -1,5 +1,5 @@
 import { Chain, SwapKitError, WalletOption } from "@swapkit/helpers";
-import { createTronToolbox, type TronSigner, type TronTransaction } from "@swapkit/toolboxes/tron";
+import { createTronToolbox, type TronTransaction } from "@swapkit/toolboxes/tron";
 import type { TronLinkWindow } from "./types.js";
 import { TronLinkResponseCode } from "./types.js";
 
@@ -37,13 +37,13 @@ export async function isTronLinkLocked() {
 
     const hasDefaultAddress = Boolean(tronLink.tronWeb?.defaultAddress?.base58);
 
-    const isReadyFalse = tronLink.ready === false;
+    const isReady = tronLink.ready !== false;
 
     const hasTronWeb = Boolean(
       tronLink.tronWeb && typeof tronLink.tronWeb.trx === "object" && typeof tronLink.tronWeb.trx.sign === "function",
     );
 
-    return !hasDefaultAddress && (isReadyFalse || !hasTronWeb);
+    return !hasDefaultAddress && (!isReady || !hasTronWeb);
   } catch {
     return false;
   }
@@ -53,10 +53,7 @@ async function requestTronLinkAccounts(tronLink: TronLinkWindow) {
   const response = await tronLink.request({ method: "tron_requestAccounts" });
 
   if (response === "") {
-    throw new SwapKitError("wallet_tronlink_locked", {
-      message: "TronLink is locked. Please unlock it to continue.",
-      wallet: WalletOption.TRONLINK,
-    });
+    throw new SwapKitError("wallet_tronlink_locked", { message: "TronLink is locked. Please unlock it to continue." });
   }
 
   if (response.code !== TronLinkResponseCode.SUCCESS) {
@@ -83,7 +80,7 @@ export async function getWalletForChain(chain: Chain, expectedNetwork?: string) 
     verifyNetwork(expectedNetwork);
   }
 
-  const signer: TronSigner = {
+  const signer = {
     getAddress: async () => address,
     signTransaction: async (transaction: TronTransaction) => {
       return await tronLink.tronWeb.trx.sign(transaction);
