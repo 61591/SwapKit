@@ -6,7 +6,6 @@ import {
   SwapKitError,
   WalletOption,
 } from "@swapkit/helpers";
-import type { NearCreateTransactionParams } from "@swapkit/toolboxes/near";
 import { createWallet, getWalletSupportedChains } from "@swapkit/wallet-core";
 
 import { getCtrlAddress, getCtrlProvider, walletTransfer } from "./walletHelpers";
@@ -72,9 +71,9 @@ async function getWalletMethods(chain: (typeof CTRL_SUPPORTED_CHAINS)[number]) {
       if (!solanaProvider) {
         throw new SwapKitError("wallet_ctrl_not_found");
       }
-      const toolbox = getSolanaToolbox({ signer: solanaProvider });
+      const toolbox = await getSolanaToolbox({ signer: solanaProvider });
 
-      return { ...toolbox };
+      return toolbox;
     }
 
     case Chain.Maya:
@@ -99,13 +98,13 @@ async function getWalletMethods(chain: (typeof CTRL_SUPPORTED_CHAINS)[number]) {
       const provider = await getCtrlProvider(chain);
 
       await provider?.enable(chainId);
-      const signer = provider?.getOfflineSignerOnlyAmino(chainId);
+      const signer = provider?.getOfflineSignerOnlyAmino(chainId, { preferNoSetFee: true });
 
       if (!signer) {
         throw new SwapKitError("wallet_ctrl_not_found");
       }
 
-      const toolbox = getCosmosToolbox(chain, { signer });
+      const toolbox = await getCosmosToolbox(chain, { signer });
 
       return toolbox;
     }
@@ -177,17 +176,12 @@ async function getWalletMethods(chain: (typeof CTRL_SUPPORTED_CHAINS)[number]) {
       const accountId = await signer.getAddress();
       const toolbox = await getNearToolbox({ signer });
 
-      // Override transfer method to use CTRL's direct API
       const transfer = async (params: GenericTransferParams) => {
         const { transfer: transferAction } = await import("near-api-js/lib/transaction");
 
-        // Convert AssetValue to NEAR amount (yoctoNEAR)
         const amountInYocto = params.assetValue.getBaseValue("string");
-
-        // Create transfer action
         const action = transferAction(BigInt(amountInYocto));
 
-        // Create transaction object for CTRL
         const transaction = { actions: [action], receiverId: params.recipient, signerId: accountId };
 
         const txHash: string = await provider.request({ method: "signAndSendTransaction", params: { transaction } });
@@ -195,31 +189,7 @@ async function getWalletMethods(chain: (typeof CTRL_SUPPORTED_CHAINS)[number]) {
         return txHash;
       };
 
-      // Override createTransaction to build NEAR transactions for CTRL
-      const createTransaction = async (params: NearCreateTransactionParams) => {
-        const { functionCall, transfer: transferAction } = await import("near-api-js/lib/transaction");
-
-        if (params.functionCall) {
-          // Function call transaction
-          const { methodName, args, attachedDeposit } = params.functionCall;
-          const action = functionCall(
-            methodName,
-            args,
-            BigInt("30000000000000"), // 30 TGas default
-            BigInt(attachedDeposit || "0"),
-          );
-
-          return { actions: [action], receiverId: params.recipient, signerId: accountId };
-        }
-
-        // Simple transfer transaction
-        const amountInYocto = params.assetValue.getBaseValue("string");
-        const action = transferAction(BigInt(amountInYocto));
-
-        return { actions: [action], receiverId: params.recipient, signerId: accountId };
-      };
-
-      return { ...toolbox, createTransaction, transfer };
+      return { ...toolbox, transfer };
     }
 
     default:

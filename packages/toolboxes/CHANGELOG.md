@@ -1,5 +1,60 @@
 # @swapkit/toolboxes
 
+## 4.0.18
+
+### Patch Changes
+
+- [#1490](https://github.com/swapkit/SwapKit/pull/1490) [`69ca725`](https://github.com/swapkit/SwapKit/commit/69ca725828d4adf996d627e494c560a71fdefc4b) Thanks [@towanTG](https://github.com/towanTG)! - Uses SwapKit Api for Near balance fetching
+
+- Updated dependencies []:
+  - @swapkit/helpers@4.0.18
+
+## 4.0.17
+
+### Patch Changes
+
+- [#1488](https://github.com/swapkit/SwapKit/pull/1488) [`98afc83`](https://github.com/swapkit/SwapKit/commit/98afc83feacf172b495e460d4e7e3f331e3dd953) Thanks [@towanTG](https://github.com/towanTG)! - Undo some zcash version related changes
+
+- Updated dependencies []:
+  - @swapkit/helpers@4.0.17
+
+## 4.0.16
+
+### Patch Changes
+
+- [#1486](https://github.com/swapkit/SwapKit/pull/1486) [`99aa35e`](https://github.com/swapkit/SwapKit/commit/99aa35e985b7f04738ce12199ac9106c2ad8707c) Thanks [@towanTG](https://github.com/towanTG)! - Fixes zcash trezor memo bug and corrects zcash version in toolbox
+
+- Updated dependencies []:
+  - @swapkit/helpers@4.0.16
+
+## 4.0.15
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @swapkit/helpers@4.0.15
+
+## 4.0.14
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @swapkit/helpers@4.0.14
+
+## 4.0.13
+
+### Patch Changes
+
+- Updated dependencies [[`c048f39`](https://github.com/swapkit/SwapKit/commit/c048f39a74b21182d2093e97883c1dc8971293f3)]:
+  - @swapkit/helpers@4.0.13
+
+## 4.0.12
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @swapkit/helpers@4.0.12
+
 ## 4.0.11
 
 ### Patch Changes

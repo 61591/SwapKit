@@ -62,7 +62,7 @@ async function getTrezorWallet<T extends Chain>({
 
       const getAddress = async () => {
         const TrezorConnect = (await import("@trezor/connect-web")).default;
-        const { success, payload } = await TrezorConnect.getAddress({ coin: "zec", path: derivationPathStr });
+        const { success, payload } = await TrezorConnect.getAddress({ coin: "zcash", path: derivationPathStr });
 
         if (!success) {
           throw new SwapKitError({
@@ -76,20 +76,18 @@ async function getTrezorWallet<T extends Chain>({
 
       const address = await getAddress();
 
-      // Create a signer that works with ZcashPsbt
       const signer = {
         getAddress: async () => address,
         signTransaction: async (zcashPsbt: ZcashPsbt) => {
           const TrezorConnect = (await import("@trezor/connect-web")).default;
+          const { address: zcashAddress, networks } = await import("@bitgo/utxo-lib");
           const address_n = derivationPath.map((pathElement, index) =>
             index < 3 ? ((pathElement as number) | 0x80000000) >>> 0 : (pathElement as number),
           );
 
-          // Extract Zcash-specific parameters from the PSBT
-          // Use getVersion() method instead of accessing protected tx property
-          const version = 4; // Sapling version
-          const versionGroupId = 0x892f2085; // Sapling
-          const branchId = 0xe9ff75a6; // Canopy
+          const version = 5;
+          const versionGroupId = 0x892f2085;
+          const branchId = 0xc8e71055;
 
           const inputs = zcashPsbt.txInputs.map((input, idx) => ({
             address_n,
@@ -99,40 +97,42 @@ async function getTrezorWallet<T extends Chain>({
             script_type: "SPENDADDRESS" as const,
           }));
 
+          const outputs = zcashPsbt.txOutputs.map((output) => {
+            if (output.value === 0n && output.script.length > 0 && output.script[0] === 0x6a) {
+              return { amount: "0", op_return_data: output.script.toString("hex"), script_type: "PAYTOOPRETURN" };
+            }
+
+            const maybeRecipient = zcashAddress.fromOutputScript(output.script, networks.zcash);
+
+            const isChangeAddress = maybeRecipient === address;
+
+            return isChangeAddress
+              ? { address_n, amount: output.value.toString(), script_type: "PAYTOADDRESS" }
+              : { address: maybeRecipient, amount: output.value.toString(), script_type: "PAYTOADDRESS" };
+          });
+
           const result = await TrezorConnect.signTransaction({
             branchId,
-            coin: "zec",
+            coin: "zcash",
+            expiry: 0,
             inputs,
-            outputs: zcashPsbt.txOutputs.map((output) => {
-              // OP_RETURN
-              if (!output.address) {
-                return { amount: "0", op_return_data: output.script.toString("hex"), script_type: "PAYTOOPRETURN" };
-              }
-
-              const outputAddress = output.address;
-
-              const isChangeAddress = outputAddress === address;
-
-              return isChangeAddress
-                ? { address_n, amount: output.value.toString(), script_type: "PAYTOADDRESS" }
-                : { address: outputAddress, amount: output.value.toString(), script_type: "PAYTOADDRESS" };
-            }),
+            locktime: 0,
+            // @ts-expect-error
+            outputs,
             overwintered: true,
             version,
             versionGroupId,
-          }); // Type assertion needed due to Trezor Connect types not supporting PAYTOOPRETURN
+          });
 
-          if (!result.success) {
-            throw new SwapKitError({
-              errorKey: "wallet_trezor_failed_to_sign_transaction",
-              info: { chain, error: (result.payload as { error: string; code?: string }).error },
-            });
+          if (result.success) {
+            console.log("returning", result.payload.serializedTx);
+            return result.payload.serializedTx;
           }
 
-          // Trezor returns the fully signed transaction hex
-          // We need to update the PSBT with the signatures and finalize it
-          // For now, we'll store the signed tx hex in a way the toolbox can use
-          return result.payload.serializedTx;
+          throw new SwapKitError({
+            errorKey: "wallet_trezor_failed_to_sign_transaction",
+            info: { chain, error: (result.payload as { error: string; code?: string }).error },
+          });
         },
       };
 
@@ -150,16 +150,10 @@ async function getTrezorWallet<T extends Chain>({
 
         const { psbt } = await toolbox.createTransaction({ ...params, feeRate, fetchTxHex: false, sender: address });
 
-        const signedPsbt = await signer.signTransaction(psbt);
-        // Extract the signed transaction hex that we stored
-        const txHex = (signedPsbt as any).signedTxHex;
-        if (!txHex) {
-          throw new SwapKitError({
-            errorKey: "wallet_trezor_failed_to_sign_transaction",
-            info: { chain, error: "No signed transaction hex returned" },
-          });
-        }
-        return toolbox.broadcastTx(txHex);
+        const txHex = await signer.signTransaction(psbt);
+        const tx = await toolbox.broadcastTx(txHex);
+
+        return tx;
       };
 
       return { ...toolbox, address, signTransaction: signer.signTransaction, transfer };
@@ -219,7 +213,6 @@ async function getTrezorWallet<T extends Chain>({
             script_type: scriptType.input,
           })),
           outputs: psbt.txOutputs.map((output) => {
-            // OP_RETURN
             if (!output.address) {
               return { amount: "0", op_return_data: Buffer.from(memo).toString("hex"), script_type: "PAYTOOPRETURN" };
             }
